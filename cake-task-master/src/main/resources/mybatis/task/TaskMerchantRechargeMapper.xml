@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cake.task.master.core.mapper.task.TaskMerchantRechargeMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.merchant_id,a.merchant_site_id,a.order_no,a.order_type,a.issue_order_no,a.order_money,a.order_status,
+        a.bank_name,a.bank_card,a.account_name,a.picture_ads,a.operate_status,a.is_synchro,a.check_status,a.check_info,
+        a.invalid_time,a.data_explain,
+        a.remark,a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,a.invalid_num,a.invalid_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="orderType != null and orderType != '' " >
+                and a.order_type = #{orderType}
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                and a.order_status = #{orderStatus}
+            </if>
+            <if test="operateStatus != null and operateStatus != '' " >
+                and a.operate_status = #{operateStatus}
+            </if>
+            <if test="operateStatusStr != null and operateStatusStr != '' " >
+                and a.operate_status &lt;= 3
+            </if>
+            <if test="isSynchro != null and isSynchro != '' " >
+                and a.is_synchro = #{isSynchro}
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                and a.check_status = #{checkStatus}
+            </if>
+            <if test="invalidTimeStr != null and invalidTimeStr != '' " >
+                and a.invalid_time &lt;= now()
+            </if>
+            <if test="runNum != null and runNum != '' " >
+                and a.run_num &lt; #{runNum}
+            </if>
+            <if test="runStatus != null and runStatus != '' " >
+                and a.run_status &lt; #{runStatus}
+            </if>
+            <if test="sendNum != null and sendNum != '' " >
+                and a.send_num &lt; #{sendNum}
+            </if>
+            <if test="sendStatus != null and sendStatus != '' " >
+                and a.send_status &lt; #{sendStatus}
+            </if>
+            <if test="invalidNum != null and invalidNum != '' " >
+                and a.invalid_num &lt; #{invalidNum}
+            </if>
+            <if test="invalidStatus != null and invalidStatus != '' " >
+                and a.invalid_status &lt; #{invalidStatus}
+            </if>
+            <if test="operateStatusStart != null and operateStatusStart != '' " >
+                and a.operate_status >= #{operateStatusStart}
+            </if>
+            <if test="operateStatusEnd != null and operateStatusEnd != '' " >
+                and a.operate_status &lt;= #{operateStatusEnd}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 查询未跑的信息 -->
+    <select id="getDataList" parameterType="Object" resultType="com.cake.task.master.core.model.merchant.MerchantRechargeModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_merchant_recharge a
+        <include refid="Example_Where_Clause"/>
+        limit #{limitNum}
+    </select>
+
+    <!-- 更新信息数据的状态成功、失败的结果 -->
+    <update id="updateStatus" parameterType="Object">
+        UPDATE tb_fr_merchant_recharge a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="runNum != null and runNum != '' " >
+                a.run_num = a.run_num + #{runNum},
+            </if>
+            <if test="runStatus != null and runStatus != '' " >
+                a.run_status = #{runStatus},
+            </if>
+            <if test="sendNum != null and sendNum != '' " >
+                a.send_num = a.send_num + #{sendNum},
+            </if>
+            <if test="sendStatus != null and sendStatus != '' " >
+                a.send_status = #{sendStatus},
+            </if>
+            <if test="invalidNum != null and invalidNum != '' " >
+                a.invalid_num = a.invalid_num + #{invalidNum},
+            </if>
+            <if test="invalidStatus != null and invalidStatus != '' " >
+                a.invalid_status = #{invalidStatus},
+            </if>
+            <if test="info != null and info != '' " >
+                a.data_explain = #{info},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+
+
+</mapper>

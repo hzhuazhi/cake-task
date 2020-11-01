@@ -1,0 +1,2 @@
+rootProject.name = 'cake-task'
+include 'cake-task-master'

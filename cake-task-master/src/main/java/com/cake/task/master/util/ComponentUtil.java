@@ -35,6 +35,7 @@ public class ComponentUtil {
     public static StatisticsClickPayService statisticsClickPayService;
     public static ShortChainService shortChainService;
     public static IssueService issueService;
+    public static OrderOutService orderOutService;
 
 
 
@@ -47,6 +48,7 @@ public class ComponentUtil {
     public static TaskShortMsgArrearsService taskShortMsgArrearsService;
     public static TaskMerchantRechargeService taskMerchantRechargeService;
     public static TaskIssueService taskIssueService;
+    public static TaskOrderOutService taskOrderOutService;
 
 
 }

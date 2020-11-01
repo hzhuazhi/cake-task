@@ -50,10 +50,16 @@ public class LoadConstant {
     public String cardQrCodeUrl;
 
     /**
-     * 默认数据同步地址
+     * 默认数据同步地址-代收订单
      */
-    @Value("${default.notify.url}")
-    public String defaultNotifyUrl;
+    @Value("${default.notify.url.in}")
+    public String defaultNotifyUrlIn;
+
+    /**
+     * 默认数据同步地址-代付订单
+     */
+    @Value("${default.notify.url.out}")
+    public String defaultNotifyUrlOut;
 
     /**
      * 提现下发数据同步地址

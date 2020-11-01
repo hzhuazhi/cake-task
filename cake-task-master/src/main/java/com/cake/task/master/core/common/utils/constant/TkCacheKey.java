@@ -120,6 +120,11 @@ public interface TkCacheKey {
      */
     String LOCK_MERCHANT_RECHARGE_INVALID = "-20";
 
+    /**
+     * LOCK-同步代付订单
+     */
+    String LOCK_ORDER_OUT_SEND = "-21";
+
 
 
 }

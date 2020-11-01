@@ -233,7 +233,7 @@ public class TaskOrder {
                     if (!StringUtils.isBlank(data.getNotifyUrl())){
                         sendUrl = data.getNotifyUrl();
                     }else {
-                        sendUrl = ComponentUtil.loadConstant.defaultNotifyUrl;
+                        sendUrl = ComponentUtil.loadConstant.defaultNotifyUrlIn;
                     }
 //                    sendUrl = "http://localhost:8085/pay/data/fine";
 //                    String resp = HttpSendUtils.sendGet(sendUrl + "?" + URLEncoder.encode(sendData,"UTF-8"), null, null);

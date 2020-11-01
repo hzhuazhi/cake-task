@@ -99,6 +99,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private IssueService issueService;
 
+    @Autowired
+    private OrderOutService orderOutService;
+
 
 
 
@@ -128,6 +131,9 @@ public class AutowireRunner implements ApplicationRunner {
 
     @Autowired
     private TaskIssueService taskIssueService;
+
+    @Autowired
+    private TaskOrderOutService taskOrderOutService;
 
 
 
@@ -165,6 +171,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.statisticsClickPayService = statisticsClickPayService;
         ComponentUtil.shortChainService = shortChainService;
         ComponentUtil.issueService = issueService;
+        ComponentUtil.orderOutService = orderOutService;
 
 
 
@@ -177,6 +184,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskShortMsgArrearsService = taskShortMsgArrearsService;
         ComponentUtil.taskMerchantRechargeService = taskMerchantRechargeService;
         ComponentUtil.taskIssueService = taskIssueService;
+        ComponentUtil.taskOrderOutService = taskOrderOutService;
 
         runThread = new RunThread();
         runThread.start();

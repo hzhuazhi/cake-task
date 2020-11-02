@@ -8,8 +8,8 @@ package com.cake.task.master.core.common.utils.constant;
  */
 public enum SystemKeysEnum {
 
-    FRUIT("FR", "水果"),
-    FRUIT_TASK("FR_TK", "水果的task"),
+    CAKE("CK", "蛋糕"),
+    CAKE_TASK("CK_TK", "蛋糕的task"),
 
 
     ;

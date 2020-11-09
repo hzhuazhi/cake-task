@@ -39,7 +39,10 @@ public class ComponentUtil {
     public static MobileCardHeartbeatService mobileCardHeartbeatService;
     public static MerchantChannelService merchantChannelService;
     public static MerchantBalanceDeductService merchantBalanceDeductService;
-
+    public static InterestService interestService;
+    public static InterestMerchantService interestMerchantService;
+    public static InterestProfitService interestProfitService;
+    public static MerchantProfitService merchantProfitService;
 
 
 

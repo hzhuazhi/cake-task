@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cake.task.master.core.mapper.InterestMapper">
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.alias,a.account_num,a.pass_wd,a.withdraw_pass_wd,a.role_id,a.ac_name,a.ac_contacts,a.ac_phone,a.ac_type,
+        a.total_money,a.balance,a.lock_money,a.total_profit,
+        a.remark,a.use_status,a.create_user_id,a.create_role_id,a.update_user_id,a.update_role_id,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="money != null and money != '' " >
+                and a.balance > #{money}
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                and a.use_status = #{useStatus}
+            </if>
+            <if test="idList != null and idList.size()>0">
+                and a.id in
+                <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.cake.task.master.core.model.interest.InterestModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_interest a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.cake.task.master.core.model.interest.InterestModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_interest a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.cake.task.master.core.model.interest.InterestModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_interest a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.cake.task.master.core.model.interest.InterestModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_interest a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fr_interest a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.cake.task.master.core.model.interest.InterestModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_interest a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.cake.task.master.core.model.interest.InterestModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fr_interest
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="alias != null and alias != '' " >
+                alias,
+            </if>
+            <if test="accountNum != null and accountNum != '' " >
+                account_num,
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                pass_wd,
+            </if>
+            <if test="withdrawPassWd != null and withdrawPassWd != '' " >
+                withdraw_pass_wd,
+            </if>
+            <if test="roleId != null and roleId != '' " >
+                role_id,
+            </if>
+            <if test="acName != null and acName != '' " >
+                ac_name,
+            </if>
+            <if test="acContacts != null and acContacts != '' " >
+                ac_contacts,
+            </if>
+            <if test="acPhone != null and acPhone != '' " >
+                ac_phone,
+            </if>
+            <if test="acType != null and acType != '' " >
+                ac_type,
+            </if>
+            <if test="totalMoney != null and totalMoney != '' " >
+                total_money,
+            </if>
+            <if test="balance != null and balance != '' " >
+                balance,
+            </if>
+            <if test="lockMoney != null and lockMoney != '' " >
+                lock_money,
+            </if>
+            <if test="totalProfit != null and totalProfit != '' " >
+                total_profit,
+            </if>
+            <if test="remark != null and remark != '' " >
+                remark,
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                use_status,
+            </if>
+            <if test="createUserId != null and createUserId != '' " >
+                create_user_id,
+            </if>
+            <if test="createRoleId != null and createRoleId != '' " >
+                create_role_id,
+            </if>
+            <if test="updateUserId != null and updateUserId != '' " >
+                update_user_id,
+            </if>
+            <if test="updateRoleId != null and updateRoleId != '' " >
+                update_role_id,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="alias != null and alias != '' " >
+                <![CDATA[  #{alias}, ]]>
+            </if>
+            <if test="accountNum != null and accountNum != '' " >
+                <![CDATA[  #{accountNum}, ]]>
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                <![CDATA[  #{passWd}, ]]>
+            </if>
+            <if test="withdrawPassWd != null and withdrawPassWd != '' " >
+                <![CDATA[  #{withdrawPassWd}, ]]>
+            </if>
+            <if test="roleId != null and roleId != '' " >
+                <![CDATA[  #{roleId}, ]]>
+            </if>
+            <if test="acName != null and acName != '' " >
+                <![CDATA[  #{acName}, ]]>
+            </if>
+            <if test="acContacts != null and acContacts != '' " >
+                <![CDATA[  #{acContacts}, ]]>
+            </if>
+            <if test="acPhone != null and acPhone != '' " >
+                <![CDATA[  #{acPhone}, ]]>
+            </if>
+            <if test="acType != null and acType != '' " >
+                <![CDATA[  #{acType}, ]]>
+            </if>
+            <if test="totalMoney != null and totalMoney != '' " >
+                <![CDATA[  #{totalMoney}, ]]>
+            </if>
+            <if test="balance != null and balance != '' " >
+                <![CDATA[  #{balance}, ]]>
+            </if>
+            <if test="lockMoney != null and lockMoney != '' " >
+                <![CDATA[  #{lockMoney}, ]]>
+            </if>
+            <if test="totalProfit != null and totalProfit != '' " >
+                <![CDATA[  #{totalProfit}, ]]>
+            </if>
+            <if test="remark != null and remark != '' " >
+                <![CDATA[  #{remark}, ]]>
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                <![CDATA[  #{useStatus}, ]]>
+            </if>
+            <if test="createUserId != null and createUserId != '' " >
+                <![CDATA[  #{createUserId}, ]]>
+            </if>
+            <if test="createRoleId != null and createRoleId != '' " >
+                <![CDATA[  #{createRoleId}, ]]>
+            </if>
+            <if test="updateUserId != null and updateUserId != '' " >
+                <![CDATA[  #{updateUserId}, ]]>
+            </if>
+            <if test="updateRoleId != null and updateRoleId != '' " >
+                <![CDATA[  #{updateRoleId}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.cake.task.master.core.model.interest.InterestModel">
+        UPDATE tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="alias != null and alias != '' " >
+                a.alias = #{alias},
+            </if>
+            <if test="accountNum != null and accountNum != '' " >
+                a.account_num = #{accountNum},
+            </if>
+            <if test="passWd != null and passWd != '' " >
+                a.pass_wd = #{passWd},
+            </if>
+            <if test="withdrawPassWd != null and withdrawPassWd != '' " >
+                a.withdraw_pass_wd = #{withdrawPassWd},
+            </if>
+            <if test="roleId != null and roleId != '' " >
+                a.role_id = #{roleId},
+            </if>
+            <if test="acName != null and acName != '' " >
+                a.ac_name = #{acName},
+            </if>
+            <if test="acContacts != null and acContacts != '' " >
+                a.ac_contacts = #{acContacts},
+            </if>
+            <if test="acPhone != null and acPhone != '' " >
+                a.ac_phone = #{acPhone},
+            </if>
+            <if test="acType != null and acType != '' " >
+                a.ac_type = #{acType},
+            </if>
+            <if test="totalMoney != null and totalMoney != '' " >
+                a.total_money = #{totalMoney},
+            </if>
+            <if test="balance != null and balance != '' " >
+                a.balance = #{balance},
+            </if>
+            <if test="lockMoney != null and lockMoney != '' " >
+                a.lock_money = #{lockMoney},
+            </if>
+            <if test="totalProfit != null and totalProfit != '' " >
+                a.total_profit = #{totalProfit},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
+            </if>
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+    <!-- 更新利益者的使用状态 -->
+    <update id="updateUseStatus" parameterType="Object">
+        update tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="useStatus != null and useStatus != '' " >
+                a.use_status = #{useStatus},
+            </if>
+        </trim>
+        where 1=1
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+    <!-- 更新利益分配者的余额 -->
+    <update id="updateBalance" parameterType="com.cake.task.master.core.model.interest.InterestModel">
+        UPDATE tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="money != null and money != '' " >
+                a.balance = a.balance + #{money},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+
+    <!-- 更新利益分配者的总金额以及余额 -->
+    <update id="updateMoney" parameterType="com.cake.task.master.core.model.interest.InterestModel">
+        UPDATE tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="money != null and money != '' " >
+                a.total_money = a.total_money + #{money},
+            </if>
+            <if test="money != null and money != '' " >
+                a.balance = a.balance + #{money},
+            </if>
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+
+    <!-- 扣除利益分配者的提现金额金额 -->
+    <update id="updateDeductMoney" parameterType="com.cake.task.master.core.model.interest.InterestModel">
+        UPDATE tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="money != null and money != '' " >
+                a.balance = a.balance - #{money},
+            </if>
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+
+</mapper>

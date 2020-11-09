@@ -125,6 +125,10 @@ public interface TkCacheKey {
      */
     String LOCK_ORDER_OUT_SEND = "-21";
 
+    /**
+     * LOCK-代付订单不是初始化的订单处理
+     */
+    String LOCK_ORDER_OUT = "-22";
 
 
 }

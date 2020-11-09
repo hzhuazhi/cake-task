@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.cake.task.master.core.common.utils.HttpSendUtils;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
+import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.util.ComponentUtil;
+import com.cake.task.master.util.HodgepodgeMethod;
 import com.cake.task.master.util.TaskMethod;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +44,82 @@ public class TaskOrderOut {
      * 10分钟
      */
     public long TEN_MIN = 10;
+
+
+
+    /**
+     * @Description: task：执行代付订单的订单状态不是初始化状态的逻辑处理
+     * <p>
+     *     每5每秒运行一次
+     *     1.查询代付订单订单状态不是初始化的订单信息。
+     *     2.更新订单对应的卡商的扣款流水的订单状态。
+     *     3.如果订单号是成功状态，则需要给各个利益者进行收益分配。
+     * </p>
+     * @author yoko
+     * @date 2019/12/6 20:25
+     */
+//    @Scheduled(cron = "1 * * * * ?")
+    @Scheduled(fixedDelay = 5000) // 每秒执行
+    public void orderStatus() throws Exception{
+//        log.info("----------------------------------TaskOrderOut.orderStatus()----start");
+
+        // 获取未跑的代付订单，并且订单状态不是初始化的
+        StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 0, 0, 1, 0,0,0,null);
+        List<OrderOutModel> synchroList = ComponentUtil.taskOrderOutService.getDataList(statusQuery);
+        for (OrderOutModel data : synchroList){
+            try{
+                // 锁住这个数据流水
+                String lockKey = CachedKeyUtils.getCacheKeyTask(TkCacheKey.LOCK_ORDER_OUT, data.getId());
+                boolean flagLock = ComponentUtil.redisIdService.lock(lockKey);
+                if (flagLock){
+                    StatusModel statusModel = null;
+                    boolean flag = false;
+                    if (data.getOrderStatus() == 2){
+                        // 更新卡商的扣款流水订单状态
+                        MerchantBalanceDeductModel merchantBalanceDeductUpdate = TaskMethod.assembleMerchantBalanceDeductUpdateByOrderNo(data.getOrderNo(), data.getOrderStatus());
+                        int num = ComponentUtil.merchantBalanceDeductService.updateOrderStatusByOrderNo(merchantBalanceDeductUpdate);
+                        if (num > 0){
+                            flag = true;
+                        }
+
+                    }else if (data.getOrderStatus() == 4){
+                        // A.更新卡商的扣款流水订单状态
+                        // B.更新各自利益者的收益
+                        MerchantBalanceDeductModel merchantBalanceDeductUpdate = TaskMethod.assembleMerchantBalanceDeductUpdateByOrderNo(data.getOrderNo(), data.getOrderStatus());
+                        //
+
+                    }
+
+                    if (flag){
+                        // 成功
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 0, 0, 0,0,null);
+                    }else {
+                        // 失败
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,null);
+                    }
+
+
+                    // 更新状态
+                    ComponentUtil.taskOrderOutService.updateStatus(statusModel);
+                    // 解锁
+                    ComponentUtil.redisIdService.delLock(lockKey);
+                }
+
+//                log.info("----------------------------------TaskOrderOut.orderStatus()----end");
+            }catch (Exception e){
+                log.error(String.format("this TaskOrderOut.orderStatus() is error , the dataId=%s !", data.getId()));
+                e.printStackTrace();
+                // 更新此次task的状态：更新成失败：因为ERROR
+                StatusModel statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"异常失败try!");
+                ComponentUtil.taskOrderOutService.updateStatus(statusModel);
+            }
+        }
+    }
+
+
+
+
+
 
 
     /**

@@ -4,6 +4,7 @@ import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.model.bank.*;
 import com.cake.task.master.core.model.issue.IssueModel;
+import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
 import com.cake.task.master.core.model.merchant.MerchantRechargeModel;
 import com.cake.task.master.core.model.mobilecard.MobileCardModel;
@@ -1341,6 +1342,22 @@ public class TaskMethod {
         if (!StringUtils.isBlank(info)){
             resBean.setInfo(info);
         }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装根据订单号更新卡商扣款流水的订单的状态的方法
+     * @param orderNo - 订单号
+     * @param orderStatus - 订单状态
+     * @return com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel
+     * @author yoko
+     * @date 2020/11/9 15:18
+     */
+    public static MerchantBalanceDeductModel assembleMerchantBalanceDeductUpdateByOrderNo(String orderNo, int orderStatus){
+        MerchantBalanceDeductModel resBean = new MerchantBalanceDeductModel();
+        resBean.setOrderNo(orderNo);
+        resBean.setOrderStatus(orderStatus);
         return resBean;
     }
 

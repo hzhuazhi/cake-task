@@ -36,6 +36,10 @@ public class ComponentUtil {
     public static ShortChainService shortChainService;
     public static IssueService issueService;
     public static OrderOutService orderOutService;
+    public static MobileCardHeartbeatService mobileCardHeartbeatService;
+    public static MerchantChannelService merchantChannelService;
+    public static MerchantBalanceDeductService merchantBalanceDeductService;
+
 
 
 

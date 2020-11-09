@@ -102,6 +102,16 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private OrderOutService orderOutService;
 
+    @Autowired
+    private MobileCardHeartbeatService mobileCardHeartbeatService;
+
+    @Autowired
+    private MerchantChannelService merchantChannelService;
+
+    @Autowired
+    private MerchantBalanceDeductService merchantBalanceDeductService;
+
+
 
 
 
@@ -172,7 +182,9 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.shortChainService = shortChainService;
         ComponentUtil.issueService = issueService;
         ComponentUtil.orderOutService = orderOutService;
-
+        ComponentUtil.mobileCardHeartbeatService = mobileCardHeartbeatService;
+        ComponentUtil.merchantChannelService = merchantChannelService;
+        ComponentUtil.merchantBalanceDeductService = merchantBalanceDeductService;
 
 
 

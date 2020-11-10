@@ -1517,6 +1517,73 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 组装代收订单的卡商的收益信息
+     * @param orderModel - 代收订单信息
+     * @param orderType - 订单类型：1代收订单，2代付订单，3其它角色提现订单
+     * @return com.cake.task.master.core.model.merchant.MerchantProfitModel
+     * @author yoko
+     * @date 2020/11/10 13:50
+     */
+    public static MerchantProfitModel assembleMerchantProfitByOrderAdd(OrderModel orderModel, int orderType){
+        MerchantProfitModel resBean = new MerchantProfitModel();
+        resBean.setOrderNo(orderModel.getOrderNo());
+        resBean.setOrderType(orderType);
+        resBean.setOrderMoney(orderModel.getOrderMoney());
+        resBean.setDistributionMoney(orderModel.getDistributionMoney());
+        resBean.setServiceCharge(orderModel.getServiceCharge());
+        resBean.setReplenishType(orderModel.getReplenishType());
+        resBean.setProfitRatio(orderModel.getServiceCharge());
+        String profit = StringUtil.getMultiplyMantissa(orderModel.getOrderMoney(), orderModel.getServiceCharge(), 4);
+        resBean.setProfit(profit);
+        resBean.setMerchantId(orderModel.getMerchantId());
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 根据代收订单组装利益者的利益信息
+     * @param interestMerchantList - 利益分配者与卡商绑定
+     * @param orderModel - 代收订单信息
+     * @param orderType - 订单类型：1代收订单，2代付订单
+     * @return java.util.List<com.cake.task.master.core.model.interest.InterestProfitModel>
+     * @author yoko
+     * @date 2020/11/10 14:04
+     */
+    public static List<InterestProfitModel> assembleInterestProfitListByOrder(List<InterestMerchantModel> interestMerchantList,
+                                                                                 OrderModel orderModel, int orderType){
+        List<InterestProfitModel> resList = new ArrayList<>();
+        if (interestMerchantList == null || interestMerchantList.size() <= 0){
+            return null;
+        }
+        for (InterestMerchantModel interestMerchantModel : interestMerchantList){
+            InterestProfitModel interestProfitModel = new InterestProfitModel();
+            interestProfitModel.setOrderNo(orderModel.getOrderNo());
+            interestProfitModel.setOrderType(orderType);
+            interestProfitModel.setOrderMoney(orderModel.getOrderMoney());
+            interestProfitModel.setDistributionMoney(orderModel.getDistributionMoney());
+            interestProfitModel.setServiceCharge(orderModel.getServiceCharge());
+            interestProfitModel.setReplenishType(1);
+            interestProfitModel.setProfitRatio(interestMerchantModel.getServiceCharge());
+            String profit = StringUtil.getMultiplyMantissa(orderModel.getOrderMoney(), interestMerchantModel.getServiceCharge(), 4);
+            interestProfitModel.setProfit(profit);
+            interestProfitModel.setInterestId(interestMerchantModel.getInterestId());
+            interestProfitModel.setMerchantId(orderModel.getMerchantId());
+            interestProfitModel.setCurday(DateUtil.getDayNumber(new Date()));
+            interestProfitModel.setCurhour(DateUtil.getHour(new Date()));
+            interestProfitModel.setCurminute(DateUtil.getCurminute(new Date()));
+            resList.add(interestProfitModel);
+        }
+        return resList;
+
+    }
+
+
+
+
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();
         BankShortMsgStrategyModel bankShortMsgStrategyModel1 = new BankShortMsgStrategyModel();

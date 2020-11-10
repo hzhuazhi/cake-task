@@ -2,7 +2,9 @@ package com.cake.task.master.core.service.task;
 
 import com.cake.task.master.core.common.service.BaseService;
 import com.cake.task.master.core.model.bank.BankCollectionModel;
+import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
+import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderModel;
 
 import java.util.List;
@@ -43,5 +45,21 @@ public interface TaskOrderService<T> extends BaseService<T> {
     public List<OrderModel> getOrderNotifyList(Object obj);
 
 
-    public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney) throws Exception;
+    /**
+     * @Description: 处理代收订单的逻辑
+     * <p>
+     *     1.添加银行卡成功收款信息。
+     *     2.更新卡商余额信息。
+     *     3.添加卡商收益信息。
+     *     4.批量添加利益者收益信息。
+     * </p>
+     * @param bankCollectionModel - 银行卡成功收款信息
+     * @param merchantUpdateMoney - 要更新的卡商余额信息
+     * @param merchantProfitModel - 卡商收益信息
+     * @param interestProfitList - 利益者收益信息集合
+     * @return
+     * @author yoko
+     * @date 2020/11/10 19:28
+     */
+    public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList) throws Exception;
 }

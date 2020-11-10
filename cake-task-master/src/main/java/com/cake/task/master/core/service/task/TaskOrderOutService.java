@@ -34,5 +34,19 @@ public interface TaskOrderOutService<T> extends BaseService<T> {
      */
     public int updateStatus(Object obj);
 
+    /**
+     * @Description: 处理代付订单的逻辑
+     * <p>
+     *     1.更新卡商扣款流水订单状态。
+     *     2.添加卡商收益信息。
+     *     3.批量添加利益者收益信息。
+     * </p>
+     * @param merchantBalanceDeductUpdate - 卡商扣款流水的订单信息
+     * @param merchantProfitModel - 卡商收益信息
+     * @param interestProfitList - 利益者收益信息集合
+     * @return
+     * @author yoko
+     * @date 2020/11/10 19:28
+    */
     public boolean handleSuccessOrderOut(MerchantBalanceDeductModel merchantBalanceDeductUpdate, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList) throws Exception;
 }

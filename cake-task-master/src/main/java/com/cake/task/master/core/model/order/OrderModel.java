@@ -131,6 +131,11 @@ public class OrderModel extends BasePage implements Serializable {
     private String channelName;
 
     /**
+     * 手续费
+     */
+    private String serviceCharge;
+
+    /**
      * 是否是补单：1初始化不是补单，2是补单
      */
     private Integer replenishType;
@@ -593,5 +598,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setCardSiteName(String cardSiteName) {
         this.cardSiteName = cardSiteName;
+    }
+
+    public String getServiceCharge() {
+        return serviceCharge;
+    }
+
+    public void setServiceCharge(String serviceCharge) {
+        this.serviceCharge = serviceCharge;
     }
 }

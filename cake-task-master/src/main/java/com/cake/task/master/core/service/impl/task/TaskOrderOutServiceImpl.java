@@ -71,7 +71,7 @@ public class TaskOrderOutServiceImpl<T> extends BaseServiceImpl<T> implements Ta
             num1 = merchantBalanceDeductMapper.updateOrderStatusByOrderNo(merchantBalanceDeductUpdate);
             num2 = merchantProfitMapper.add(merchantProfitModel);
             if (interestProfitList == null || interestProfitList.size() <= 0){
-                if (num1> 0 && num2 >0){
+                if (num1> 0 && num2 > 0){
                     return true;
                 }else {
                     throw new ServiceException("handleSuccessOrderOut", "二个执行更新SQL其中有一个或者多个响应行为0");
@@ -83,7 +83,7 @@ public class TaskOrderOutServiceImpl<T> extends BaseServiceImpl<T> implements Ta
                     // 说明批量查询的数据影响条数与集合的数据条数不一
                     num3 = 0;
                 }
-                if (num1> 0 && num2 >0 && num3 > 0){
+                if (num1> 0 && num2 > 0 && num3 > 0){
                     return true;
                 }else {
                     throw new ServiceException("handleSuccessOrderOut", "三个执行更新SQL其中有一个或者多个响应行为0");

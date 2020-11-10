@@ -8,7 +8,10 @@ import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
 import com.cake.task.master.core.model.bank.BankCollectionModel;
 import com.cake.task.master.core.model.bank.BankStrategyModel;
+import com.cake.task.master.core.model.interest.InterestMerchantModel;
+import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
+import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.util.ComponentUtil;
@@ -146,13 +149,23 @@ public class TaskOrder {
 
                     // 组装卡商金额更新
                     MerchantModel merchantUpdate = TaskMethod.assembleMerchantUpdateMoney(data.getMerchantId(), data.getOrderMoney());
+
+                    // 组装卡商的利益
+                    MerchantProfitModel merchantProfitModel = TaskMethod.assembleMerchantProfitByOrderAdd(data, 1);
+
+                    // 查询卡商对应的利益者的关联关系以及利益者的收益比例
+                    InterestMerchantModel interestMerchantQuery = TaskMethod.assembleInterestMerchantQuery(0,0,data.getMerchantId(),1);
+                    List<InterestMerchantModel> interestMerchantList = ComponentUtil.interestMerchantService.findByCondition(interestMerchantQuery);
+
+                    // 组装利益者的利益
+                    List<InterestProfitModel> interestProfitList = TaskMethod.assembleInterestProfitListByOrder(interestMerchantList, data, 1);
+
                     // 锁住这个卡商
                     String lockKey_merchantId = CachedKeyUtils.getCacheKey(CacheKey.LOCK_MERCHANT_MONEY, data.getMerchantId());
                     boolean flagLock_merchantId = ComponentUtil.redisIdService.lock(lockKey_merchantId);
                     if (flagLock_merchantId){
-
                         // 执行订单成功的逻辑
-                        boolean flag_handle = ComponentUtil.taskOrderService.handleSuccessOrder(bankCollectionAdd, merchantUpdate);
+                        boolean flag_handle = ComponentUtil.taskOrderService.handleSuccessOrder(bankCollectionAdd, merchantUpdate, merchantProfitModel, interestProfitList);
                         if (flag_handle){
 
                             // 判断是否是补单，不是补单则需要释放银行卡的挂单金额

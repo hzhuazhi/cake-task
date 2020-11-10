@@ -22,6 +22,9 @@
             <if test="orderStatus != null and orderStatus != '' " >
                 and a.order_status = #{orderStatus}
             </if>
+            <if test="greaterThan != null and greaterThan != '' " >
+                and a.order_status > #{greaterThan}
+            </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
             </if>

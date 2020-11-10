@@ -130,5 +130,9 @@ public interface TkCacheKey {
      */
     String LOCK_ORDER_OUT = "-22";
 
+    /**
+     * LOCK-卡商扣款流水订单状态不是初始化的订单处理
+     */
+    String LOCK_MERCHANT_BALANCE_DEDUCT = "-23";
 
 }

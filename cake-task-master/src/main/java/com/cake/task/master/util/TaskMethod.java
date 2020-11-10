@@ -4,6 +4,7 @@ import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.model.bank.*;
 import com.cake.task.master.core.model.interest.InterestMerchantModel;
+import com.cake.task.master.core.model.interest.InterestModel;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.issue.IssueModel;
 import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
@@ -1485,6 +1486,35 @@ public class TaskMethod {
         return resBean;
     }
 
+
+    /**
+     * @Description: 组装变更利益者余额/收益的方法
+     * @param id - 利益者主键ID
+     * @param type - 余额加减：1加，2减
+     * @param money - 变更的金额值
+     * @return com.hz.cake.master.core.model.merchant.MerchantModel
+     * @author yoko
+     * @date 2020/10/30 19:57
+     */
+    public static InterestModel assembleInterestByChanagerMoney(long id, int type, String money){
+        InterestModel resBean = new InterestModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (type > 0){
+            if (type == 1){
+                resBean.setAddBalance("1");
+            }else if (type == 2){
+                resBean.setSubtractBalance("1");
+            }
+            log.info("");
+        }
+        if (!StringUtils.isBlank(money)){
+            BigDecimal bd = new BigDecimal(money);
+            resBean.setMoney(bd);
+        }
+        return resBean;
+    }
 
 
     public static void main(String []args){

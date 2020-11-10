@@ -46,4 +46,17 @@ public interface InterestService<T> extends BaseService<T> {
      * @date 2020/9/23 21:51
      */
     public int updateDeductMoney(InterestModel model);
+
+    /**
+     * @Description: 更新利益者的收益/余额
+     * <p>
+     *     利益者收益累加则更新total_money、balance这两个字段；
+     *     利益者金额扣减则更新balance字段
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/10 18:57
+     */
+    public int updateAddOrSubtractMoney(InterestModel model);
 }

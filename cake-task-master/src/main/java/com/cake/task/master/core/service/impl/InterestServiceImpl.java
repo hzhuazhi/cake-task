@@ -61,4 +61,9 @@ public class InterestServiceImpl <T> extends BaseServiceImpl<T> implements Inter
     public int updateDeductMoney(InterestModel model) {
         return interestMapper.updateDeductMoney(model);
     }
+
+    @Override
+    public int updateAddOrSubtractMoney(InterestModel model) {
+        return interestMapper.updateAddOrSubtractMoney(model);
+    }
 }

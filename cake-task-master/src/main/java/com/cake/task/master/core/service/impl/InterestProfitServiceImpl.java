@@ -3,9 +3,12 @@ package com.cake.task.master.core.service.impl;
 import com.cake.task.master.core.common.dao.BaseDao;
 import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.mapper.InterestProfitMapper;
+import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.service.InterestProfitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description 利益者收益数据的Service层的实现层
@@ -39,5 +42,10 @@ public class InterestProfitServiceImpl<T> extends BaseServiceImpl<T> implements 
 
     public BaseDao<T> getDao() {
         return interestProfitMapper;
+    }
+
+    @Override
+    public int addBatchInterestProfit(List<InterestProfitModel> list) {
+        return interestProfitMapper.addBatchInterestProfit(list);
     }
 }

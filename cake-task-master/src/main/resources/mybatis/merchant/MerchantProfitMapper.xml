@@ -196,9 +196,6 @@
             <if test="merchantId != null and merchantId != '' " >
                 <![CDATA[  #{merchantId}, ]]>
             </if>
-            <if test="merchantName != null and merchantName != '' " >
-                <![CDATA[  #{merchantName}, ]]>
-            </if>
             <if test="dataExplain != null and dataExplain != '' " >
                 <![CDATA[  #{dataExplain}, ]]>
             </if>

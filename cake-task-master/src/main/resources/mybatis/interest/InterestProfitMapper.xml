@@ -286,4 +286,21 @@
     </update>
 
 
+    <!-- 批量添加收益者的收益信息 -->
+    <insert id="addBatchInterestProfit" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_fr_interest_profit
+        (order_no, order_type, order_money, distribution_money, service_charge, replenish_type, profit_ratio, profit, interest_id, merchant_id, curday, curhour, curminute, create_time)
+        values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (
+            #{item.orderNo}, #{item.orderType},#{item.orderMoney},#{item.distributionMoney},#{item.serviceCharge},#{item.replenishType},#{item.profitRatio},#{item.profit},#{item.interestId},#{item.merchantId},
+            #{item.curday},#{item.curhour},#{item.curminute},now()
+            )
+        </foreach>
+    </insert>
+
+
 </mapper>

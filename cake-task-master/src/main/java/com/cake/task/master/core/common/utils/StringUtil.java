@@ -1389,6 +1389,39 @@ public class StringUtil {
         return str;
     }
 
+
+	/**
+	 * @Description: 计算两数相乘-尾数
+	 * @param x
+	 * @param y
+	 * @param z - 小数点的尾数
+	 * @return java.lang.String
+	 * @author yoko
+	 * @date 2019/11/28 22:24
+	 */
+	public static String getMultiplyMantissa(String x, String y, int z){
+		String format = "###.##";
+		if (z > 0){
+			if(z == 1){
+				format = "###.#";
+			}else if (z == 2){
+				format = "###.##";
+			}else if (z == 3){
+				format = "###.###";
+			}else if (z == 4){
+				format = "###.####";
+			}
+		}
+		BigDecimal resDoble;
+		BigDecimal xx = new BigDecimal(x);
+		BigDecimal yy = new BigDecimal(y);
+		resDoble = xx.multiply(yy);
+		DecimalFormat sb = new DecimalFormat(format);
+		String str = sb.format(resDoble);
+		return str;
+	}
+
+
     /**
      * @Description: 计算两数相加
      * @param x

@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.cake.task.master.core.common.utils.HttpSendUtils;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
+import com.cake.task.master.core.model.interest.InterestMerchantModel;
+import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
+import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
@@ -84,10 +87,19 @@ public class TaskOrderOut {
 
                     }else if (data.getOrderStatus() == 4){
                         // A.更新卡商的扣款流水订单状态
-                        // B.更新各自利益者的收益
-                        MerchantBalanceDeductModel merchantBalanceDeductUpdate = TaskMethod.assembleMerchantBalanceDeductUpdateByOrderNo(data.getOrderNo(), data.getOrderStatus());
-                        //
+                        // B.更新各自利益者的收益：卡商与利益者的利益信息
 
+                        // 组装要更新的卡商的扣款流水订单状态
+                        MerchantBalanceDeductModel merchantBalanceDeductUpdate = TaskMethod.assembleMerchantBalanceDeductUpdateByOrderNo(data.getOrderNo(), data.getOrderStatus());
+                        // 组装卡商的利益
+                        MerchantProfitModel merchantProfitModel = TaskMethod.assembleMerchantProfitByOrderOutAdd(data, 2);
+                        // 查询卡商对应的利益者的关联关系以及利益者的收益比例
+                        InterestMerchantModel interestMerchantQuery = TaskMethod.assembleInterestMerchantQuery(0,0,data.getMerchantId(),1);
+                        List<InterestMerchantModel> interestMerchantList = ComponentUtil.interestMerchantService.findByCondition(interestMerchantQuery);
+                        // 组装利益者的利益
+                        List<InterestProfitModel> interestProfitList = TaskMethod.assembleInterestProfitListByOrderOut(interestMerchantList, data, 2);
+                        // 执行事务-正式处理逻辑
+                        flag = ComponentUtil.taskOrderOutService.handleSuccessOrderOut(merchantBalanceDeductUpdate, merchantProfitModel, interestProfitList);
                     }
 
                     if (flag){

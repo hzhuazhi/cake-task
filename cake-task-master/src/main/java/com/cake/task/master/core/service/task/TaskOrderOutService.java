@@ -1,6 +1,9 @@
 package com.cake.task.master.core.service.task;
 
 import com.cake.task.master.core.common.service.BaseService;
+import com.cake.task.master.core.model.interest.InterestProfitModel;
+import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
+import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
 
 import java.util.List;
@@ -30,4 +33,6 @@ public interface TaskOrderOutService<T> extends BaseService<T> {
      * @date 2020/1/11 16:30
      */
     public int updateStatus(Object obj);
+
+    public boolean handleSuccessOrderOut(MerchantBalanceDeductModel merchantBalanceDeductUpdate, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList) throws Exception;
 }

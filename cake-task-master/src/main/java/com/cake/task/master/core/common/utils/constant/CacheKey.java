@@ -107,9 +107,35 @@ public interface CacheKey {
     String LOCK_MERCHANT_MONEY = "-17";
 
     /**
+     * 给出绑定银行卡的ID纪录
+     */
+    String BANK_BINDING_TYPE = "-18";
+
+    /**
+     * 给出绑定卡商的ID纪录
+     */
+    String MERCHANT_BINDING_TYPE = "-19";
+
+    /**
+     * 锁：在筛选商户，需要先锁住此商户
+     * 高并发避免出现问题
+     */
+    String LOCK_MERCHANT = "-20";
+
+    /**
      * LOCK-卡商的账户ID
      * 用于更新字段least_money
      */
-    String LOCK_MERCHANT_ID = "-18";
+    String LOCK_MERCHANT_ID = "-21";
+
+    /**
+     * 锁定：锁住卡商账号的主键ID，在更新卡商收益金额金额的时候
+     * <p>
+     *     更新卡商字段profit的时候
+     * </p>
+     */
+    String LOCK_MERCHANT_MONEY_PROFIT = "-22";
+
+
 
 }

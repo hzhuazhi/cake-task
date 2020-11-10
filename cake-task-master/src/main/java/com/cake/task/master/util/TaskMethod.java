@@ -1457,6 +1457,35 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 组装变更卡商余额/收益的方法
+     * @param id - 卡商主键ID
+     * @param type - 余额加减：1加，2减
+     * @param money - 变更的金额值
+     * @return com.hz.cake.master.core.model.merchant.MerchantModel
+     * @author yoko
+     * @date 2020/10/30 19:57
+     */
+    public static MerchantModel assembleMerchantByChanagerMoney(long id, int type, String money){
+        MerchantModel resBean = new MerchantModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (type > 0){
+            if (type == 1){
+                resBean.setAddBalance("1");
+            }else if (type == 2){
+                resBean.setSubtractBalance("1");
+            }
+        }
+        if (!StringUtils.isBlank(money)){
+            BigDecimal bd = new BigDecimal(money);
+            resBean.setMoney(bd);
+        }
+        return resBean;
+    }
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();

@@ -57,4 +57,18 @@ public interface MerchantService<T> extends BaseService<T> {
      * @date 2020/9/24 19:53
     */
     public int updateLeastMoney(MerchantModel model);
+
+
+    /**
+     * @Description: 更新卡商的收益
+     * <p>
+     *     卡商收益累加则更新total_profit、profit这两个字段；
+     *     卡商金额扣减则更新profit字段
+     * </p>
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/10 16:59
+     */
+    public int updateProfit(MerchantModel model);
 }

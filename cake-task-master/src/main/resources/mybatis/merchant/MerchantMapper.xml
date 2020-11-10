@@ -6,7 +6,7 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.alias,a.account_num,a.pass_wd,a.withdraw_pass_wd,a.role_id,a.ac_name,a.ac_contacts,a.ac_phone,a.ac_type,
-        a.total_money,a.least_money,a.balance,a.lock_money,a.merchant_type,a.operate_type,a.total_profit,a.pay_type,a.service_charge,
+        a.total_money,a.least_money,a.balance,a.lock_money,a.merchant_type,a.operate_type,a.total_profit,a.profit,a.pay_type,a.service_charge,
         a.remark,a.use_status,a.create_user_id,a.create_role_id,a.update_user_id,a.update_role_id,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -170,6 +170,9 @@
             <if test="totalProfit != null and totalProfit != '' " >
                 total_profit,
             </if>
+            <if test="profit != null and profit != '' " >
+                profit,
+            </if>
             <if test="payType != null and payType != '' " >
                 pay_type,
             </if>
@@ -245,6 +248,9 @@
             </if>
             <if test="totalProfit != null and totalProfit != '' " >
                 <![CDATA[  #{totalProfit}, ]]>
+            </if>
+            <if test="profit != null and profit != '' " >
+                <![CDATA[  #{profit}, ]]>
             </if>
             <if test="payType != null and payType != '' " >
                 <![CDATA[  #{payType}, ]]>
@@ -325,6 +331,9 @@
             </if>
             <if test="totalProfit != null and totalProfit != '' " >
                 a.total_profit = #{totalProfit},
+            </if>
+            <if test="profit != null and profit != '' " >
+                a.profit = #{profit},
             </if>
             <if test="payType != null and payType != '' " >
                 a.pay_type = #{payType},
@@ -427,6 +436,24 @@
         where 1=1
         and a.id = #{id}
         and a.yn = 0
+    </update>
+
+
+    <!-- 更新卡商的收益 -->
+    <update id="updateProfit" parameterType="com.cake.task.master.core.model.merchant.MerchantModel">
+        UPDATE tb_fr_merchant a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="addBalance != null and addBalance != '' " >
+                a.total_profit = a.total_profit + #{money},
+                a.profit = a.profit + #{money},
+            </if>
+            <if test="subtractBalance != null and subtractBalance != '' " >
+                a.profit = a.profit - #{money},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
     </update>
 
 </mapper>

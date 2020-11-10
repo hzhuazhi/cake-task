@@ -65,4 +65,9 @@ public class MerchantServiceImpl<T> extends BaseServiceImpl<T> implements Mercha
     public int updateLeastMoney(MerchantModel model) {
         return merchantMapper.updateLeastMoney(model);
     }
+
+    @Override
+    public int updateProfit(MerchantModel model) {
+        return merchantMapper.updateProfit(model);
+    }
 }

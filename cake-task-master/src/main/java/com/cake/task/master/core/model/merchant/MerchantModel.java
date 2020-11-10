@@ -100,6 +100,11 @@ public class MerchantModel extends BasePage implements Serializable {
     private String totalProfit;
 
     /**
+     * 收益
+     */
+    private String profit;
+
+    /**
      * 代付款类型：1手动付款，2API自动付款
      */
     private Integer payType;
@@ -442,5 +447,13 @@ public class MerchantModel extends BasePage implements Serializable {
 
     public void setOrderMoney(String orderMoney) {
         this.orderMoney = orderMoney;
+    }
+
+    public String getProfit() {
+        return profit;
+    }
+
+    public void setProfit(String profit) {
+        this.profit = profit;
     }
 }

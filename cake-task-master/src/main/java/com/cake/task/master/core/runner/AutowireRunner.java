@@ -157,6 +157,16 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private TaskOrderOutService taskOrderOutService;
 
+    @Autowired
+    private TaskMerchantBalanceDeductService taskMerchantBalanceDeductService;
+
+    @Autowired
+    private TaskMerchantProfitService taskMerchantProfitService;
+
+    @Autowired
+    private TaskInterestProfitService taskInterestProfitService;
+
+
 
 
 
@@ -213,6 +223,9 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskMerchantRechargeService = taskMerchantRechargeService;
         ComponentUtil.taskIssueService = taskIssueService;
         ComponentUtil.taskOrderOutService = taskOrderOutService;
+        ComponentUtil.taskMerchantBalanceDeductService = taskMerchantBalanceDeductService;
+        ComponentUtil.taskMerchantProfitService = taskMerchantProfitService;
+        ComponentUtil.taskInterestProfitService = taskInterestProfitService;
 
         runThread = new RunThread();
         runThread.start();

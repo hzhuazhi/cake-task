@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cake.task.master.core.mapper.ChannelWithdrawMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.channel_id,a.alias,a.order_no,a.out_trade_no,a.money,a.withdraw_service_charge,a.order_status,
+        a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,
+        a.check_status,a.check_info,a.work_type,a.data_explain,a.remark,
+        a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
+        a.create_time,a.update_time,a.yn
+
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="channelId != null and channelId != '' " >
+                and a.channel_id = #{channelId}
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                and a.order_no = #{orderNo}
+            </if>
+            <if test="outTradeNo != null and outTradeNo != '' " >
+                and a.out_trade_no = #{outTradeNo}
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                and a.order_status = #{orderStatus}
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                and a.check_status = #{checkStatus}
+            </if>
+            <if test="workType != null and workType != '' " >
+                and a.work_type = #{workType}
+            </if>
+            <if test="curday != null and curday != '' " >
+                and a.curday = #{curday}
+            </if>
+            <if test="curdayStart != null and curdayStart != '' and curdayEnd != null and curdayEnd != '' " >
+                and a.curday >= #{curdayStart} and a.curday &lt;= #{curdayEnd}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_channel_withdraw a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_channel_withdraw a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_channel_withdraw a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_channel_withdraw a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fr_channel_withdraw a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_channel_withdraw a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.cake.task.master.core.model.channel.ChannelWithdrawModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fr_channel_withdraw
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="channelId != null and channelId != '' " >
+                channel_id,
+            </if>
+            <if test="alias != null and alias != '' " >
+                alias,
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                order_no,
+            </if>
+            <if test="outTradeNo != null and outTradeNo != '' " >
+                out_trade_no,
+            </if>
+            <if test="money != null and money != '' " >
+                money,
+            </if>
+            <if test="withdrawServiceCharge != null and withdrawServiceCharge != '' " >
+                withdraw_service_charge,
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                order_status,
+            </if>
+            <if test="inBankCard != null and inBankCard != '' " >
+                in_bank_card,
+            </if>
+            <if test="inBankName != null and inBankName != '' " >
+                in_bank_name,
+            </if>
+            <if test="inAccountName != null and inAccountName != '' " >
+                in_account_name,
+            </if>
+            <if test="outBankName != null and outBankName != '' " >
+                out_bank_name,
+            </if>
+            <if test="outBankCard != null and outBankCard != '' " >
+                out_bank_card,
+            </if>
+            <if test="outAccountName != null and outAccountName != '' " >
+                out_account_name,
+            </if>
+            <if test="pictureAds != null and pictureAds != '' " >
+                picture_ads,
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                check_status,
+            </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                check_info,
+            </if>
+            <if test="workType != null and workType != '' " >
+                work_type,
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                data_explain,
+            </if>
+            <if test="remark != null and remark != '' " >
+                remark,
+            </if>
+            <if test="curday != null and curday != '' " >
+                curday,
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                curhour,
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                curminute,
+            </if>
+            <if test="createUserId != null and createUserId != '' " >
+                create_user_id,
+            </if>
+            <if test="createRoleId != null and createRoleId != '' " >
+                create_role_id,
+            </if>
+            <if test="updateUserId != null and updateUserId != '' " >
+                update_user_id,
+            </if>
+            <if test="updateRoleId != null and updateRoleId != '' " >
+                update_role_id,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="channelId != null and channelId != '' " >
+                <![CDATA[  #{channelId}, ]]>
+            </if>
+            <if test="alias != null and alias != '' " >
+                <![CDATA[  #{alias}, ]]>
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                <![CDATA[  #{orderNo}, ]]>
+            </if>
+            <if test="outTradeNo != null and outTradeNo != '' " >
+                <![CDATA[  #{outTradeNo}, ]]>
+            </if>
+            <if test="money != null and money != '' " >
+                <![CDATA[  #{money}, ]]>
+            </if>
+            <if test="withdrawServiceCharge != null and withdrawServiceCharge != '' " >
+                <![CDATA[  #{withdrawServiceCharge}, ]]>
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                <![CDATA[  #{orderStatus}, ]]>
+            </if>
+            <if test="inBankCard != null and inBankCard != '' " >
+                <![CDATA[  #{inBankCard}, ]]>
+            </if>
+            <if test="inBankName != null and inBankName != '' " >
+                <![CDATA[  #{inBankName}, ]]>
+            </if>
+            <if test="inAccountName != null and inAccountName != '' " >
+                <![CDATA[  #{inAccountName}, ]]>
+            </if>
+            <if test="outBankName != null and outBankName != '' " >
+                <![CDATA[  #{outBankName}, ]]>
+            </if>
+            <if test="outBankCard != null and outBankCard != '' " >
+                <![CDATA[  #{outBankCard}, ]]>
+            </if>
+            <if test="outAccountName != null and outAccountName != '' " >
+                <![CDATA[  #{outAccountName}, ]]>
+            </if>
+            <if test="pictureAds != null and pictureAds != '' " >
+                <![CDATA[  #{pictureAds}, ]]>
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                <![CDATA[  #{checkStatus}, ]]>
+            </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                <![CDATA[  #{checkInfo}, ]]>
+            </if>
+            <if test="workType != null and workType != '' " >
+                <![CDATA[  #{workType}, ]]>
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                <![CDATA[  #{dataExplain}, ]]>
+            </if>
+            <if test="remark != null and remark != '' " >
+                <![CDATA[  #{remark}, ]]>
+            </if>
+            <if test="curday != null and curday != '' " >
+                <![CDATA[  #{curday}, ]]>
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                <![CDATA[  #{curhour}, ]]>
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                <![CDATA[  #{curminute}, ]]>
+            </if>
+            <if test="createUserId != null and createUserId != '' " >
+                <![CDATA[  #{createUserId}, ]]>
+            </if>
+            <if test="createRoleId != null and createRoleId != '' " >
+                <![CDATA[  #{createRoleId}, ]]>
+            </if>
+            <if test="updateUserId != null and updateUserId != '' " >
+                <![CDATA[  #{updateUserId}, ]]>
+            </if>
+            <if test="updateRoleId != null and updateRoleId != '' " >
+                <![CDATA[  #{updateRoleId}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        UPDATE tb_fr_channel_withdraw a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="channelId != null and channelId != '' " >
+                a.channel_id = #{channelId},
+            </if>
+            <if test="alias != null and alias != '' " >
+                a.alias = #{alias},
+            </if>
+            <if test="orderNo != null and orderNo != '' " >
+                a.order_no = #{orderNo},
+            </if>
+            <if test="outTradeNo != null and outTradeNo != '' " >
+                a.out_trade_no = #{outTradeNo},
+            </if>
+            <if test="money != null and money != '' " >
+                a.money = #{money},
+            </if>
+            <if test="withdrawServiceCharge != null and withdrawServiceCharge != '' " >
+                a.withdraw_service_charge = #{withdrawServiceCharge},
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="inBankCard != null and inBankCard != '' " >
+                a.in_bank_card = #{inBankCard},
+            </if>
+            <if test="inBankName != null and inBankName != '' " >
+                a.in_bank_name = #{inBankName},
+            </if>
+            <if test="inAccountName != null and inAccountName != '' " >
+                a.in_account_name = #{inAccountName},
+            </if>
+            <if test="outBankName != null and outBankName != '' " >
+                a.out_bank_name = #{outBankName},
+            </if>
+            <if test="outBankCard != null and outBankCard != '' " >
+                a.out_bank_card = #{outBankCard},
+            </if>
+            <if test="outAccountName != null and outAccountName != '' " >
+                a.out_account_name = #{outAccountName},
+            </if>
+            <if test="pictureAds != null and pictureAds != '' " >
+                a.picture_ads = #{pictureAds},
+            </if>
+            <if test="checkStatus != null and checkStatus != '' " >
+                a.check_status = #{checkStatus},
+            </if>
+            <if test="checkInfo != null and checkInfo != '' " >
+                a.check_info = #{checkInfo},
+            </if>
+            <if test="workType != null and workType != '' " >
+                a.work_type = #{workType},
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                a.data_explain = #{dataExplain},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+    
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fr_channel_withdraw a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+</mapper>

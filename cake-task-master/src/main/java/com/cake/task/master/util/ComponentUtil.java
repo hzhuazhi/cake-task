@@ -43,6 +43,7 @@ public class ComponentUtil {
     public static InterestMerchantService interestMerchantService;
     public static InterestProfitService interestProfitService;
     public static MerchantProfitService merchantProfitService;
+    public static ChannelWithdrawService channelWithdrawService;
 
 
 

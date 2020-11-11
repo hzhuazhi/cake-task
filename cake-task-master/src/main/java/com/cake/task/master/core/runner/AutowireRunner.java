@@ -118,10 +118,13 @@ public class AutowireRunner implements ApplicationRunner {
     private InterestMerchantService interestMerchantService;
 
     @Autowired
-    private InterestProfitService interestProfitService;;
+    private InterestProfitService interestProfitService;
 
     @Autowired
-    private MerchantProfitService merchantProfitService;;
+    private MerchantProfitService merchantProfitService;
+
+    @Autowired
+    private ChannelWithdrawService channelWithdrawService;
 
 
 
@@ -211,6 +214,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.interestMerchantService = interestMerchantService;
         ComponentUtil.interestProfitService = interestProfitService;
         ComponentUtil.merchantProfitService = merchantProfitService;
+        ComponentUtil.channelWithdrawService = channelWithdrawService;
 
 
 

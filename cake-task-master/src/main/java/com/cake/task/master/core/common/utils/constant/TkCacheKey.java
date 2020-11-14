@@ -145,4 +145,9 @@ public interface TkCacheKey {
      */
     String LOCK_INTEREST_PROFIT = "-25";
 
+    /**
+     * LOCK-变更金额流水的处理
+     */
+    String LOCK_CHANGE_MONEY = "-26";
+
 }

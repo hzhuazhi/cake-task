@@ -1583,7 +1583,6 @@ public class TaskMethod {
 
 
 
-
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();
         BankShortMsgStrategyModel bankShortMsgStrategyModel1 = new BankShortMsgStrategyModel();

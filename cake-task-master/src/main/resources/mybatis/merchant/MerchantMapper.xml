@@ -456,4 +456,40 @@
         and a.id = #{id}
     </update>
 
+
+
+    <!-- 加减卡商余额 -->
+    <update id="updateAddOrSubtractBalance" parameterType="com.cake.task.master.core.model.merchant.MerchantModel">
+        UPDATE tb_fr_merchant a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="addBalance != null and addBalance != '' " >
+                a.balance = a.balance + #{money},
+            </if>
+            <if test="subtractBalance != null and subtractBalance != '' " >
+                a.balance = a.balance - #{money},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+    </update>
+
+
+    <!-- 加减卡商收益 -->
+    <update id="updateAddOrSubtractProfit" parameterType="com.cake.task.master.core.model.merchant.MerchantModel">
+        UPDATE tb_fr_merchant a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="addBalance != null and addBalance != '' " >
+                a.profit = a.profit + #{money},
+            </if>
+            <if test="subtractBalance != null and subtractBalance != '' " >
+                a.profit = a.profit - #{money},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+    </update>
+
+
 </mapper>

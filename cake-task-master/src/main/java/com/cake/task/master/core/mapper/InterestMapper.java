@@ -62,4 +62,14 @@ public interface InterestMapper<T> extends BaseDao<T> {
     */
     public int updateAddOrSubtractMoney(InterestModel model);
 
+
+    /**
+     * @Description: 加减利益者余额
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/14 15:01
+     */
+    public int updateAddOrSubtractBalance(InterestModel model);
+
 }

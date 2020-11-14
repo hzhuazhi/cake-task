@@ -71,4 +71,23 @@ public interface MerchantService<T> extends BaseService<T> {
      * @date 2020/11/10 16:59
      */
     public int updateProfit(MerchantModel model);
+
+
+    /**
+     * @Description: 加减卡商余额
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/14 15:01
+     */
+    public int updateAddOrSubtractBalance(MerchantModel model);
+
+    /**
+     * @Description: 加减卡商收益
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/14 15:01
+     */
+    public int updateAddOrSubtractProfit(MerchantModel model);
 }

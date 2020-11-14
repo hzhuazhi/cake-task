@@ -379,4 +379,22 @@
     </update>
 
 
+
+    <!-- 加减利益者余额/余额 -->
+    <update id="updateAddOrSubtractBalance" parameterType="com.cake.task.master.core.model.interest.InterestModel">
+        UPDATE tb_fr_interest a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="addBalance != null and addBalance != '' " >
+                a.balance = a.balance + #{money},
+            </if>
+            <if test="subtractBalance != null and subtractBalance != '' " >
+                a.balance = a.balance - #{money},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+    </update>
+
+
 </mapper>

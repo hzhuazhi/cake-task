@@ -59,4 +59,14 @@ public interface InterestService<T> extends BaseService<T> {
      * @date 2020/11/10 18:57
      */
     public int updateAddOrSubtractMoney(InterestModel model);
+
+
+    /**
+     * @Description: 加减利益者余额
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/14 15:01
+     */
+    public int updateAddOrSubtractBalance(InterestModel model);
 }

@@ -126,6 +126,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private ChannelWithdrawService channelWithdrawService;
 
+    @Autowired
+    private ChangeMoneyService changeMoneyService;
+
 
 
 
@@ -168,6 +171,9 @@ public class AutowireRunner implements ApplicationRunner {
 
     @Autowired
     private TaskInterestProfitService taskInterestProfitService;
+
+    @Autowired
+    private TaskChangeMoneyService taskChangeMoneyService;
 
 
 
@@ -215,6 +221,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.interestProfitService = interestProfitService;
         ComponentUtil.merchantProfitService = merchantProfitService;
         ComponentUtil.channelWithdrawService = channelWithdrawService;
+        ComponentUtil.changeMoneyService = changeMoneyService;
 
 
 
@@ -230,6 +237,8 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskMerchantBalanceDeductService = taskMerchantBalanceDeductService;
         ComponentUtil.taskMerchantProfitService = taskMerchantProfitService;
         ComponentUtil.taskInterestProfitService = taskInterestProfitService;
+        ComponentUtil.taskChangeMoneyService = taskChangeMoneyService;
+
 
         runThread = new RunThread();
         runThread.start();

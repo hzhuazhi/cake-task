@@ -8,7 +8,7 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.channel_id,a.alias,a.order_no,a.out_trade_no,a.money,a.withdraw_service_charge,a.order_status,
-        a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,
+        a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,a.data_type,
         a.check_status,a.check_info,a.work_type,a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_time,a.update_time,a.yn
@@ -33,6 +33,9 @@
             </if>
             <if test="orderStatus != null and orderStatus != '' " >
                 and a.order_status = #{orderStatus}
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                and a.data_type = #{dataType}
             </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 and a.check_status = #{checkStatus}
@@ -171,6 +174,9 @@
             <if test="pictureAds != null and pictureAds != '' " >
                 picture_ads,
             </if>
+            <if test="dataType != null and dataType != '' " >
+                data_type,
+            </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 check_status,
             </if>
@@ -252,6 +258,9 @@
             </if>
             <if test="pictureAds != null and pictureAds != '' " >
                 <![CDATA[  #{pictureAds}, ]]>
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                <![CDATA[  #{dataType}, ]]>
             </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 <![CDATA[  #{checkStatus}, ]]>
@@ -338,6 +347,9 @@
             </if>
             <if test="pictureAds != null and pictureAds != '' " >
                 a.picture_ads = #{pictureAds},
+            </if>
+            <if test="dataType != null and dataType != '' " >
+                a.data_type = #{dataType},
             </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 a.check_status = #{checkStatus},

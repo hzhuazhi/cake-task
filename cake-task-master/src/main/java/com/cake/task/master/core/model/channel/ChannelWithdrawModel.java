@@ -89,6 +89,11 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
     private String pictureAds;
 
     /**
+     * 提现数据来源：1来源平台，2来源蛋糕；这里如果来源平台，数据结果要同步给平台
+     */
+    private Integer dataType;
+
+    /**
      * 审核状态：1初始化，2审核收款失败，3审核收款成功
      */
     private Integer checkStatus;
@@ -474,5 +479,13 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public Integer getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Integer dataType) {
+        this.dataType = dataType;
     }
 }

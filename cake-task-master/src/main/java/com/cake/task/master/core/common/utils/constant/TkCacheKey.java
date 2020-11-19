@@ -161,4 +161,9 @@ public interface TkCacheKey {
      */
     String LOCK_CHANNEL_WITHDRAW_SEND = "-28";
 
+    /**
+     * LOCK-汇总提现记录流水的处理-数据同步
+     */
+    String LOCK_WITHDRAW_SEND = "-29";
+
 }

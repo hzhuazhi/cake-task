@@ -1623,6 +1623,67 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 判断组装卡商的收益数据
+     * @param withdrawModel - 提现记录
+     * @return
+     * @author yoko
+     * @date 2020/11/19 19:50
+    */
+    public static MerchantProfitModel assembleMerchantProfitByWithdraw(WithdrawModel withdrawModel){
+        if (withdrawModel.getOrderStatus() != 4){
+            // 订单状态不是成功状态
+            return null;
+        }
+        if (StringUtils.isBlank(withdrawModel.getWithdrawServiceCharge())){
+            // 手续费的值是空的
+            return null;
+        }
+
+        MerchantProfitModel resBean = new MerchantProfitModel();
+        resBean.setOrderNo(withdrawModel.getOrderNo());
+        resBean.setOrderType(3);
+        resBean.setOrderMoney(withdrawModel.getOrderMoney());
+        resBean.setDistributionMoney(withdrawModel.getOrderMoney());
+        resBean.setServiceCharge(withdrawModel.getWithdrawServiceCharge());
+        resBean.setReplenishType(1);
+        resBean.setProfitRatio("");
+        resBean.setProfit(withdrawModel.getWithdrawServiceCharge());
+        resBean.setMerchantId(withdrawModel.getMerchantId());
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装渠道提现的订单状态更改
+     * @param withdrawModel - 汇总的提现记录
+     * @return com.cake.task.master.core.model.channel.ChannelWithdrawModel
+     * @author yoko
+     * @date 2020/11/19 20:05
+     */
+    public static ChannelWithdrawModel assembleChannelWithdrawOrderStatusUpdate(WithdrawModel withdrawModel){
+        ChannelWithdrawModel resBean = new ChannelWithdrawModel();
+        resBean.setOrderNo(withdrawModel.getOrderNo());
+        resBean.setOrderStatus(withdrawModel.getOrderStatus());
+        if (!StringUtils.isBlank(withdrawModel.getOutBankName())){
+            resBean.setOutBankName(withdrawModel.getOutBankName());
+        }
+        if (!StringUtils.isBlank(withdrawModel.getOutBankCard())){
+            resBean.setOutBankCard(withdrawModel.getOutBankCard());
+        }
+        if (!StringUtils.isBlank(withdrawModel.getOutAccountName())){
+            resBean.setOutAccountName(withdrawModel.getOutAccountName());
+        }
+        if (!StringUtils.isBlank(withdrawModel.getPictureAds())){
+            resBean.setPictureAds(withdrawModel.getPictureAds());
+        }
+        return resBean;
+    }
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();

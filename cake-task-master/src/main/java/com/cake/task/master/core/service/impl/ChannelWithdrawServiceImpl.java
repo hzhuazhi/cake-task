@@ -3,6 +3,7 @@ package com.cake.task.master.core.service.impl;
 import com.cake.task.master.core.common.dao.BaseDao;
 import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.mapper.ChannelWithdrawMapper;
+import com.cake.task.master.core.model.channel.ChannelWithdrawModel;
 import com.cake.task.master.core.service.ChannelWithdrawService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,10 @@ public class ChannelWithdrawServiceImpl <T> extends BaseServiceImpl<T> implement
 
     public BaseDao<T> getDao() {
         return channelWithdrawMapper;
+    }
+
+    @Override
+    public int updateOrderStatus(ChannelWithdrawModel model) {
+        return channelWithdrawMapper.updateOrderStatus(model);
     }
 }

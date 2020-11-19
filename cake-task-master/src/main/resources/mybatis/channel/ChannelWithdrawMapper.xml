@@ -386,4 +386,32 @@
     </update>
 
 
+
+    <!-- 更新渠道提现记录的订单状态 -->
+    <update id="updateOrderStatus" parameterType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+        UPDATE tb_fr_channel_withdraw a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="outBankName != null and outBankName != '' " >
+                a.out_bank_name = #{outBankName},
+            </if>
+            <if test="outBankCard != null and outBankCard != '' " >
+                a.out_bank_card = #{outBankCard},
+            </if>
+            <if test="outAccountName != null and outAccountName != '' " >
+                a.out_account_name = #{outAccountName},
+            </if>
+            <if test="pictureAds != null and pictureAds != '' " >
+                a.picture_ads = #{pictureAds},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.order_no = #{orderNo}
+        and a.yn = 0
+    </update>
+
+
 </mapper>

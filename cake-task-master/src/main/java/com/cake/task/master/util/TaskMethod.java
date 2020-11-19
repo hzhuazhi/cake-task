@@ -3,6 +3,7 @@ import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.model.bank.*;
+import com.cake.task.master.core.model.channel.ChannelWithdrawModel;
 import com.cake.task.master.core.model.interest.InterestMerchantModel;
 import com.cake.task.master.core.model.interest.InterestModel;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
@@ -19,6 +20,7 @@ import com.cake.task.master.core.model.shortmsg.ShortMsgArrearsModel;
 import com.cake.task.master.core.model.shortmsg.ShortMsgStrategyModel;
 import com.cake.task.master.core.model.strategy.StrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
+import com.cake.task.master.core.model.withdraw.WithdrawModel;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1579,6 +1581,45 @@ public class TaskMethod {
         }
         return resList;
 
+    }
+
+    /**
+     * @Description: 组装添加汇总到提现记录的数据
+     * @param channelWithdrawModel - 渠道提现记录
+     * @param withdrawType - 提现订单类型：1利益者提现，2卡商提现，3渠道提现
+     * @return com.cake.task.master.core.model.withdraw.WithdrawModel
+     * @author yoko
+     * @date 2020/11/19 17:37
+     */
+    public static WithdrawModel assembleWithdrawByChannel(ChannelWithdrawModel channelWithdrawModel, int withdrawType){
+        WithdrawModel resBean = new WithdrawModel();
+        resBean.setOrderNo(channelWithdrawModel.getOrderNo());
+        resBean.setOrderMoney(channelWithdrawModel.getMoney());
+        resBean.setWithdrawServiceCharge(channelWithdrawModel.getWithdrawServiceCharge());
+        resBean.setWithdrawType(withdrawType);
+        resBean.setInBankCard(channelWithdrawModel.getInBankCard());
+        resBean.setInBankName(channelWithdrawModel.getInBankName());
+        resBean.setInAccountName(channelWithdrawModel.getInAccountName());
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装更新平台提现订单的状态
+     * @param channelWithdrawModel - 渠道提现记录
+     * @param withdrawStatus - 提现状态:1提现中，2提现失败，3提现成功
+     * @return com.cake.task.master.core.model.channel.ChannelWithdrawModel
+     * @author yoko
+     * @date 2020/11/19 19:11
+     */
+    public static ChannelWithdrawModel assembleUpdateWithdrawStatus(ChannelWithdrawModel channelWithdrawModel, int withdrawStatus){
+        ChannelWithdrawModel resBean = new ChannelWithdrawModel();
+        resBean.setOrderNo(channelWithdrawModel.getOutTradeNo());
+        resBean.setWithdrawStatus(withdrawStatus);
+        return resBean;
     }
 
 

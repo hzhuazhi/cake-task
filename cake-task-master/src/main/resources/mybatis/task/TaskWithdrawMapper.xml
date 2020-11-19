@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cake.task.master.core.mapper.task.TaskChannelWithdrawMapper">
+<mapper namespace="com.cake.task.master.core.mapper.task.TaskWithdrawMapper">
 
 
 
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.channel_id,a.alias,a.order_no,a.out_trade_no,a.money,a.withdraw_service_charge,a.order_status,
-        a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,a.data_type,
-        a.check_status,a.check_info,a.work_type,a.data_explain,a.remark,
+        a.id,a.alias,a.order_no,a.out_trade_no,a.order_money,a.withdraw_service_charge,a.order_status,a.withdraw_type,a.out_type,a.merchant_id,
+        a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,
+        a.check_status,a.check_info,a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_time,a.update_time,a.yn
 
@@ -30,9 +30,6 @@
             </if>
             <if test="lessThan != null and lessThan != '' " >
                 and a.order_status &lt; #{lessThan}
-            </if>
-            <if test="dataType != null and dataType != '' " >
-                and a.data_type = #{dataType}
             </if>
             <if test="runNum != null and runNum != '' " >
                 and a.run_num &lt; #{runNum}
@@ -69,17 +66,17 @@
 
 
     <!-- 查询未跑的信息 -->
-    <select id="getDataList" parameterType="Object" resultType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
+    <select id="getDataList" parameterType="Object" resultType="com.cake.task.master.core.model.withdraw.WithdrawModel">
         select
         <include refid="Base_Column_List" />
-        from tb_fr_channel_withdraw a
+        from tb_fr_withdraw a
         <include refid="Example_Where_Clause"/>
         limit #{limitNum}
     </select>
 
     <!-- 更新信息数据的状态成功、失败的结果 -->
     <update id="updateStatus" parameterType="Object">
-        UPDATE tb_fr_channel_withdraw a
+        UPDATE tb_fr_withdraw a
         <trim prefix="set" suffixOverrides=",">
             <if test="runNum != null and runNum != '' " >
                 a.run_num = a.run_num + #{runNum},
@@ -106,19 +103,5 @@
         and a.yn = 0
     </update>
 
-
-    <!-- 更新平台的提现状态 -->
-    <update id="updatePlatformWithdrawStatus" parameterType="com.cake.task.master.core.model.channel.ChannelWithdrawModel">
-        UPDATE platform.tb_hz_withdraw a
-        <trim prefix="set" suffixOverrides=",">
-            <if test="withdrawStatus != null and withdrawStatus != '' " >
-                a.withdraw_status = #{withdrawStatus},
-            </if>
-            a.update_time = NOW(),
-        </trim>
-        where 1=1
-        and a.order_no = #{orderNo}
-        and a.yn = 0
-    </update>
 
 </mapper>

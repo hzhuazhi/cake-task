@@ -30,4 +30,13 @@ public interface TaskChannelWithdrawService<T> extends BaseService<T> {
      * @date 2020/1/11 16:30
      */
     public int updateStatus(Object obj);
+
+    /**
+     * @Description: 更新平台的提现状态
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/11/19 19:02
+     */
+    public int updatePlatformWithdrawStatus(ChannelWithdrawModel model);
 }

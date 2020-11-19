@@ -42,4 +42,9 @@ public class TaskChannelWithdrawServiceImpl<T> extends BaseServiceImpl<T> implem
     public int updateStatus(Object obj) {
         return taskChannelWithdrawMapper.updateStatus(obj);
     }
+
+    @Override
+    public int updatePlatformWithdrawStatus(ChannelWithdrawModel model) {
+        return taskChannelWithdrawMapper.updatePlatformWithdrawStatus(model);
+    }
 }

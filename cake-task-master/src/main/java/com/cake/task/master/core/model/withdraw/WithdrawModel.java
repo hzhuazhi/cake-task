@@ -1,17 +1,17 @@
-package com.cake.task.master.core.model.channel;
+package com.cake.task.master.core.model.withdraw;
 
 import com.cake.task.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
 
 /**
- * @Description 商户的提现记录的实体属性Bean
+ * @Description 提现记录的实体属性Bean
  * @Author yoko
- * @Date 2020/11/11 18:52
+ * @Date 2020/11/19 16:33
  * @Version 1.0
  */
-public class ChannelWithdrawModel extends BasePage implements Serializable {
-    private static final long   serialVersionUID = 1203223501100L;
+public class WithdrawModel extends BasePage implements Serializable {
+    private static final long   serialVersionUID = 1203223501106L;
 
     /**
      * 主键ID
@@ -19,29 +19,24 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
     private Long id;
 
     /**
-     * 归属渠道的账号ID：对应表tb_fr_channel的主键ID
-     */
-    private Long channelId;
-
-    /**
      * 名称/别名
      */
     private String alias;
 
     /**
-     * 订单号
+     * 订单号/各个环节提现的订单号
      */
     private String orderNo;
 
     /**
-     * 商家订单号：平台订单号；不是蛋糕平台哦
+     * 中转站订单号
      */
     private String outTradeNo;
 
     /**
-     * 提现金额
+     * 提现金额/提现金额
      */
-    private String money;
+    private String orderMoney;
 
     /**
      * 提现手续费：2块，5块
@@ -52,6 +47,21 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
      * 订单状态：1初始化，2超时，3质疑，4成功
      */
     private Integer orderStatus;
+
+    /**
+     * 提现订单类型：1利益者提现，2卡商提现，3渠道提现
+     */
+    private Integer withdrawType;
+
+    /**
+     * 指派由谁进行转账给提现人：1卡商，2中转站，3平台
+     */
+    private Integer outType;
+
+    /**
+     * 指派给的卡商ID：对应表tb_fr_merchant的主键ID；假如指派out_type=1，则此字段不允许为空
+     */
+    private Long merchantId;
 
     /**
      * 收款银行卡账号/银行卡号
@@ -89,11 +99,6 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
     private String pictureAds;
 
     /**
-     * 提现数据来源：1来源平台，2来源蛋糕；这里如果来源平台，数据结果要同步给平台
-     */
-    private Integer dataType;
-
-    /**
      * 审核状态：1初始化，2审核收款失败，3审核收款成功
      */
     private Integer checkStatus;
@@ -102,11 +107,6 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
      * 审核失败缘由，审核失败的原因
      */
     private String checkInfo;
-
-    /**
-     * 补充数据的类型(这里往汇总的提现表写数据)：1初始化，2补充数据失败（其它原因等..），3补充数据成功
-     */
-    private Integer workType;
 
     /**
      * 数据说明：做解说用的
@@ -191,12 +191,6 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
     private Integer curdayStart;
     private Integer curdayEnd;
 
-    /**
-     * 提现状态:1提现中，2提现失败，3提现成功
-     */
-    private Integer withdrawStatus;
-
-
 
     public Long getId() {
         return id;
@@ -204,14 +198,6 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getChannelId() {
-        return channelId;
-    }
-
-    public void setChannelId(Long channelId) {
-        this.channelId = channelId;
     }
 
     public String getAlias() {
@@ -238,12 +224,12 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
         this.outTradeNo = outTradeNo;
     }
 
-    public String getMoney() {
-        return money;
+    public String getOrderMoney() {
+        return orderMoney;
     }
 
-    public void setMoney(String money) {
-        this.money = money;
+    public void setOrderMoney(String orderMoney) {
+        this.orderMoney = orderMoney;
     }
 
     public String getWithdrawServiceCharge() {
@@ -260,6 +246,30 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setOrderStatus(Integer orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public Integer getWithdrawType() {
+        return withdrawType;
+    }
+
+    public void setWithdrawType(Integer withdrawType) {
+        this.withdrawType = withdrawType;
+    }
+
+    public Integer getOutType() {
+        return outType;
+    }
+
+    public void setOutType(Integer outType) {
+        this.outType = outType;
+    }
+
+    public Long getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
     }
 
     public String getInBankCard() {
@@ -332,14 +342,6 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setCheckInfo(String checkInfo) {
         this.checkInfo = checkInfo;
-    }
-
-    public Integer getWorkType() {
-        return workType;
-    }
-
-    public void setWorkType(Integer workType) {
-        this.workType = workType;
     }
 
     public String getDataExplain() {
@@ -484,21 +486,5 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
-    }
-
-    public Integer getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(Integer dataType) {
-        this.dataType = dataType;
-    }
-
-    public Integer getWithdrawStatus() {
-        return withdrawStatus;
-    }
-
-    public void setWithdrawStatus(Integer withdrawStatus) {
-        this.withdrawStatus = withdrawStatus;
     }
 }

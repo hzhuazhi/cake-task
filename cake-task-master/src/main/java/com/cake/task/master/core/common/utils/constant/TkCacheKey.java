@@ -150,4 +150,15 @@ public interface TkCacheKey {
      */
     String LOCK_CHANGE_MONEY = "-26";
 
+    /**
+     * LOCK-渠道提现流水的处理
+     */
+    String LOCK_CHANNEL_WITHDRAW_RUN = "-27";
+
+
+    /**
+     * LOCK-渠道提现流水的处理-数据同步
+     */
+    String LOCK_CHANNEL_WITHDRAW_SEND = "-28";
+
 }

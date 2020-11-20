@@ -90,10 +90,12 @@ public class TaskWithdraw {
                             }
 
                             boolean flag_lock = false;
+                            int tab = 0;// 标记：等于1表示需要更新卡商余额
                             String lockKey_merchant = "";
                             // 组装更新渠道提现记录的订单状态
                             ChannelWithdrawModel channelWithdrawUpdate = TaskMethod.assembleChannelWithdrawOrderStatusUpdate(data);
                             if (merchantUpdate != null){
+                                tab = 1;
                                 // 余额变更
                                 // 锁住此卡商
                                 lockKey_merchant = CachedKeyUtils.getCacheKeyTask(CacheKey.LOCK_MERCHANT_MONEY, data.getMerchantId());
@@ -102,12 +104,19 @@ public class TaskWithdraw {
                                     flag_lock = true;
                                 }
                             }
-                            if (flag_lock){
-                                // 只有卡商被锁住才能执行事务的逻辑
+                            if (tab == 1){
+                                // 表示需要更新卡商余额
+                                if (flag_lock){
+                                    // 只有卡商被锁住才能执行事务的逻辑：因为tab=1表示要更新卡商余额，所以一定要锁住
+                                    flag = ComponentUtil.taskWithdrawService.handleChannelWithdraw(merchantProfitAdd, merchantUpdate, channelWithdrawUpdate);
+                                    // 解锁
+                                    ComponentUtil.redisIdService.delLock(lockKey_merchant);
+                                }
+                            }else {
+                                // 这里表示不用更新卡商的余额：判断能进行到这里是表示卡商给渠道下发的提现是失败的，所以才进入这里
                                 flag = ComponentUtil.taskWithdrawService.handleChannelWithdraw(merchantProfitAdd, merchantUpdate, channelWithdrawUpdate);
-                                // 解锁
-                                ComponentUtil.redisIdService.delLock(lockKey_merchant);
                             }
+
 
 
 

@@ -69,7 +69,11 @@ public class TaskOrderOutServiceImpl<T> extends BaseServiceImpl<T> implements Ta
         int num3 = 0;
         try {
             num1 = merchantBalanceDeductMapper.updateOrderStatusByOrderNo(merchantBalanceDeductUpdate);
-            num2 = merchantProfitMapper.add(merchantProfitModel);
+            if (merchantProfitModel == null){
+                num2 = 1;
+            }else {
+                num2 = merchantProfitMapper.add(merchantProfitModel);
+            }
             if (interestProfitList == null || interestProfitList.size() <= 0){
                 if (num1> 0 && num2 > 0){
                     return true;

@@ -1378,21 +1378,29 @@ public class TaskMethod {
      * @date 2020/11/10 13:50
      */
     public static MerchantProfitModel assembleMerchantProfitByOrderOutAdd(OrderOutModel orderOutModel, int orderType){
-        MerchantProfitModel resBean = new MerchantProfitModel();
-        resBean.setOrderNo(orderOutModel.getOrderNo());
-        resBean.setOrderType(orderType);
-        resBean.setOrderMoney(orderOutModel.getOrderMoney());
+        if (!StringUtils.isBlank(orderOutModel.getServiceCharge())){
+            if (!orderOutModel.getServiceCharge().equals("0")){
+                MerchantProfitModel resBean = new MerchantProfitModel();
+                resBean.setOrderNo(orderOutModel.getOrderNo());
+                resBean.setOrderType(orderType);
+                resBean.setOrderMoney(orderOutModel.getOrderMoney());
 //        resBean.setDistributionMoney("1");
-        resBean.setServiceCharge(orderOutModel.getServiceCharge());
+                resBean.setServiceCharge(orderOutModel.getServiceCharge());
 //        resBean.setReplenishType(1);
-        resBean.setProfitRatio(orderOutModel.getServiceCharge());
-        String profit = StringUtil.getMultiplyMantissa(orderOutModel.getOrderMoney(), orderOutModel.getServiceCharge(), 4);
-        resBean.setProfit(profit);
-        resBean.setMerchantId(orderOutModel.getMerchantId());
-        resBean.setCurday(DateUtil.getDayNumber(new Date()));
-        resBean.setCurhour(DateUtil.getHour(new Date()));
-        resBean.setCurminute(DateUtil.getCurminute(new Date()));
-        return resBean;
+                resBean.setProfitRatio(orderOutModel.getServiceCharge());
+                String profit = StringUtil.getMultiplyMantissa(orderOutModel.getOrderMoney(), orderOutModel.getServiceCharge(), 4);
+                resBean.setProfit(profit);
+                resBean.setMerchantId(orderOutModel.getMerchantId());
+                resBean.setCurday(DateUtil.getDayNumber(new Date()));
+                resBean.setCurhour(DateUtil.getHour(new Date()));
+                resBean.setCurminute(DateUtil.getCurminute(new Date()));
+                return resBean;
+            }else {
+                return null;
+            }
+        }else {
+            return null;
+        }
     }
 
     /**
@@ -1532,21 +1540,25 @@ public class TaskMethod {
      */
     public static MerchantProfitModel assembleMerchantProfitByOrderAdd(OrderModel orderModel, int orderType){
         if (!StringUtils.isBlank(orderModel.getServiceCharge())){
-            MerchantProfitModel resBean = new MerchantProfitModel();
-            resBean.setOrderNo(orderModel.getOrderNo());
-            resBean.setOrderType(orderType);
-            resBean.setOrderMoney(orderModel.getOrderMoney());
-            resBean.setDistributionMoney(orderModel.getDistributionMoney());
-            resBean.setServiceCharge(orderModel.getServiceCharge());
-            resBean.setReplenishType(orderModel.getReplenishType());
-            resBean.setProfitRatio(orderModel.getServiceCharge());
-            String profit = StringUtil.getMultiplyMantissa(orderModel.getOrderMoney(), orderModel.getServiceCharge(), 4);
-            resBean.setProfit(profit);
-            resBean.setMerchantId(orderModel.getMerchantId());
-            resBean.setCurday(DateUtil.getDayNumber(new Date()));
-            resBean.setCurhour(DateUtil.getHour(new Date()));
-            resBean.setCurminute(DateUtil.getCurminute(new Date()));
-            return resBean;
+            if (!orderModel.getServiceCharge().equals("0")){
+                MerchantProfitModel resBean = new MerchantProfitModel();
+                resBean.setOrderNo(orderModel.getOrderNo());
+                resBean.setOrderType(orderType);
+                resBean.setOrderMoney(orderModel.getOrderMoney());
+                resBean.setDistributionMoney(orderModel.getDistributionMoney());
+                resBean.setServiceCharge(orderModel.getServiceCharge());
+                resBean.setReplenishType(orderModel.getReplenishType());
+                resBean.setProfitRatio(orderModel.getServiceCharge());
+                String profit = StringUtil.getMultiplyMantissa(orderModel.getOrderMoney(), orderModel.getServiceCharge(), 4);
+                resBean.setProfit(profit);
+                resBean.setMerchantId(orderModel.getMerchantId());
+                resBean.setCurday(DateUtil.getDayNumber(new Date()));
+                resBean.setCurhour(DateUtil.getHour(new Date()));
+                resBean.setCurminute(DateUtil.getCurminute(new Date()));
+                return resBean;
+            }else{
+                return null;
+            }
         }else {
             return null;
         }

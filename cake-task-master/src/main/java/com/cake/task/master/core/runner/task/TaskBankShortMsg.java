@@ -78,6 +78,28 @@ public class TaskBankShortMsg {
                 continue;
             }
 
+            // 检测元关键字的个数
+            if (data.getSmsContent().indexOf("元") > -1){
+                String [] strNum = data.getSmsContent().split("元");
+                if (strNum.length >= 4){
+                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"关键字“元”个数多了!" );
+                    // 更新状态
+                    ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);
+                    continue;
+                }
+            }
+
+            // 检测右括号的个数
+            if (data.getSmsContent().indexOf(")") > -1){
+                String [] strNum = data.getSmsContent().split("\\)");
+                if (strNum.length >= 3){
+                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"右括号个数多了!" );
+                    // 更新状态
+                    ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);
+                    continue;
+                }
+            }
+
             // 获取端口号的银行卡数据
             BankModel bankQuery = TaskMethod.assembleBankQuery(0, data.getMobileCardId(), 0, 0, null, data.getSmsNum(), null);
             List<BankModel> bankList = ComponentUtil.bankService.findByCondition(bankQuery);

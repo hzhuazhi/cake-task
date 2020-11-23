@@ -1521,6 +1521,9 @@ public class TaskMethod {
 
     /**
      * @Description: 组装代收订单的卡商的收益信息
+     * <p>
+     *     当订单的手续费收益为空，则卡商的收益没有
+     * </p>
      * @param orderModel - 代收订单信息
      * @param orderType - 订单类型：1代收订单，2代付订单，3其它角色提现订单
      * @return com.cake.task.master.core.model.merchant.MerchantProfitModel
@@ -1528,21 +1531,26 @@ public class TaskMethod {
      * @date 2020/11/10 13:50
      */
     public static MerchantProfitModel assembleMerchantProfitByOrderAdd(OrderModel orderModel, int orderType){
-        MerchantProfitModel resBean = new MerchantProfitModel();
-        resBean.setOrderNo(orderModel.getOrderNo());
-        resBean.setOrderType(orderType);
-        resBean.setOrderMoney(orderModel.getOrderMoney());
-        resBean.setDistributionMoney(orderModel.getDistributionMoney());
-        resBean.setServiceCharge(orderModel.getServiceCharge());
-        resBean.setReplenishType(orderModel.getReplenishType());
-        resBean.setProfitRatio(orderModel.getServiceCharge());
-        String profit = StringUtil.getMultiplyMantissa(orderModel.getOrderMoney(), orderModel.getServiceCharge(), 4);
-        resBean.setProfit(profit);
-        resBean.setMerchantId(orderModel.getMerchantId());
-        resBean.setCurday(DateUtil.getDayNumber(new Date()));
-        resBean.setCurhour(DateUtil.getHour(new Date()));
-        resBean.setCurminute(DateUtil.getCurminute(new Date()));
-        return resBean;
+        if (!StringUtils.isBlank(orderModel.getServiceCharge())){
+            MerchantProfitModel resBean = new MerchantProfitModel();
+            resBean.setOrderNo(orderModel.getOrderNo());
+            resBean.setOrderType(orderType);
+            resBean.setOrderMoney(orderModel.getOrderMoney());
+            resBean.setDistributionMoney(orderModel.getDistributionMoney());
+            resBean.setServiceCharge(orderModel.getServiceCharge());
+            resBean.setReplenishType(orderModel.getReplenishType());
+            resBean.setProfitRatio(orderModel.getServiceCharge());
+            String profit = StringUtil.getMultiplyMantissa(orderModel.getOrderMoney(), orderModel.getServiceCharge(), 4);
+            resBean.setProfit(profit);
+            resBean.setMerchantId(orderModel.getMerchantId());
+            resBean.setCurday(DateUtil.getDayNumber(new Date()));
+            resBean.setCurhour(DateUtil.getHour(new Date()));
+            resBean.setCurminute(DateUtil.getCurminute(new Date()));
+            return resBean;
+        }else {
+            return null;
+        }
+
     }
 
 

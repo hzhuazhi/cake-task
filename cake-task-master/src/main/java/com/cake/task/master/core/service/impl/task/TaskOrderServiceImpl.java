@@ -81,7 +81,11 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
         try {
             num1 = bankCollectionMapper.add(bankCollectionModel);
             num2 = merchantMapper.updateMoney(merchantUpdateMoney);
-            num3 = merchantProfitMapper.add(merchantProfitModel);
+            if (merchantProfitModel == null){
+                num3 = 1;
+            }else {
+                num3 = merchantProfitMapper.add(merchantProfitModel);
+            }
             if (interestProfitList == null || interestProfitList.size() <= 0){
                 if (num1> 0 && num2 > 0 && num3 > 0){
                     return true;

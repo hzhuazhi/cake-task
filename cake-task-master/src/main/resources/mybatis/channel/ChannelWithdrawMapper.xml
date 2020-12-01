@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.channel_id,a.alias,a.order_no,a.out_trade_no,a.money,a.withdraw_service_charge,a.order_status,
+        a.id,a.channel_id,a.alias,a.order_no,a.out_trade_no,a.money,a.withdraw_service_charge,a.order_status,a.channel_type,a.secret_key,
         a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,a.data_type,
         a.check_status,a.check_info,a.work_type,a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
@@ -153,6 +153,12 @@
             <if test="orderStatus != null and orderStatus != '' " >
                 order_status,
             </if>
+            <if test="channelType != null and channelType != '' " >
+                channel_type,
+            </if>
+            <if test="secretKey != null and secretKey != '' " >
+                secret_key,
+            </if>
             <if test="inBankCard != null and inBankCard != '' " >
                 in_bank_card,
             </if>
@@ -237,6 +243,12 @@
             </if>
             <if test="orderStatus != null and orderStatus != '' " >
                 <![CDATA[  #{orderStatus}, ]]>
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                <![CDATA[  #{channelType}, ]]>
+            </if>
+            <if test="secretKey != null and secretKey != '' " >
+                <![CDATA[  #{secretKey}, ]]>
             </if>
             <if test="inBankCard != null and inBankCard != '' " >
                 <![CDATA[  #{inBankCard}, ]]>
@@ -326,6 +338,12 @@
             </if>
             <if test="orderStatus != null and orderStatus != '' " >
                 a.order_status = #{orderStatus},
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                a.channel_type = #{channelType},
+            </if>
+            <if test="secretKey != null and secretKey != '' " >
+                a.secret_key = #{secretKey},
             </if>
             <if test="inBankCard != null and inBankCard != '' " >
                 a.in_bank_card = #{inBankCard},

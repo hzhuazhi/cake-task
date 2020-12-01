@@ -7,7 +7,8 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.order_no,a.out_trade_no,a.order_money,a.withdraw_service_charge,a.order_status,a.withdraw_type,a.out_type,a.merchant_id,
+        a.id,a.alias,a.order_no,a.out_trade_no,a.order_money,a.withdraw_service_charge,a.order_status,a.withdraw_type,a.channel_id,a.channel_type,
+        a.out_type,a.merchant_id,
         a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,
         a.check_status,a.check_info,a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
@@ -153,6 +154,12 @@
             <if test="withdrawType != null and withdrawType != '' " >
                 withdraw_type,
             </if>
+            <if test="channelId != null and channelId != '' " >
+                channel_id,
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                channel_type,
+            </if>
             <if test="outType != null and outType != '' " >
                 out_type,
             </if>
@@ -237,6 +244,12 @@
             </if>
             <if test="withdrawType != null and withdrawType != '' " >
                 <![CDATA[  #{withdrawType}, ]]>
+            </if>
+            <if test="channelId != null and channelId != '' " >
+                <![CDATA[  #{channelId}, ]]>
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                <![CDATA[  #{channelType}, ]]>
             </if>
             <if test="outType != null and outType != '' " >
                 <![CDATA[  #{outType}, ]]>
@@ -326,6 +339,12 @@
             </if>
             <if test="withdrawType != null and withdrawType != '' " >
                 a.withdraw_type = #{withdrawType},
+            </if>
+            <if test="channelId != null and channelId != '' " >
+                a.channel_id = #{channelId},
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                a.channel_type = #{channelType},
             </if>
             <if test="outType != null and outType != '' " >
                 a.out_type = #{outType},

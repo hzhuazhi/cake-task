@@ -3,6 +3,7 @@ import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.model.bank.*;
+import com.cake.task.master.core.model.channel.ChannelModel;
 import com.cake.task.master.core.model.channel.ChannelWithdrawModel;
 import com.cake.task.master.core.model.interest.InterestMerchantModel;
 import com.cake.task.master.core.model.interest.InterestModel;
@@ -1617,6 +1618,12 @@ public class TaskMethod {
         resBean.setOrderMoney(channelWithdrawModel.getMoney());
         resBean.setWithdrawServiceCharge(channelWithdrawModel.getWithdrawServiceCharge());
         resBean.setWithdrawType(withdrawType);
+        if (channelWithdrawModel.getChannelId() != null && channelWithdrawModel.getChannelId() > 0){
+            resBean.setChannelId(channelWithdrawModel.getChannelId());
+        }
+        if (channelWithdrawModel.getChannelType() != null && channelWithdrawModel.getChannelType() > 0){
+            resBean.setChannelType(channelWithdrawModel.getChannelType());
+        }
         resBean.setInBankCard(channelWithdrawModel.getInBankCard());
         resBean.setInBankName(channelWithdrawModel.getInBankName());
         resBean.setInAccountName(channelWithdrawModel.getInAccountName());
@@ -1639,6 +1646,9 @@ public class TaskMethod {
         ChannelWithdrawModel resBean = new ChannelWithdrawModel();
         resBean.setOrderNo(channelWithdrawModel.getOutTradeNo());
         resBean.setWithdrawStatus(withdrawStatus);
+        if (!StringUtils.isBlank(channelWithdrawModel.getPictureAds())){
+            resBean.setPictureAds(channelWithdrawModel.getPictureAds());
+        }
         return resBean;
     }
 
@@ -1700,6 +1710,53 @@ public class TaskMethod {
         if (!StringUtils.isBlank(withdrawModel.getPictureAds())){
             resBean.setPictureAds(withdrawModel.getPictureAds());
         }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询渠道的查询方法
+     * @param id - 主键ID
+     * @param secretKey - 渠道秘钥
+     * @param bankBindingType - 银行卡绑定类型：1无需绑定银行卡，2需要绑定银行卡
+     * @param channelType - 渠道类型：1代收，2大包，3代付
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @return com.cake.task.master.core.model.channel.ChannelModel
+     * @author yoko
+     * @date 2020/12/1 17:41
+     */
+    public static ChannelModel assembleChannelQuery(long id, String secretKey, int bankBindingType, int channelType, int useStatus){
+        ChannelModel resBean = new ChannelModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (!StringUtils.isBlank(secretKey)){
+            resBean.setSecretKey(secretKey);
+        }
+        if (bankBindingType > 0){
+            resBean.setBankBindingType(bankBindingType);
+        }
+        if (channelType > 0){
+            resBean.setChannelType(channelType);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装填充渠道主键ID
+     * @param id - 主键ID
+     * @param channelId - 渠道ID
+     * @return com.cake.task.master.core.model.channel.ChannelWithdrawModel
+     * @author yoko
+     * @date 2020/12/1 17:47
+     */
+    public static ChannelWithdrawModel assembleChannelWithdrawUpdateChannel(long id, long channelId){
+        ChannelWithdrawModel resBean = new ChannelWithdrawModel();
+        resBean.setId(id);
+        resBean.setChannelId(channelId);
         return resBean;
     }
 

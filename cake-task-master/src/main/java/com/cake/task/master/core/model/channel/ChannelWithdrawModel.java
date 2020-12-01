@@ -54,6 +54,16 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
     private Integer orderStatus;
 
     /**
+     * 渠道类型：0初始化，1代收，2大包，3代付
+     */
+    private Integer channelType;
+
+    /**
+     * 商户秘钥
+     */
+    private String secretKey;
+
+    /**
      * 收款银行卡账号/银行卡号
      */
     private String inBankCard;
@@ -500,5 +510,21 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setWithdrawStatus(Integer withdrawStatus) {
         this.withdrawStatus = withdrawStatus;
+    }
+
+    public Integer getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(Integer channelType) {
+        this.channelType = channelType;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 }

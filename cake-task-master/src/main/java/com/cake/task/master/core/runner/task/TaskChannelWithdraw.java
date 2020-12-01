@@ -2,11 +2,13 @@ package com.cake.task.master.core.runner.task;
 
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
+import com.cake.task.master.core.model.channel.ChannelModel;
 import com.cake.task.master.core.model.channel.ChannelWithdrawModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.core.model.withdraw.WithdrawModel;
 import com.cake.task.master.util.ComponentUtil;
 import com.cake.task.master.util.TaskMethod;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +69,22 @@ public class TaskChannelWithdraw {
                 if (flagLock){
                     StatusModel statusModel = null;
                     boolean flag = false;
+                    long channelId = 0;// 平台上报的数据，没有渠道ID，所以这里赋值渠道ID
+                    if (data.getChannelId() == null || data.getChannelId() <= 0){
+                        if (!StringUtils.isBlank(data.getSecretKey())){
+                            ChannelModel channelQuery = TaskMethod.assembleChannelQuery(0, data.getSecretKey(), 0, 0 , 0);
+                            ChannelModel channelModel = (ChannelModel)ComponentUtil.channelService.findByObject(channelQuery);
+                            if (channelModel != null && channelModel.getId() != null){
+                                channelId = channelModel.getId();
+                                // 修改此条数据的渠道ID，进行数据填充
+                                ChannelWithdrawModel channelWithdrawUpdate = TaskMethod.assembleChannelWithdrawUpdateChannel(data.getId(), channelId);
+                                ComponentUtil.channelWithdrawService.update(channelWithdrawUpdate);
+                                // 赋值给提现汇总的纪录的渠道ID
+                                data.setChannelId(channelId);
+                            }
+                        }
+
+                    }
                     // 组装添加数据录入到提现汇总表中
                     WithdrawModel withdrawModel = TaskMethod.assembleWithdrawByChannel(data, 3);
                     int num = ComponentUtil.withdrawService.add(withdrawModel);

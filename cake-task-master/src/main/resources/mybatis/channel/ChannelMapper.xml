@@ -5,7 +5,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.secret_key,a.remark,a.use_status,
+        a.id,a.alias,a.secret_key,a.bank_binding_type,a.channel_type,a.remark,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -18,6 +18,12 @@
             </if>
             <if test="secretKey != null and secretKey != '' " >
                 and a.secret_key = #{secretKey}
+            </if>
+            <if test="bankBindingType != null and bankBindingType != '' " >
+                and a.bank_binding_type = #{bankBindingType}
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                and a.channel_type = #{channelType}
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
@@ -111,6 +117,12 @@
             <if test="secretKey != null and secretKey != '' " >
                 secret_key,
             </if>
+            <if test="bankBindingType != null and bankBindingType != '' " >
+                bank_binding_type,
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                channel_type,
+            </if>
             <if test="remark != null and remark != '' " >
                 remark,
             </if>
@@ -126,6 +138,12 @@
             </if>
             <if test="secretKey != null and secretKey != '' " >
                 <![CDATA[  #{secretKey}, ]]>
+            </if>
+            <if test="bankBindingType != null and bankBindingType != '' " >
+                <![CDATA[  #{bankBindingType}, ]]>
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                <![CDATA[  #{channelType}, ]]>
             </if>
             <if test="remark != null and remark != '' " >
                 <![CDATA[  #{remark}, ]]>
@@ -146,6 +164,12 @@
             </if>
             <if test="secretKey != null and secretKey != '' " >
                 a.secret_key = #{secretKey},
+            </if>
+            <if test="bankBindingType != null and bankBindingType != '' " >
+                a.bank_binding_type = #{bankBindingType},
+            </if>
+            <if test="channelType != null and channelType != '' " >
+                a.channel_type = #{channelType},
             </if>
             <if test="remark != null and remark != '' " >
                 a.remark = #{remark},

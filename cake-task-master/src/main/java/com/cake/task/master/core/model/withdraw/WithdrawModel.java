@@ -54,6 +54,17 @@ public class WithdrawModel extends BasePage implements Serializable {
     private Integer withdrawType;
 
     /**
+     * 渠道主键ID
+     */
+    private Long channelId;
+
+    /**
+     * 渠道类型：1代收，2大包，3代付
+     */
+    private Integer channelType;
+
+
+    /**
      * 指派由谁进行转账给提现人：1卡商，2中转站，3平台
      */
     private Integer outType;
@@ -486,5 +497,21 @@ public class WithdrawModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public Long getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Long channelId) {
+        this.channelId = channelId;
+    }
+
+    public Integer getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(Integer channelType) {
+        this.channelType = channelType;
     }
 }

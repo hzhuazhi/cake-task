@@ -166,4 +166,11 @@ public interface TkCacheKey {
      */
     String LOCK_WITHDRAW_SEND = "-29";
 
+    /**
+     * LOCK-汇总提现记录流水的处理-分配
+     */
+    String LOCK_WITHDRAW_ISSUE_DISTRIBUTION = "-30";
+
+
+
 }

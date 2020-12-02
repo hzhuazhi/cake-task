@@ -120,6 +120,11 @@ public class WithdrawModel extends BasePage implements Serializable {
     private String checkInfo;
 
     /**
+     * 补充数据的类型：1初始化，2补充数据失败（其它原因等..），3补充数据成功；这里是派单状态
+     */
+    private Integer workType;
+
+    /**
      * 数据说明：做解说用的
      */
     private String dataExplain;
@@ -513,5 +518,13 @@ public class WithdrawModel extends BasePage implements Serializable {
 
     public void setChannelType(Integer channelType) {
         this.channelType = channelType;
+    }
+
+    public Integer getWorkType() {
+        return workType;
+    }
+
+    public void setWorkType(Integer workType) {
+        this.workType = workType;
     }
 }

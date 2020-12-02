@@ -10,7 +10,7 @@
         a.id,a.alias,a.order_no,a.out_trade_no,a.order_money,a.withdraw_service_charge,a.order_status,a.withdraw_type,a.channel_id,a.channel_type,
         a.out_type,a.merchant_id,
         a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,
-        a.check_status,a.check_info,a.data_explain,a.remark,
+        a.check_status,a.check_info,a.work_type,a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_time,a.update_time,a.yn
 
@@ -31,6 +31,9 @@
             </if>
             <if test="lessThan != null and lessThan != '' " >
                 and a.order_status &lt; #{lessThan}
+            </if>
+            <if test="workType != null and workType != '' " >
+                and a.work_type = #{workType}
             </if>
             <if test="runNum != null and runNum != '' " >
                 and a.run_num &lt; #{runNum}
@@ -96,6 +99,9 @@
             </if>
             <if test="info != null and info != '' " >
                 a.data_explain = #{info},
+            </if>
+            <if test="workType != null and workType != '' " >
+                a.work_type = #{workType},
             </if>
             a.update_time = NOW(),
         </trim>

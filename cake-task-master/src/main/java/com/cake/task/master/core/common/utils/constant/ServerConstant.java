@@ -93,6 +93,10 @@ public class ServerConstant {
         ISSUE_DISTRIBUTION_NUM(8,""),
         ISSUE_DISTRIBUTION_TIME(9,""),
         BANK_MONEY_OUT(10,""),
+        INVALID_TIME_NUM_BY_OUT_ORDER(11,""),
+        OUT_QR_CODE_SWITCH(12,""),
+        ORDER_OUT_MONEY_RANGE(13,""),
+        ISSUE_DISTRIBUTION(14,""),
 
 
 

@@ -2,10 +2,12 @@ package com.cake.task.master.core.runner.task;
 
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
+import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
 import com.cake.task.master.core.model.channel.ChannelWithdrawModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
 import com.cake.task.master.core.model.merchant.MerchantProfitModel;
+import com.cake.task.master.core.model.strategy.StrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.core.model.withdraw.WithdrawModel;
 import com.cake.task.master.util.ComponentUtil;
@@ -40,6 +42,107 @@ public class TaskWithdraw {
      * 10分钟
      */
     public long TEN_MIN = 10;
+
+
+
+
+    /**
+     * @Description: 把执行提现信息进行分配
+     * <p>
+     *     每5秒运行一次
+     *     1.查询未分配的下发信息。
+     *     2.根据各自提现类型进行分配。
+     * </p>
+     * @author yoko
+     * @date 2019/12/6 20:25
+     */
+//    @Scheduled(cron = "1 * * * * ?")
+    @Scheduled(fixedDelay = 5000) // 每秒执行
+    public void issueDistribution() throws Exception{
+//        log.info("----------------------------------TaskWithdraw.issueDistribution()----start");
+
+        int issueDistribution = 0;// 下发分配类型：1手动分配，2自动分配
+        // 策略：检测银行卡连续给出失败次数
+        StrategyModel strategyQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ISSUE_DISTRIBUTION.getStgType());
+        StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        issueDistribution = strategyModel.getStgNumValue();
+        // 获取未分配提现记录
+        StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 0, 1, 0, 0, 0,0,0,null);
+        List<WithdrawModel> synchroList = ComponentUtil.taskWithdrawService.getDataList(statusQuery);
+        for (WithdrawModel data : synchroList){
+            try{
+                // 锁住这个数据流水
+                String lockKey = CachedKeyUtils.getCacheKeyTask(TkCacheKey.LOCK_WITHDRAW_ISSUE_DISTRIBUTION, data.getId());
+                boolean flagLock = ComponentUtil.redisIdService.lock(lockKey);
+                if (flagLock){
+                    StatusModel statusModel = null;
+                    boolean flag = false;
+                    if (issueDistribution == 1){
+                        // 手动分配 ：这里无需做任何操作，直接把workType=3就行
+                        flag = true;
+
+                    }else if (issueDistribution == 2){
+                        // 自动分配
+
+                        // 判断提现类型
+                        if (data.getWithdrawType() == 1){
+                            // 利益者提现： #目前没有业务逻辑处理
+                            flag = true;
+                        }else if (data.getWithdrawType() == 2){
+                            // 卡商提现： #目前没有业务逻辑处理
+                            flag = true;
+                        }else if (data.getWithdrawType() == 3){
+                            // 渠道提现
+                            // 判断渠道类型
+                            if (data.getChannelType() == null || data.getChannelType() == 0){
+                                // 表示属于平台的利益者提现的（平台提现分两种：渠道提现，利益者提现）
+                                // 这里目前不做自动分配处理
+                                flag = true;
+                            }else if (data.getChannelType() == 1){
+                                // 渠道：代收
+
+                                // 查询与之关联的卡商信息
+
+                            }else if (data.getChannelType() == 2){
+                                // 渠道：大包
+                                // 这里目前不做自动分配处理
+                                flag = true;
+                            }else if (data.getChannelType() == 3){
+                                // 渠道：代付
+                                // 这里目前不做自动分配处理
+                                flag = true;
+                            }
+                        }
+                    }
+
+
+
+                    if (flag){
+                        // 成功
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 3, 0, 0,0,null);
+                    }else {
+                        // 失败
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,null);
+                    }
+
+
+                    // 更新状态
+                    ComponentUtil.taskWithdrawService.updateStatus(statusModel);
+                    // 解锁
+                    ComponentUtil.redisIdService.delLock(lockKey);
+                }
+
+//                log.info("----------------------------------TaskWithdraw.issueDistribution()----end");
+            }catch (Exception e){
+                log.error(String.format("this TaskWithdraw.send() is error , the dataId=%s !", data.getId()));
+                e.printStackTrace();
+                // 更新此次task的状态：更新成失败：因为ERROR
+                StatusModel statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"异常失败try!");
+                ComponentUtil.taskWithdrawService.updateStatus(statusModel);
+            }
+        }
+    }
+
 
 
 

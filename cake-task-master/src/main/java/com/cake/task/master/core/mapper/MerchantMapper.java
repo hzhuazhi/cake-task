@@ -3,6 +3,8 @@ import com.cake.task.master.core.common.dao.BaseDao;
 import com.cake.task.master.core.model.merchant.MerchantModel;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @Description 卡商扩充数据的Dao层
  * @Author yoko
@@ -91,4 +93,13 @@ public interface MerchantMapper<T> extends BaseDao<T> {
      * @date 2020/11/14 15:01
      */
     public int updateAddOrSubtractProfit(MerchantModel model);
+
+    /**
+     * @Description: 根据渠道与银行卡的关联关系查询卡商信息
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/12/2 15:47
+    */
+    public List<MerchantModel> getMerchantByChannelBank(MerchantModel model);
 }

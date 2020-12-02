@@ -492,4 +492,20 @@
     </update>
 
 
+    <!-- 根据渠道与银行卡的关联关系查询卡商信息-->
+    <select id="getMerchantByChannelBank" parameterType="Object" resultType="com.cake.task.master.core.model.merchant.MerchantModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_merchant a
+        where 1=1
+        and a.id in (
+            select merchant_id from tb_fr_bank where id in (
+            select bank_id from tb_fr_channel_bank where channel_id = #{channelId} and yn = 0
+            )
+            group by merchant_id
+        )
+        and a.yn = 0
+    </select>
+
+
 </mapper>

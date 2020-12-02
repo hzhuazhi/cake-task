@@ -3,6 +3,7 @@ package com.cake.task.master.core.service.impl;
 import com.cake.task.master.core.common.dao.BaseDao;
 import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.mapper.WithdrawMapper;
+import com.cake.task.master.core.model.withdraw.WithdrawModel;
 import com.cake.task.master.core.service.WithdrawService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,10 @@ public class WithdrawServiceImpl <T> extends BaseServiceImpl<T> implements Withd
 
     public BaseDao<T> getDao() {
         return withdrawMapper;
+    }
+
+    @Override
+    public String sumMoney(WithdrawModel model) {
+        return withdrawMapper.sumMoney(model);
     }
 }

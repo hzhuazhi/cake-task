@@ -7,6 +7,8 @@ import com.cake.task.master.core.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description 卡商扩充数据的Service层的实现层
  * @Author yoko
@@ -79,5 +81,10 @@ public class MerchantServiceImpl<T> extends BaseServiceImpl<T> implements Mercha
     @Override
     public int updateAddOrSubtractProfit(MerchantModel model) {
         return merchantMapper.updateAddOrSubtractProfit(model);
+    }
+
+    @Override
+    public List<MerchantModel> getMerchantByChannelBank(MerchantModel model) {
+        return merchantMapper.getMerchantByChannelBank(model);
     }
 }

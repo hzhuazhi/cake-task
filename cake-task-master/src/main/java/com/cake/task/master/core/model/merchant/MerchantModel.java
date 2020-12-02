@@ -184,6 +184,11 @@ public class MerchantModel extends BasePage implements Serializable {
      */
     private String orderMoney;
 
+    /**
+     * 渠道主键ID
+     */
+    private Long channelId;
+
 
     public Long getId() {
         return id;
@@ -455,5 +460,13 @@ public class MerchantModel extends BasePage implements Serializable {
 
     public void setProfit(String profit) {
         this.profit = profit;
+    }
+
+    public Long getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Long channelId) {
+        this.channelId = channelId;
     }
 }

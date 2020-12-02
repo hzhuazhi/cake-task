@@ -408,4 +408,10 @@
     </update>
 
 
+    <!-- 根据条件查询下发的金额总和-->
+    <select id="sumMoney" parameterType="Object" resultType="java.lang.String">
+        select ifnull(sum(convert(a.order_money,decimal(19,2))), '0.00') as money from tb_fr_withdraw a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
 </mapper>

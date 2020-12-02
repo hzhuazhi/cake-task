@@ -102,6 +102,35 @@ public class TaskWithdraw {
                                 // 渠道：代收
 
                                 // 查询与之关联的卡商信息
+                                MerchantModel merchantQuery = TaskMethod.assembleMerchantByChannelQuery(data.getChannelId());
+                                List<MerchantModel> merchantList = ComponentUtil.merchantService.getMerchantByChannelBank(merchantQuery);
+                                if (merchantList == null || merchantList.size() <= 0){
+                                    flag = false;
+                                }else {
+                                    // 正式进行分配
+                                    long merchantId = 0;// 卡商ID：只要此卡商与此提现的渠道有关联关系，并且渠道提现的金额小于卡商的余额，则分配这个卡商
+                                    for (MerchantModel merchantModel : merchantList){
+                                        // 查询提现记录中已分配给的卡商，但是没实际操作下发的卡商的金额
+                                        WithdrawModel withdrawQuery = TaskMethod.assembleWithdrawQuery(0,null,null,1,0,0,0,
+                                                1,merchantModel.getId(),0,0,0);
+                                        String withdrawMoney = ComponentUtil.withdrawService.sumMoney(withdrawQuery);
+                                        boolean flag_money = TaskMethod.checkMerchantMoney(merchantModel.getBalance(), data.getOrderMoney(), withdrawMoney);
+                                        if (flag_money){
+                                            merchantId = merchantModel.getId();
+                                            break;
+                                        }
+                                    }
+
+                                    if (merchantId > 0){
+                                        // 更新提现的分配信息
+                                        WithdrawModel withdrawUpdate = TaskMethod.assembleWithdrawQuery(data.getId(),null,null,0,0,0,0,
+                                                1, merchantId,0,0,0);
+                                        int num = ComponentUtil.withdrawService.update(withdrawUpdate);
+                                        if (num > 0){
+                                            flag = true;
+                                        }
+                                    }
+                                }
 
                             }else if (data.getChannelType() == 2){
                                 // 渠道：大包

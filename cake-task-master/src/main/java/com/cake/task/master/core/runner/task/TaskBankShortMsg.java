@@ -7,6 +7,8 @@ import com.cake.task.master.core.common.utils.constant.TkCacheKey;
 import com.cake.task.master.core.model.bank.BankModel;
 import com.cake.task.master.core.model.bank.BankShortMsgModel;
 import com.cake.task.master.core.model.bank.BankShortMsgStrategyModel;
+import com.cake.task.master.core.model.channel.ChannelBankModel;
+import com.cake.task.master.core.model.channel.ChannelModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.strategy.StrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
@@ -178,21 +180,39 @@ public class TaskBankShortMsg {
     public void handle() throws Exception{
 //        log.info("----------------------------------TaskBankShortMsg.handle()----start");
         // 策略数据：订单的支付时间
-        int invalidTimeNum = 0;
+        int invalidTimeNum_strategy = 0;
         StrategyModel strategyInvalidTimeNumQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.INVALID_TIME_NUM.getStgType());
         StrategyModel strategyInvalidTimeNumModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
-        invalidTimeNum = strategyInvalidTimeNumModel.getStgNumValue();
+        invalidTimeNum_strategy = strategyInvalidTimeNumModel.getStgNumValue();
 
         // 获取银行短信数据-已经扩充完毕
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 3, 0, 0, 0,0,0,null);
         List<BankShortMsgModel> synchroList = ComponentUtil.taskBankShortMsgService.getDataList(statusQuery);
         for (BankShortMsgModel data : synchroList){
             StatusModel statusModel = null;
+            int invalidTimeNum = 0;
             try{
                 // 锁住这个数据流水
                 String lockKey = CachedKeyUtils.getCacheKeyTask(TkCacheKey.LOCK_BANK_SHORT_MSG_WORK_TYPE, data.getId());
                 boolean flagLock = ComponentUtil.redisIdService.lock(lockKey);
                 if (flagLock){
+                    // 根据银行卡ID查询关联的渠道，以及此渠道的支付时间
+                    ChannelBankModel channelBankQuery = TaskMethod.assembleChannelBankQuery(0,0, data.getBankId(), 1);
+                    ChannelBankModel channelBankModel = (ChannelBankModel)ComponentUtil.channelBankService.findByObject(channelBankQuery);
+                    if (channelBankModel != null && channelBankModel.getId() != null){
+                        // 表示渠道与银行卡有绑定关系：根据绑定关系里面的渠道ID查询渠道信息
+                        ChannelModel channelQuery = TaskMethod.assembleChannelQuery(channelBankModel.getChannelId(), null, 0,0, 0);
+                        ChannelModel channelModel = ComponentUtil.channelService.getChannelById(channelQuery, 0);
+                        if (channelModel != null && channelModel.getId() != null){
+                            if (channelModel.getInvalidTimeNum() != null && channelModel.getInvalidTimeNum() > 0){
+                                invalidTimeNum = channelModel.getInvalidTimeNum();// 把渠道的支付时间进行赋值
+                            }
+                        }
+                    }
+                    if (invalidTimeNum <= 0){
+                        invalidTimeNum = invalidTimeNum_strategy;
+                    }
+
                     String startTime = DateUtil.addAndSubtractDateMinute(data.getCreateTime(), -invalidTimeNum);// 数据的创建时间减订单超时时间=特定时间的前几分中的时间
                     String endTime = data.getCreateTime();
                      // 查询订单

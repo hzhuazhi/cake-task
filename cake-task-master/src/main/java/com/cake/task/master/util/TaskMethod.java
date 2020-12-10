@@ -3,6 +3,7 @@ import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.model.bank.*;
+import com.cake.task.master.core.model.channel.ChannelBankModel;
 import com.cake.task.master.core.model.channel.ChannelModel;
 import com.cake.task.master.core.model.channel.ChannelWithdrawModel;
 import com.cake.task.master.core.model.interest.InterestMerchantModel;
@@ -1853,6 +1854,35 @@ public class TaskMethod {
         }
         String addMoney = StringUtil.getBigDecimalAdd(orderMoney, withdrawMoney);
         return StringUtil.getBigDecimalSubtract(balance, addMoney);
+    }
+
+
+    /**
+     * @Description: 组装查询渠道与银行卡绑定关系的查询方法
+     * @param id - 主键ID
+     * @param channelId - 渠道ID
+     * @param bankId - 银行卡ID
+     * @param useStatus - 使用状态
+     * @return com.cake.task.master.core.model.channel.ChannelBankModel
+     * @author yoko
+     * @date 2020/12/10 14:48
+     */
+    public static ChannelBankModel assembleChannelBankQuery(long id, long channelId, long bankId, int useStatus){
+        ChannelBankModel resBean = new ChannelBankModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (channelId > 0){
+            resBean.setChannelId(channelId);
+        }
+        if (bankId > 0){
+            resBean.setBankId(bankId);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+
     }
 
 

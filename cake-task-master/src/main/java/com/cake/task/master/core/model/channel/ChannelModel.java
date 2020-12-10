@@ -38,6 +38,26 @@ public class ChannelModel extends BasePage implements Serializable {
     private Integer channelType;
 
     /**
+     * 代收金额订单范围：每单代收的金额范围以“-”进行分割的
+     */
+    private String inMoneyRange;
+
+    /**
+     * 代付金额订单范围：每单代付的金额范围以“-”进行分割的
+     */
+    private String outMoneyRange;
+
+    /**
+     * 出码后银行卡金额的锁定时间
+     */
+    private Integer moneyLockTime;
+
+    /**
+     * 出码后订单的支付时间
+     */
+    private Integer invalidTimeNum;
+
+    /**
      * 备注
      */
     private String remark;
@@ -140,5 +160,37 @@ public class ChannelModel extends BasePage implements Serializable {
 
     public void setChannelType(Integer channelType) {
         this.channelType = channelType;
+    }
+
+    public String getInMoneyRange() {
+        return inMoneyRange;
+    }
+
+    public void setInMoneyRange(String inMoneyRange) {
+        this.inMoneyRange = inMoneyRange;
+    }
+
+    public String getOutMoneyRange() {
+        return outMoneyRange;
+    }
+
+    public void setOutMoneyRange(String outMoneyRange) {
+        this.outMoneyRange = outMoneyRange;
+    }
+
+    public Integer getMoneyLockTime() {
+        return moneyLockTime;
+    }
+
+    public void setMoneyLockTime(Integer moneyLockTime) {
+        this.moneyLockTime = moneyLockTime;
+    }
+
+    public Integer getInvalidTimeNum() {
+        return invalidTimeNum;
+    }
+
+    public void setInvalidTimeNum(Integer invalidTimeNum) {
+        this.invalidTimeNum = invalidTimeNum;
     }
 }

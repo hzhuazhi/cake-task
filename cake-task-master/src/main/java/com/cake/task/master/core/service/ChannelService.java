@@ -20,4 +20,16 @@ public interface ChannelService<T> extends BaseService<T> {
      * @date 2019/11/21 19:26
      */
     public ChannelModel getChannel(ChannelModel model, int isCache) throws Exception;
+
+
+    /**
+     * @Description: 根据条件查询商户数据
+     * @param model - 查询条件
+     * @param isCache - 是否通过缓存查询：0需要通过缓存查询，1直接查询数据库
+     * @return
+     * @author yoko
+     * @date 2019/11/21 19:26
+     */
+    public ChannelModel getChannelById(ChannelModel model, int isCache) throws Exception;
+
 }

@@ -5,7 +5,8 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.secret_key,a.bank_binding_type,a.channel_type,a.remark,a.use_status,
+        a.id,a.alias,a.secret_key,a.bank_binding_type,a.channel_type,a.in_money_range,a.out_money_range,a.money_lock_time,a.invalid_time_num,
+        a.remark,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
 
@@ -123,6 +124,18 @@
             <if test="channelType != null and channelType != '' " >
                 channel_type,
             </if>
+            <if test="inMoneyRange != null and inMoneyRange != '' " >
+                in_money_range,
+            </if>
+            <if test="outMoneyRange != null and outMoneyRange != '' " >
+                out_money_range,
+            </if>
+            <if test="moneyLockTime != null and moneyLockTime != '' " >
+                money_lock_time,
+            </if>
+            <if test="invalidTimeNum != null and invalidTimeNum != '' " >
+                invalid_time_num,
+            </if>
             <if test="remark != null and remark != '' " >
                 remark,
             </if>
@@ -144,6 +157,18 @@
             </if>
             <if test="channelType != null and channelType != '' " >
                 <![CDATA[  #{channelType}, ]]>
+            </if>
+            <if test="inMoneyRange != null and inMoneyRange != '' " >
+                <![CDATA[  #{inMoneyRange}, ]]>
+            </if>
+            <if test="outMoneyRange != null and outMoneyRange != '' " >
+                <![CDATA[  #{outMoneyRange}, ]]>
+            </if>
+            <if test="moneyLockTime != null and moneyLockTime != '' " >
+                <![CDATA[  #{moneyLockTime}, ]]>
+            </if>
+            <if test="invalidTimeNum != null and invalidTimeNum != '' " >
+                <![CDATA[  #{invalidTimeNum}, ]]>
             </if>
             <if test="remark != null and remark != '' " >
                 <![CDATA[  #{remark}, ]]>
@@ -170,6 +195,18 @@
             </if>
             <if test="channelType != null and channelType != '' " >
                 a.channel_type = #{channelType},
+            </if>
+            <if test="inMoneyRange != null and inMoneyRange != '' " >
+                a.in_money_range = #{inMoneyRange},
+            </if>
+            <if test="outMoneyRange != null and outMoneyRange != '' " >
+                a.out_money_range = #{outMoneyRange},
+            </if>
+            <if test="moneyLockTime != null and moneyLockTime != '' " >
+                a.money_lock_time = #{moneyLockTime},
+            </if>
+            <if test="invalidTimeNum != null and invalidTimeNum != '' " >
+                a.invalid_time_num = #{invalidTimeNum},
             </if>
             <if test="remark != null and remark != '' " >
                 a.remark = #{remark},

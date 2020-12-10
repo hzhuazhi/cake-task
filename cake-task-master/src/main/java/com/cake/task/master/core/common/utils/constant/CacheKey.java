@@ -136,6 +136,9 @@ public interface CacheKey {
      */
     String LOCK_MERCHANT_MONEY_PROFIT = "-22";
 
-
+    /**
+     * 商户：商户的ID
+     */
+    String CHANNEL_ID = "-23";
 
 }

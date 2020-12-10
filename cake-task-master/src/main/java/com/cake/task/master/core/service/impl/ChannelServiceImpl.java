@@ -12,6 +12,8 @@ import com.cake.task.master.core.model.channel.ChannelModel;
 import com.cake.task.master.core.service.ChannelService;
 import com.cake.task.master.util.ComponentUtil;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ChannelServiceImpl<T> extends BaseServiceImpl<T> implements ChannelService<T> {
+
+    private final static Logger log = LoggerFactory.getLogger(ChannelServiceImpl.class);
+
     /**
      * 5分钟.
      */
@@ -60,6 +65,32 @@ public class ChannelServiceImpl<T> extends BaseServiceImpl<T> implements Channel
                 dataModel = JSON.parseObject(strCache, ChannelModel.class);
             } else {
                 //查询数据库
+                dataModel = (ChannelModel) channelMapper.findByObject(model);
+                if (dataModel != null && dataModel.getId() != ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO) {
+                    // 把数据存入缓存
+                    ComponentUtil.redisService.set(strKeyCache, JSON.toJSONString(dataModel, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullStringAsEmpty), FIVE_MIN);
+                }
+            }
+        }else {
+            // 直接查数据库
+            // 查询数据库
+            dataModel = (ChannelModel) channelMapper.findByObject(model);
+        }
+        return dataModel;
+    }
+
+    @Override
+    public ChannelModel getChannelById(ChannelModel model, int isCache) throws Exception {
+        ChannelModel dataModel = null;
+        if (isCache == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
+            String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.CHANNEL_ID, model.getId());
+            String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
+            if (!StringUtils.isBlank(strCache)) {
+                // 从缓存里面获取数据
+                dataModel = JSON.parseObject(strCache, ChannelModel.class);
+            } else {
+                //查询数据库
+                log.info("");
                 dataModel = (ChannelModel) channelMapper.findByObject(model);
                 if (dataModel != null && dataModel.getId() != ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO) {
                     // 把数据存入缓存

@@ -498,6 +498,44 @@ public class TaskMethod {
     }
 
 
+
+//    /**
+//     * @Description: 解析短信获取银行卡
+//     * <p>
+//     *     解析短信，根据短信的尾号匹配银行卡的尾号；
+//     *     如果可以匹配到银行卡的尾号，则返回
+//     * </p>
+//     * @param bankList - 银行卡集合
+//     * @param smsContent - 短信内容
+//     * @param lastNumKey - 尾号开始位的关键字
+//     * @return long
+//     * @author yoko
+//     * @date 2020/9/14 19:13
+//     */
+//    public static BankModel getBankIdBySmsContent(List<BankModel> bankList, String smsContent, String lastNumKey){
+//        String [] lastNumKeyArr = lastNumKey.split("#");
+//        for (BankModel bankModel : bankList){
+//            for (String str : lastNumKeyArr){
+//                int start = 0;
+//                int end = 0;
+//                if (smsContent.indexOf(str) > -1){
+//                    start = smsContent.indexOf(str) + str.length();
+//                    end = start + bankModel.getLastNum().length();
+//                    // 从短信内容中截取银行卡尾号
+//                    String sms_lastNum = smsContent.substring(start, end);
+//                    if (!StringUtils.isBlank(sms_lastNum)){
+//                        if (sms_lastNum.equals(bankModel.getLastNum())){
+//                            return bankModel;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return null;
+//    }
+
+
+
     /**
      * @Description: 解析短信获取银行卡
      * <p>
@@ -518,13 +556,16 @@ public class TaskMethod {
                 int start = 0;
                 int end = 0;
                 if (smsContent.indexOf(str) > -1){
-                    start = smsContent.indexOf(str) + str.length();
-                    end = start + bankModel.getLastNum().length();
-                    // 从短信内容中截取银行卡尾号
-                    String sms_lastNum = smsContent.substring(start, end);
-                    if (!StringUtils.isBlank(sms_lastNum)){
-                        if (sms_lastNum.equals(bankModel.getLastNum())){
-                            return bankModel;
+                    String [] laseNumArr = bankModel.getLastNum().split("#");
+                    for (String laseNumStr : laseNumArr){
+                        start = smsContent.indexOf(str) + str.length();
+                        end = start + laseNumStr.length();
+                        // 从短信内容中截取银行卡尾号
+                        String sms_lastNum = smsContent.substring(start, end);
+                        if (!StringUtils.isBlank(sms_lastNum)){
+                            if (sms_lastNum.equals(laseNumStr)){
+                                return bankModel;
+                            }
                         }
                     }
                 }

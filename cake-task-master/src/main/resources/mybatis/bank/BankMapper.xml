@@ -8,7 +8,7 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.alias,a.mobile_card_id,a.bank_type_id,a.merchant_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,
-        a.sms_num,a.last_num,a.in_day_money,a.in_month_money,a.out_day_money,a.out_month_money,a.is_arrears,
+        a.sms_num,a.last_num,a.balance,a.in_day_money,a.in_month_money,a.out_day_money,a.out_month_money,a.is_arrears,
         a.check_status,a.data_explain,a.is_ok,a.remark,a.use_status,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -16,7 +16,7 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List_Two">
         a.id,a.alias,a.mobile_card_id,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,
-        a.sms_num,a.last_num,a.in_day_money,a.in_month_money,a.out_day_money,a.out_month_money,a.is_arrears,
+        a.sms_num,a.last_num,a.balance,a.in_day_money,a.in_month_money,a.out_day_money,a.out_month_money,a.is_arrears,
         a.check_status,a.data_explain,a.is_ok,a.remark,a.use_status,
         a.create_time,a.update_time,a.yn,
         b.phone_num,
@@ -233,6 +233,9 @@
             <if test="lastNum != null and lastNum != '' " >
                 last_num,
             </if>
+            <if test="balance != null and balance != '' " >
+                balance,
+            </if>
             <if test="inDayMoney != null and inDayMoney != '' " >
                 in_day_money,
             </if>
@@ -305,6 +308,9 @@
             </if>
             <if test="lastNum != null and lastNum != '' " >
                 <![CDATA[  #{lastNum}, ]]>
+            </if>
+            <if test="balance != null and balance != '' " >
+                <![CDATA[  #{balance}, ]]>
             </if>
             <if test="inDayMoney != null and inDayMoney != '' " >
                 <![CDATA[  #{inDayMoney}, ]]>
@@ -382,6 +388,9 @@
             </if>
             <if test="lastNum != null and lastNum != '' " >
                 a.last_num = #{lastNum},
+            </if>
+            <if test="balance != null and balance != '' " >
+                a.balance = #{balance},
             </if>
             <if test="inDayMoney != null and inDayMoney != '' " >
                 a.in_day_money = #{inDayMoney},

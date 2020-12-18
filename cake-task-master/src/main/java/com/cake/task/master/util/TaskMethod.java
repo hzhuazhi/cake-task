@@ -1928,6 +1928,102 @@ public class TaskMethod {
 
 
 
+    /**
+     * @Description: 截取短信内容中的余额
+     * <p>
+     *     1.判断短信内容中是否有余额的关键字。
+     *     2.有余额关键字，那就根于余额开始结束来截取银行卡目前的余额值
+     * </p>
+     * @param balanceKey - 策略截取银行短信余额的数据
+     * @param matching - 匹配规则值如下：余额%【中国银行】#余额%元#余额%。#余额为%元
+     * @param smsContent - 银行短信
+     * @return java.lang.String
+     * @author yoko
+     * @date 2020/9/14 17:48
+     */
+    public static String getBankBalance(String balanceKey, String matching, String smsContent){
+        String str = null;
+        int startIndex = 0;
+        int endIndex = 0;
+        String [] balanceKeyArr = balanceKey.split("#");
+
+        boolean flag_balance = false; // 是否有关于余额的关键字:true表示有，false表示无
+        for (String balanceKeyStr : balanceKeyArr){
+            if (smsContent.indexOf(balanceKeyStr) > -1){
+                flag_balance = true;
+                break;
+            }
+        }
+
+        if (flag_balance){
+            // 计算余额的值
+
+            // 获取截取方法
+            String [] matchingArr = matching.split("#");
+            for (String matchingKey : matchingArr){
+                String [] matchingKeyArr = matchingKey.split("%");
+                String startKey = matchingKeyArr[0];
+                String endKey = matchingKeyArr[1];
+                startIndex = getIndexOfByStr(smsContent, startKey);
+                if (startIndex > 0){
+                    startIndex = startIndex + startKey.length();
+                }else {
+                    continue;
+                }
+
+                endIndex = getIndexOfByStrByIndex(smsContent, endKey, startIndex);
+                if (endIndex > 0){
+                }else {
+                    continue;
+                }
+
+                if (startIndex <= 0 || endIndex <= 0){
+                    continue;
+                }
+
+                String money = smsContent.substring(startIndex, endIndex).replaceAll(",","");
+                if (StringUtils.isBlank(money)){
+                    continue;
+                }
+
+                // 判断是否是金额
+                boolean flag = StringUtil.isNumberByMoney(money);
+                if (flag){
+                    str = money;
+                }
+            }
+
+        }
+
+        return str;
+    }
+
+
+    /**
+     * @Description: 组装更新银行卡余额的方法
+     * @param id - 主键ID
+     * @param balance - 银行卡余额
+     * @return BankModel
+     * @author yoko
+     * @date 2020/9/14 17:19
+     */
+    public static BankModel assembleBankUpdate(long id, String balance){
+        BankModel resBean = new BankModel();
+        if (id > 0){
+            resBean.setId(id);
+        }else {
+            return null;
+        }
+        if (!StringUtils.isBlank(balance)){
+            resBean.setBalance(balance);
+        }else {
+            return null;
+        }
+        return resBean;
+    }
+
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();
@@ -1959,6 +2055,19 @@ public class TaskMethod {
         String smsContent = "您尾号2666卡10月3日01:00元快捷支付收入(肖爱林支付宝转账支付宝)300元，余额13,814元。【工商银行】";
         String money = getBankMoney(bankShortMsgStrategyList, smsContent);
         System.out.println("money:" + money);
+
+
+        String balanceKey = "余额";
+        String matching = "余额%【中国银行】#余额%元#余额%。#余额为%元";
+        String smsContent1 = "【中国农业银行】支付宝（中国）网络技术有限公司于10月04日02:30向您尾号2476账户完成代付交易人民币300.00，余额300.18。";
+        String str = getBankBalance(balanceKey, matching, smsContent1);
+        System.out.println("str:" + str);
+        if (!StringUtils.isBlank(str)){
+            System.out.println("哈哈");
+        }
+
+        boolean flag = StringUtil.getBigDecimalSubtract("101","100.01");
+        System.out.println("flag:" + flag);
     }
 
 }

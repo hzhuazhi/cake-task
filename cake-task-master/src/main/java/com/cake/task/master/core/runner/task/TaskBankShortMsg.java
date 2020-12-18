@@ -1,6 +1,7 @@
 package com.cake.task.master.core.runner.task;
 
 import com.cake.task.master.core.common.utils.DateUtil;
+import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
@@ -64,6 +65,14 @@ public class TaskBankShortMsg {
         StrategyModel strategyQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.LAST_NUM_KEY.getStgType());
         StrategyModel strategyModel = ComponentUtil.strategyService.getStrategyModel(strategyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
         lastNumKey = strategyModel.getStgValue();
+
+        // 策略：银行余额关键字匹配
+        String balanceKey = null;
+        String balanceMatchingKey = null;
+        StrategyModel strategybalanceKeyQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BALANCE_KEY.getStgType());
+        StrategyModel strategybalanceKeyModel = ComponentUtil.strategyService.getStrategyModel(strategybalanceKeyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        balanceKey = strategybalanceKeyModel.getStgValue();
+        balanceMatchingKey = strategybalanceKeyModel.getStgBigValue();
 
         // 获取银行短信数据
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 0, 1, 0, 0, 0, 0, 0,null);
@@ -137,6 +146,31 @@ public class TaskBankShortMsg {
                         ComponentUtil.redisIdService.delLock(lockKey);
                         continue;
                     }
+
+
+                    // 检测余额
+                    String balance = TaskMethod.getBankBalance(balanceKey, balanceMatchingKey, data.getSmsContent());
+                    if (!StringUtils.isBlank(balance)){
+                        // 更新银行卡的余额
+                        BankModel bankModel = TaskMethod.assembleBankUpdate(bank_matching.getId(), balance);
+                        if (bankModel != null){
+                            // 更新银行卡余额
+                            ComponentUtil.bankService.update(bankModel);
+                        }
+
+                        // check校验余额是否大于等于转入金额
+                        boolean flag_check_balance = StringUtil.getBigDecimalSubtract(balance, money);
+                        if (!flag_check_balance){
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"金额有误：银行卡余额小于转入金额!");
+                            // 更新状态
+                            ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);
+                            // 解锁
+                            ComponentUtil.redisIdService.delLock(lockKey);
+                            continue;
+                        }
+                    }
+
+
 
                     // 更新银行卡短信信息的扩充数据
                     BankShortMsgModel bankShortMsgModelUpdate = TaskMethod.assembleBankShortMsgUpdate(data.getId(), null, bank_matching.getId(), bank_matching.getBankTypeId(), money, bank_matching.getLastNum());

@@ -91,6 +91,11 @@ public class BankModel extends BasePage implements Serializable {
     private String lastNum;
 
     /**
+     * 余额：银行卡现有余额
+     */
+    private String balance;
+
+    /**
      * 收款日限金额
      */
     private String inDayMoney;
@@ -642,5 +647,13 @@ public class BankModel extends BasePage implements Serializable {
 
     public void setMerchantIdList(List<Long> merchantIdList) {
         this.merchantIdList = merchantIdList;
+    }
+
+    public String getBalance() {
+        return balance;
+    }
+
+    public void setBalance(String balance) {
+        this.balance = balance;
     }
 }

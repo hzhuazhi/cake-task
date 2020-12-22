@@ -105,7 +105,31 @@ public class TaskWithdraw {
                                 MerchantModel merchantQuery = TaskMethod.assembleMerchantByChannelQuery(data.getChannelId());
                                 List<MerchantModel> merchantList = ComponentUtil.merchantService.getMerchantByChannelBank(merchantQuery);
                                 if (merchantList == null || merchantList.size() <= 0){
-                                    flag = false;
+//                                    flag = false;
+                                    // #临时代码：分配给固定的“海枣卡商” -start
+                                    long merchantId = 7;
+                                    MerchantModel merchantModel = (MerchantModel)ComponentUtil.merchantService.findById(merchantId);
+                                    if (merchantModel == null || merchantModel.getId() == null){
+                                        flag = false;
+                                    }else{
+                                        // 查询提现记录中已分配给的卡商，但是没实际操作下发的卡商的金额
+                                        WithdrawModel withdrawQuery = TaskMethod.assembleWithdrawQuery(0,null,null,1,0,0,0,
+                                                1,merchantId,0,0,0);
+                                        String withdrawMoney = ComponentUtil.withdrawService.sumMoney(withdrawQuery);
+                                        boolean flag_money = TaskMethod.checkMerchantMoney(merchantModel.getBalance(), data.getOrderMoney(), withdrawMoney);
+                                        if (flag_money){
+                                            // 更新提现的分配信息
+                                            WithdrawModel withdrawUpdate = TaskMethod.assembleWithdrawQuery(data.getId(),null,null,0,0,0,0,
+                                                    1, merchantId,0,0,0);
+                                            int num = ComponentUtil.withdrawService.update(withdrawUpdate);
+                                            if (num > 0){
+                                                flag = true;
+                                            }
+                                        }
+                                    }
+
+                                    // #临时代码：分配给固定的“海枣卡商” -start
+
                                 }else {
                                     // 正式进行分配
                                     long merchantId = 0;// 卡商ID：只要此卡商与此提现的渠道有关联关系，并且渠道提现的金额小于卡商的余额，则分配这个卡商

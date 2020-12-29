@@ -51,7 +51,7 @@ public class TaskMerchantRecharge {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void handleRecharge() throws Exception{
 //        log.info("----------------------------------TaskMerchantRecharge.handleRecharge()----start");
         // 获取充值数据
@@ -135,7 +135,7 @@ public class TaskMerchantRecharge {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void handleRechargeByBalance() throws Exception{
 //        log.info("----------------------------------TaskMerchantRecharge.handleRechargeByBalance()----start");
         // 获取充值数据
@@ -218,7 +218,7 @@ public class TaskMerchantRecharge {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void handleRechargeByMoney() throws Exception{
 //        log.info("----------------------------------TaskMerchantRecharge.handleRechargeByMoney()----start");
         // 获取充值数据
@@ -302,7 +302,7 @@ public class TaskMerchantRecharge {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void handleRechargeByIssue() throws Exception{
 //        log.info("----------------------------------TaskMerchantRecharge.handleRechargeByIssue()----start");
         // 获取充值数据
@@ -369,7 +369,7 @@ public class TaskMerchantRecharge {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void handleOperate() throws Exception{
 //        log.info("----------------------------------TaskMerchantRecharge.handleOperate()----start");
         // 获取充值数据
@@ -424,7 +424,7 @@ public class TaskMerchantRecharge {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void handleInvalidMoney() throws Exception{
 //        log.info("----------------------------------TaskMerchantRecharge.handleInvalidMoney()----start");
         // 获取充值数据

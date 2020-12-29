@@ -63,7 +63,7 @@ public class TaskIssue {
      */
 //    @Scheduled(cron = "5 * * * * ?")
 //    @Scheduled(fixedDelay = 1000) // 每1秒执行
-    @Scheduled(fixedDelay = 10000) // 每10秒执行
+//    @Scheduled(fixedDelay = 10000) // 每10秒执行
     public void issueDistribution() throws Exception{
 //        log.info("----------------------------------TaskIssue.issueDistribution()----start");
         // 策略：下发分配次数
@@ -180,7 +180,7 @@ public class TaskIssue {
      */
 //    @Scheduled(cron = "5 * * * * ?")
 //    @Scheduled(fixedDelay = 1000) // 每1秒执行
-    @Scheduled(fixedDelay = 300000) // 每5分钟执行
+//    @Scheduled(fixedDelay = 300000) // 每5分钟执行
     public void issueComplete() throws Exception{
 //        log.info("----------------------------------TaskIssue.issueComplete()----start");
 
@@ -238,7 +238,7 @@ public class TaskIssue {
      * @date 2019/12/6 20:25
      */
 //    @Scheduled(cron = "5 * * * * ?")
-    @Scheduled(fixedDelay = 5000) // 每5秒执行
+//    @Scheduled(fixedDelay = 5000) // 每5秒执行
     public void issueSynchro() throws Exception{
 //        log.info("----------------------------------TaskIssue.issueSynchro()----start");
 

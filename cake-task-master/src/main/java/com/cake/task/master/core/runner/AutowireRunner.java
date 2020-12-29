@@ -132,6 +132,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private WithdrawService withdrawService;
 
+    @Autowired
+    private MonitorBankService monitorBankService;
+
 
 
 
@@ -232,6 +235,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.channelWithdrawService = channelWithdrawService;
         ComponentUtil.changeMoneyService = changeMoneyService;
         ComponentUtil.withdrawService = withdrawService;
+        ComponentUtil.monitorBankService = monitorBankService;
 
 
 

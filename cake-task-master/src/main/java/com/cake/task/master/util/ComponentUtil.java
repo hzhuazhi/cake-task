@@ -46,6 +46,7 @@ public class ComponentUtil {
     public static ChannelWithdrawService channelWithdrawService;
     public static ChangeMoneyService changeMoneyService;
     public static WithdrawService withdrawService;
+    public static MonitorBankService monitorBankService;
 
 
 

@@ -47,7 +47,7 @@ public class ComponentUtil {
     public static ChangeMoneyService changeMoneyService;
     public static WithdrawService withdrawService;
     public static MonitorBankService monitorBankService;
-
+    public static MerchantWithdrawService merchantWithdrawService;
 
 
 
@@ -66,5 +66,6 @@ public class ComponentUtil {
     public static TaskChangeMoneyService taskChangeMoneyService;
     public static TaskChannelWithdrawService taskChannelWithdrawService;
     public static TaskWithdrawService taskWithdrawService;
+    public static TaskMerchantWithdrawService taskMerchantWithdrawService;
 
 }

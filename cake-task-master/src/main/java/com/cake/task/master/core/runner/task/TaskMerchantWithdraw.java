@@ -1,5 +1,6 @@
 package com.cake.task.master.core.runner.task;
 
+import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
@@ -11,6 +12,7 @@ import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.core.model.withdraw.WithdrawModel;
 import com.cake.task.master.util.ComponentUtil;
 import com.cake.task.master.util.TaskMethod;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,6 +75,52 @@ public class TaskMerchantWithdraw {
                     boolean flag = false;
 
                     // 查询卡商余额以及收益
+                    MerchantModel merchantQuery = TaskMethod.assembleMerchantQuery(data.getMerchantId(), null,0, 0, null);
+                    MerchantModel merchantModel = (MerchantModel)ComponentUtil.merchantService.findByObject(merchantQuery);
+                    if (merchantModel == null || merchantModel.getId() == null || merchantModel.getId() <= 0){
+                        // 失败
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"根据卡商ID查询卡商信息为空!");
+                        // 更新状态
+                        ComponentUtil.taskMerchantWithdrawService.updateStatus(statusModel);
+                        continue;
+                    }
+
+                    // check校验要提现的金额是否小于等于卡商的余额
+                    if (!StringUtils.isBlank(merchantModel.getBalance())){
+                        boolean flag_balance = StringUtil.getBigDecimalSubtract(merchantModel.getBalance(), data.getMoney());
+                        if (!flag_balance){
+                            // 失败
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"提现金额大于余额!");
+                            // 更新状态
+                            ComponentUtil.taskMerchantWithdrawService.updateStatus(statusModel);
+                            continue;
+                        }
+                    }else {
+                        // 失败
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"卡商余额为空!");
+                        // 更新状态
+                        ComponentUtil.taskMerchantWithdrawService.updateStatus(statusModel);
+                        continue;
+                    }
+
+
+                    // check校验要提现的金额是否小于等于卡商的收益
+                    if (!StringUtils.isBlank(merchantModel.getProfit())){
+                        boolean flag_profit = StringUtil.getBigDecimalSubtract(merchantModel.getProfit(), data.getMoney());
+                        if (!flag_profit){
+                            // 失败
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"提现金额大于收益!");
+                            // 更新状态
+                            ComponentUtil.taskMerchantWithdrawService.updateStatus(statusModel);
+                            continue;
+                        }
+                    }else {
+                        // 失败
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"卡商收益为空!");
+                        // 更新状态
+                        ComponentUtil.taskMerchantWithdrawService.updateStatus(statusModel);
+                        continue;
+                    }
 
 
                     // 余额变更

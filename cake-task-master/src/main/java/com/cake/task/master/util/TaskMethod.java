@@ -10,10 +10,7 @@ import com.cake.task.master.core.model.interest.InterestMerchantModel;
 import com.cake.task.master.core.model.interest.InterestModel;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.issue.IssueModel;
-import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
-import com.cake.task.master.core.model.merchant.MerchantModel;
-import com.cake.task.master.core.model.merchant.MerchantProfitModel;
-import com.cake.task.master.core.model.merchant.MerchantRechargeModel;
+import com.cake.task.master.core.model.merchant.*;
 import com.cake.task.master.core.model.mobilecard.MobileCardModel;
 import com.cake.task.master.core.model.mobilecard.MobileCardShortMsgModel;
 import com.cake.task.master.core.model.order.OrderModel;
@@ -2019,6 +2016,24 @@ public class TaskMethod {
         }else {
             return null;
         }
+        return resBean;
+    }
+
+
+
+
+    /**
+     * @Description: 组装卡商提现的订单状态更改
+     * @param id - 主键ID
+     * @param orderStatus - 订单状态：1初始化，2超时，3质疑，4成功
+     * @return com.cake.task.master.core.model.channel.ChannelWithdrawModel
+     * @author yoko
+     * @date 2020/11/19 20:05
+     */
+    public static MerchantWithdrawModel assembleMerchantWithdrawOrderStatusUpdate(long id, int orderStatus){
+        MerchantWithdrawModel resBean = new MerchantWithdrawModel();
+        resBean.setId(id);
+        resBean.setOrderStatus(orderStatus);
         return resBean;
     }
 

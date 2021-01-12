@@ -171,6 +171,11 @@ public interface TkCacheKey {
      */
     String LOCK_WITHDRAW_ISSUE_DISTRIBUTION = "-30";
 
+    /**
+     * LOCK-卡商提现流水的处理
+     */
+    String LOCK_MERCHANT_WITHDRAW_RUN = "-31";
+
 
 
 }

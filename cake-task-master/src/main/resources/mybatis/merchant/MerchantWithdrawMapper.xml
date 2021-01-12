@@ -385,7 +385,7 @@
             a.update_time = NOW(),
         </trim>
         where 1=1
-        and a.order_no = #{orderNo}
+        and a.id = #{id}
         and a.yn = 0
     </update>
 

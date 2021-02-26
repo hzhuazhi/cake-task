@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.bank_id,a.order_no,a.money,
+        a.id,a.lead_bank_id,a.bank_id,a.order_no,a.money,
         a.curday,a.curhour,a.curminute,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -18,6 +18,9 @@
         <trim  suffixOverrides="," >
             <if test="id != null and id != '' " >
                 and a.id = #{id}
+            </if>
+            <if test="leadBankId != null and leadBankId != '' " >
+                and a.lead_bank_id = #{leadBankId}
             </if>
             <if test="bankId != null and bankId != '' " >
                 and a.bank_id = #{bankId}
@@ -114,6 +117,9 @@
         <!--</selectKey>-->
         insert into tb_fr_bank_lead_collection
         <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="leadBankId != null and leadBankId != '' " >
+                lead_bank_id,
+            </if>
             <if test="bankId != null and bankId != '' " >
                 bank_id,
             </if>
@@ -136,6 +142,9 @@
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="leadBankId != null and leadBankId != '' " >
+                <![CDATA[  #{leadBankId}, ]]>
+            </if>
             <if test="bankId != null and bankId != '' " >
                 <![CDATA[  #{bankId}, ]]>
             </if>
@@ -162,6 +171,9 @@
     <update id="update" parameterType="com.cake.task.master.core.model.bank.BankLeadCollectionModel">
         UPDATE tb_fr_bank_lead_collection a
         <trim prefix="set" suffixOverrides=",">
+            <if test="leadBankId != null and leadBankId != '' " >
+                a.lead_bank_id = #{leadBankId},
+            </if>
             <if test="bankId != null and bankId != '' " >
                 a.bank_id = #{bankId},
             </if>

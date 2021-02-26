@@ -173,7 +173,7 @@ public class TaskOrder {
                     // 添加主卡的收款纪录
                     BankLeadCollectionModel bankLeadCollectionAdd = null;
                     if (bankLeadModel != null && bankLeadModel.getId() != null && bankLeadModel.getId() > 0){
-                        bankLeadCollectionAdd = TaskMethod.assembleBankLeadCollectionAdd(bankLeadModel.getId(), data.getOrderNo(), data.getOrderMoney());
+                        bankLeadCollectionAdd = TaskMethod.assembleBankLeadCollectionAdd(bankLeadModel.getId(), data.getBankId(), data.getOrderNo(), data.getOrderMoney());
                     }
 
                     // 锁住这个卡商

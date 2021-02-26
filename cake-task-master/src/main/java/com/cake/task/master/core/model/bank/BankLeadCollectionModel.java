@@ -21,6 +21,11 @@ public class BankLeadCollectionModel extends BasePage implements Serializable {
     /**
      * 归属主卡/原始银行卡ID：对应表tb_fr_bank_lead的主键ID
      */
+    private Long leadBankId;
+
+    /**
+     * 归属银行卡ID：对应表tb_fr_bank的主键ID
+     */
     private Long bankId;
 
     /**
@@ -162,5 +167,13 @@ public class BankLeadCollectionModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public Long getLeadBankId() {
+        return leadBankId;
+    }
+
+    public void setLeadBankId(Long leadBankId) {
+        this.leadBankId = leadBankId;
     }
 }

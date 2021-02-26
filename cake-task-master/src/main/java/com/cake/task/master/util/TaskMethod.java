@@ -2086,6 +2086,7 @@ public class TaskMethod {
 
     /**
      * @Description: 组装添加主卡收款纪录
+     * @param leadBankId - 主卡的主键ID
      * @param bankId - 银行卡主键ID
      * @param orderNo - 订单号
      * @param money - 订单金额
@@ -2093,8 +2094,9 @@ public class TaskMethod {
      * @author yoko
      * @date 2020/9/15 17:25
      */
-    public static BankLeadCollectionModel assembleBankLeadCollectionAdd(long bankId, String orderNo, String money){
+    public static BankLeadCollectionModel assembleBankLeadCollectionAdd(long leadBankId, long bankId, String orderNo, String money){
         BankLeadCollectionModel resBean = new BankLeadCollectionModel();
+        resBean.setLeadBankId(leadBankId);
         resBean.setBankId(bankId);
         resBean.setOrderNo(orderNo);
         resBean.setMoney(money);

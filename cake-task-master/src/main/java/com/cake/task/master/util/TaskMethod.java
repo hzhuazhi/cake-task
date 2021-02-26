@@ -2038,6 +2038,73 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 组装主卡与设备卡关联关系的查询方法
+     * @param id - 主键ID
+     * @param bankLeadId - 主卡ID
+     * @param bankId - 银行卡ID
+     * @param useStatus -  使用状态
+     * @return com.cake.task.master.core.model.interest.InterestMerchantModel
+     * @author yoko
+     * @date 2020/11/10 13:54
+     */
+    public static BankLeadLinkModel assembleBankLeadLinkQuery(long id, long bankLeadId, long bankId, int useStatus){
+        BankLeadLinkModel resBean = new BankLeadLinkModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (bankLeadId > 0){
+            resBean.setBankLeadId(bankLeadId);
+        }
+        if (bankId > 0){
+            resBean.setBankId(bankId);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装主卡与设备卡关联关系的查询方法
+     * @param id - 主键ID
+     * @param id - 主卡ID
+     * @return com.cake.task.master.core.model.interest.InterestMerchantModel
+     * @author yoko
+     * @date 2020/11/10 13:54
+     */
+    public static BankLeadModel assembleBankLeadByIdQuery(long id){
+        BankLeadModel resBean = new BankLeadModel();
+        if (id > 0){
+            resBean.setId(id);
+        }else{
+            return null;
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装添加主卡收款纪录
+     * @param bankId - 银行卡主键ID
+     * @param orderNo - 订单号
+     * @param money - 订单金额
+     * @return BankCollectionModel
+     * @author yoko
+     * @date 2020/9/15 17:25
+     */
+    public static BankLeadCollectionModel assembleBankLeadCollectionAdd(long bankId, String orderNo, String money){
+        BankLeadCollectionModel resBean = new BankLeadCollectionModel();
+        resBean.setBankId(bankId);
+        resBean.setOrderNo(orderNo);
+        resBean.setMoney(money);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
 
 
     public static void main(String []args){

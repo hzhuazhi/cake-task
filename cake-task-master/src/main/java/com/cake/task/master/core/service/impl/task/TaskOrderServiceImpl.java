@@ -3,12 +3,10 @@ package com.cake.task.master.core.service.impl.task;
 import com.cake.task.master.core.common.dao.BaseDao;
 import com.cake.task.master.core.common.exception.ServiceException;
 import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
-import com.cake.task.master.core.mapper.BankCollectionMapper;
-import com.cake.task.master.core.mapper.InterestProfitMapper;
-import com.cake.task.master.core.mapper.MerchantMapper;
-import com.cake.task.master.core.mapper.MerchantProfitMapper;
+import com.cake.task.master.core.mapper.*;
 import com.cake.task.master.core.mapper.task.TaskOrderMapper;
 import com.cake.task.master.core.model.bank.BankCollectionModel;
+import com.cake.task.master.core.model.bank.BankLeadCollectionModel;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
 import com.cake.task.master.core.model.merchant.MerchantProfitModel;
@@ -50,6 +48,9 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
     @Autowired
     private InterestProfitMapper interestProfitMapper;
 
+    @Autowired
+    private BankLeadCollectionMapper bankLeadCollectionMapper;
+
 
 
     public BaseDao<T> getDao() {
@@ -73,11 +74,12 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList) throws Exception {
+    public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, BankLeadCollectionModel bankLeadCollectionModel) throws Exception {
         int num1 = 0;
         int num2 = 0;
         int num3 = 0;
         int num4 = 0;
+        int num5 = 0;
         try {
             num1 = bankCollectionMapper.add(bankCollectionModel);
             num2 = merchantMapper.updateMoney(merchantUpdateMoney);
@@ -87,24 +89,25 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
                 num3 = merchantProfitMapper.add(merchantProfitModel);
             }
             if (interestProfitList == null || interestProfitList.size() <= 0){
-                if (num1> 0 && num2 > 0 && num3 > 0){
-                    return true;
-                }else {
-                    throw new ServiceException("handleSuccessOrder", "三个执行更新SQL其中有一个或者多个响应行为0");
-//                throw new RuntimeException();
-                }
+                num4 = 1;
             }else {
                 num4 = interestProfitMapper.addBatchInterestProfit(interestProfitList);
                 if (num4 != interestProfitList.size()){
                     // 说明批量查询的数据影响条数与集合的数据条数不一
                     num4 = 0;
                 }
-                if (num1> 0 && num2 > 0 && num3 > 0 && num4 > 0){
-                    return true;
-                }else {
-                    throw new ServiceException("handleSuccessOrderOut", "四个执行更新SQL其中有一个或者多个响应行为0");
+            }
+            if (bankLeadCollectionModel == null){
+                num5 = 1;
+            }else {
+                num5 = bankLeadCollectionMapper.add(bankLeadCollectionModel);
+            }
+
+            if (num1> 0 && num2 > 0 && num3 > 0 && num4 > 0 && num5 > 0){
+                return true;
+            }else {
+                throw new ServiceException("handleSuccessOrderOut", "五个执行更新SQL其中有一个或者多个响应行为0");
 //                throw new RuntimeException();
-                }
             }
 
         }catch (Exception e){

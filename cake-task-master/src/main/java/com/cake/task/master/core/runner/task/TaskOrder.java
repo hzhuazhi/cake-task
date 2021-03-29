@@ -187,7 +187,7 @@ public class TaskOrder {
                             // 判断是否是补单，不是补单则需要释放银行卡的挂单金额
                             if (data.getReplenishType() == 1){
                                 // 删除redis：删除银行卡此金额的挂单
-                                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ORDER_MONEY, data.getBankId(), data.getOrderMoney());
+                                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ORDER_MONEY, data.getBankId(), data.getDistributionMoney());
                                 ComponentUtil.redisService.remove(strKeyCache);
                             }
 

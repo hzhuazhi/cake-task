@@ -363,11 +363,16 @@ public class TaskMethod {
      * @param bankCard - 银行卡卡号
      * @param smsNum - 短信来源端口号
      * @param lastNum - 银行卡尾号
+     * @param isOk - 是否测试通过：1未通过，2通过；收到银行卡短信，并且解析短信模板配置正确
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param changeStatus - 换卡状态：1初始化，2待换卡（成功10多单后、或者后面订单连续几单未成功），3驳回（上线连续几单都未成功），4换卡完毕
+     * @param nextBankId - 自动上线下银行卡使用：下一个银行卡ID
      * @return BankModel
      * @author yoko
      * @date 2020/9/14 17:19
      */
-    public static BankModel assembleBankQuery(long id, long mobileCardId, long bankTypeId, long merchantId, String bankCard, String smsNum, String lastNum){
+    public static BankModel assembleBankQuery(long id, long mobileCardId, long bankTypeId, long merchantId, String bankCard, String smsNum, String lastNum,
+                                              int isOk, int useStatus, int changeStatus, long nextBankId){
         BankModel resBean = new BankModel();
         if (id > 0){
             resBean.setId(id);
@@ -389,6 +394,18 @@ public class TaskMethod {
         }
         if (!StringUtils.isBlank(lastNum)){
             resBean.setLastNum(lastNum);
+        }
+        if (isOk > 0){
+            resBean.setIsOk(isOk);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        if (changeStatus > 0){
+            resBean.setChangeStatus(changeStatus);
+        }
+        if (nextBankId > 0){
+            resBean.setNextBankId(nextBankId);
         }
         return resBean;
     }
@@ -1063,13 +1080,14 @@ public class TaskMethod {
      * @param id - 主键ID
      * @param money - 金额
      * @param merchantType - 卡商类型：1我方卡商，2第三方卡商
+     * @param operateType - 卡商运营类型/运营性质：1代收，2代付
      * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
      * @param merchantIdList - 卡商账号ID集合
      * @return MerchantModel
      * @author yoko
      * @date 2020/9/23 20:30
      */
-    public static MerchantModel assembleMerchantQuery(long id, String money, int merchantType, int useStatus, List<Long> merchantIdList){
+    public static MerchantModel assembleMerchantQuery(long id, String money, int merchantType, int operateType, int useStatus, List<Long> merchantIdList){
         MerchantModel resBean = new MerchantModel();
         if (id > 0){
             resBean.setId(id);
@@ -1080,6 +1098,9 @@ public class TaskMethod {
         }
         if (merchantType > 0){
             resBean.setMerchantType(merchantType);
+        }
+        if (operateType > 0){
+            resBean.setOperateType(operateType);
         }
         if (useStatus > 0){
             resBean.setUseStatus(useStatus);
@@ -2103,6 +2124,95 @@ public class TaskMethod {
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 获取目前自动上线银行卡的数量
+     * <p>
+     *     1.根据时间判断当前时间是否有匹配的上线的数量，如果有当前匹配的时间的数量就直接给出。
+     *     2.如果没有匹配的上线数量，则使用默认的数量
+     * </p>
+     * @param strategyBankUpNumhModel
+     * @return
+     * @author yoko
+     * @date 2020/9/23 14:15
+     */
+    public static int getBankUpNum(StrategyModel strategyBankUpNumhModel){
+        int bankNum = 0;
+        // 拆解时间段
+        String [] strArr = null;
+        if (!StringUtils.isBlank(strategyBankUpNumhModel.getStgBigValue())){
+            strArr = strategyBankUpNumhModel.getStgBigValue().split("#");
+        }
+
+        // 拆解上线数量
+        String[] bankNumArr = null;
+        if (!StringUtils.isBlank(strategyBankUpNumhModel.getStgValue())){
+            bankNumArr = strategyBankUpNumhModel.getStgValue().split("#");
+        }
+        if (strArr != null && bankNumArr != null){
+            if (strArr.length == bankNumArr.length){
+                for (int i = 0; i <= strArr.length; i++){
+                    String[] str_ = strArr[i].split("-");
+                    boolean flag_ = DateUtil.isBelong(str_[0], str_[1]);
+                    if (flag_){
+                        bankNum = Integer.parseInt(bankNumArr[i]);
+                        break;
+                    }
+                }
+            }
+        }
+        if (bankNum <= 0){
+            // 表示在这个时间段没有配置上线的数量，则使用默认的上线数量
+            bankNum = strategyBankUpNumhModel.getStgNumValue();
+        }
+        return bankNum;
+    }
+
+
+    /**
+     * @Description: 更新银行卡信息
+     * @param id - 主键ID
+     * @param checkStatus - 检测状态：1初始化正常，2不正常
+     * @param isArrears - 归属手机卡是否欠费：1未欠费，2欠费
+     * @param dataExplain - 数据说明：检测被限制的原因:task跑日月总限制，如果被限制，连续给出订单失败会填充被限制的原因
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @param changeStatus - 换卡状态：1初始化，2待换卡（成功10多单后、或者后面订单连续几单未成功），3驳回（上线连续几单都未成功），4换卡完毕
+     * @param changeTime - 换卡时间：比如卡在2021-03-29 18:29:47下线，但是挂了有订单不允许立即让人换卡，在此时间延迟几分钟在换卡
+     * @param checkChange - 检测换卡：检测卡的原因说明，比如连续失败，等。。
+     * @return BankModel
+     * @author yoko
+     * @date 2020/9/15 16:57
+     */
+    public static BankModel assembleBankAllUpdate(long id, int checkStatus,int isArrears, String dataExplain,
+                                                  int useStatus, int changeStatus, String changeTime, String checkChange){
+        BankModel resBean = new BankModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (checkStatus > 0){
+            resBean.setCheckStatus(checkStatus);
+        }
+        if (isArrears > 0){
+            resBean.setIsArrears(isArrears);
+        }
+        if (!StringUtils.isBlank(dataExplain)){
+            resBean.setDataExplain(dataExplain);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        if (changeStatus > 0){
+            resBean.setChangeStatus(changeStatus);
+        }
+        if (!StringUtils.isBlank(changeTime)){
+            resBean.setChangeTime(changeTime);
+        }
+        if (!StringUtils.isBlank(checkChange)){
+            resBean.setCheckChange(checkChange);
+        }
         return resBean;
     }
 

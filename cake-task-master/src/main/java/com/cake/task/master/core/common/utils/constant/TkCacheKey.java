@@ -176,6 +176,11 @@ public interface TkCacheKey {
      */
     String LOCK_MERCHANT_WITHDRAW_RUN = "-31";
 
+    /**
+     * LOCK-银行卡在更新使用状态时进行锁
+     */
+    String LOCK_BANK_UPDATE_USE = "-32";
+
 
 
 }

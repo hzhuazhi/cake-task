@@ -75,7 +75,7 @@ public class TaskMerchantWithdraw {
                     boolean flag = false;
 
                     // 查询卡商余额以及收益
-                    MerchantModel merchantQuery = TaskMethod.assembleMerchantQuery(data.getMerchantId(), null,0, 0, null);
+                    MerchantModel merchantQuery = TaskMethod.assembleMerchantQuery(data.getMerchantId(), null,0,0, 0, null);
                     MerchantModel merchantModel = (MerchantModel)ComponentUtil.merchantService.findByObject(merchantQuery);
                     if (merchantModel == null || merchantModel.getId() == null || merchantModel.getId() <= 0){
                         // 失败

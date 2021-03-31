@@ -112,7 +112,7 @@ public class TaskBankShortMsg {
             }
 
             // 获取端口号的银行卡数据
-            BankModel bankQuery = TaskMethod.assembleBankQuery(0, data.getMobileCardId(), 0, 0, null, data.getSmsNum(), null);
+            BankModel bankQuery = TaskMethod.assembleBankQuery(0, data.getMobileCardId(), 0, 0, null, data.getSmsNum(), null,0,0,0, 0);
             List<BankModel> bankList = ComponentUtil.bankService.findByCondition(bankQuery);
             if (bankList == null || bankList.size() <= 0){
                 statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"根据手机卡ID、短信来源端口获取银行集合数据为空!");

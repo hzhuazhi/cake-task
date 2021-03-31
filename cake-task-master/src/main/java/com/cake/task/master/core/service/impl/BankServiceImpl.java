@@ -49,4 +49,29 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
     public List<BankModel> getBankAndStrategy(BankModel model) {
         return bankMapper.getBankAndStrategy(model);
     }
+
+    @Override
+    public int countUseNum(BankModel model) {
+        return bankMapper.countUseNum(model);
+    }
+
+    @Override
+    public int countCanUseNum(BankModel model) {
+        return bankMapper.countCanUseNum(model);
+    }
+
+    @Override
+    public long getMaxBankIdByUse(BankModel model) {
+        return bankMapper.getMaxBankIdByUse(model);
+    }
+
+    @Override
+    public BankModel getNextBankByNotUse(BankModel model) {
+        return bankMapper.getNextBankByNotUse(model);
+    }
+
+    @Override
+    public BankModel getMinBankByNotUse(BankModel model) {
+        return bankMapper.getMinBankByNotUse(model);
+    }
 }

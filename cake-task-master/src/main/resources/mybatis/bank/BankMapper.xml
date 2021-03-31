@@ -7,17 +7,17 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.mobile_card_id,a.bank_type_id,a.merchant_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,
+        a.id,a.alias,a.mobile_card_id,a.bank_type_id,a.merchant_id,a.lead_bank_card,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,
         a.sms_num,a.last_num,a.balance,a.in_day_money,a.in_month_money,a.out_day_money,a.out_month_money,a.is_arrears,
-        a.check_status,a.data_explain,a.is_ok,a.remark,a.use_status,
+        a.check_status,a.data_explain,a.is_ok,a.remark,a.use_status,a.change_status,a.change_time,a.check_change,a.phone_device_num,
         a.create_time,a.update_time,a.yn
     </sql>
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List_Two">
-        a.id,a.alias,a.mobile_card_id,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,
+        a.id,a.alias,a.mobile_card_id,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.lead_bank_card,a.bank_name,a.bank_card,a.subbranch_name,a.account_name,a.bank_code,a.province,a.city,
         a.sms_num,a.last_num,a.balance,a.in_day_money,a.in_month_money,a.out_day_money,a.out_month_money,a.is_arrears,
-        a.check_status,a.data_explain,a.is_ok,a.remark,a.use_status,
+        a.check_status,a.data_explain,a.is_ok,a.remark,a.use_status,a.change_status,a.change_time,a.check_change,a.phone_device_num,
         a.create_time,a.update_time,a.yn,
         b.phone_num,
         c.id as bank_strategy_id,c.bank_id,c.alias,c.priority,c.open_time_slot,c.wx_in_day_money,c.wx_in_month_money,c.wx_in_day_num,c.zfb_in_day_money,c.zfb_in_month_money,
@@ -59,6 +59,12 @@
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
+            </if>
+            <if test="changeStatus != null and changeStatus != '' " >
+                and a.change_status = #{changeStatus}
+            </if>
+            <if test="nextBankId != null and nextBankId != '' " >
+                and a.id > #{nextBankId}
             </if>
             and a.yn = 0
         </trim>
@@ -104,6 +110,9 @@
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
+            </if>
+            <if test="changeStatus != null and changeStatus != '' " >
+                and a.change_status = #{changeStatus}
             </if>
             and c.id is not null
             and a.yn = 0
@@ -206,6 +215,9 @@
             <if test="merchantId != null and merchantId != '' " >
                 merchant_id,
             </if>
+            <if test="leadBankCard != null and leadBankCard != '' " >
+                lead_bank_card,
+            </if>
             <if test="bankName != null and bankName != '' " >
                 bank_name,
             </if>
@@ -266,6 +278,18 @@
             <if test="useStatus != null and useStatus != '' " >
                 use_status,
             </if>
+            <if test="changeStatus != null and changeStatus != '' " >
+                change_status,
+            </if>
+            <if test="changeTime != null and changeTime != '' " >
+                change_time,
+            </if>
+            <if test="checkChange != null and checkChange != '' " >
+                check_change,
+            </if>
+            <if test="phoneDeviceNum != null and phoneDeviceNum != '' " >
+                phone_device_num,
+            </if>
             create_time,
         </trim>
         values
@@ -281,6 +305,9 @@
             </if>
             <if test="merchantId != null and merchantId != '' " >
                 <![CDATA[  #{merchantId}, ]]>
+            </if>
+            <if test="leadBankCard != null and leadBankCard != '' " >
+                <![CDATA[  #{leadBankCard}, ]]>
             </if>
             <if test="bankName != null and bankName != '' " >
                 <![CDATA[  #{bankName}, ]]>
@@ -342,6 +369,18 @@
             <if test="useStatus != null and useStatus != '' " >
                 <![CDATA[  #{useStatus}, ]]>
             </if>
+            <if test="changeStatus != null and changeStatus != '' " >
+                <![CDATA[  #{changeStatus}, ]]>
+            </if>
+            <if test="changeTime != null and changeTime != '' " >
+                <![CDATA[  #{changeTime}, ]]>
+            </if>
+            <if test="checkChange != null and checkChange != '' " >
+                <![CDATA[  #{checkChange}, ]]>
+            </if>
+            <if test="phoneDeviceNum != null and phoneDeviceNum != '' " >
+                <![CDATA[  #{phoneDeviceNum}, ]]>
+            </if>
             NOW(),
         </trim>
     </insert>
@@ -361,6 +400,9 @@
             </if>
             <if test="merchantId != null and merchantId != '' " >
                 a.merchant_id = #{merchantId},
+            </if>
+            <if test="leadBankCard != null and leadBankCard != '' " >
+                a.lead_bank_card = #{leadBankCard},
             </if>
             <if test="bankName != null and bankName != '' " >
                 a.bank_name = #{bankName},
@@ -422,6 +464,18 @@
             <if test="useStatus != null and useStatus != '' " >
                 a.use_status = #{useStatus},
             </if>
+            <if test="changeStatus != null and changeStatus != '' " >
+                a.change_status = #{changeStatus},
+            </if>
+            <if test="changeTime != null and changeTime != '' " >
+                a.change_time = #{changeTime},
+            </if>
+            <if test="checkChange != null and checkChange != '' " >
+                a.check_change = #{checkChange},
+            </if>
+            <if test="phoneDeviceNum != null and phoneDeviceNum != '' " >
+                a.phone_device_num = #{phoneDeviceNum},
+            </if>
             a.update_time = NOW(),
         </trim>
         where 1=1
@@ -482,5 +536,49 @@
         <!-- order by c.priority asc -->
     </select>
 
+
+
+    <!-- 计算有多少张卡处于上线状态-->
+    <select id="countUseNum" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fr_bank a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 计算有多少长卡可以上线的-->
+    <select id="countCanUseNum" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fr_bank a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+
+    <!-- 获取正在使用的最大银行卡ID-->
+    <select id="getMaxBankIdByUse" resultType="java.lang.Long"  parameterType="Object">
+        select ifnull(max(a.id), 0) as num
+        from tb_fr_bank a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+
+    <!-- 获取下一个未上线但是可以上线的银行信息 -->
+    <select id="getNextBankByNotUse" parameterType="Object" resultType="com.cake.task.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_bank a
+        <include refid="Example_Where_Clause"/>
+        order by a.id asc
+        limit 1
+    </select>
+
+    <!-- 获取最小的未上线但是可以上线的银行信息 -->
+    <select id="getMinBankByNotUse" parameterType="Object" resultType="com.cake.task.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_bank a
+        <include refid="Example_Where_Clause"/>
+        order by a.id asc
+        limit 1
+    </select>
 
 </mapper>

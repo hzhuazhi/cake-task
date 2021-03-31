@@ -108,7 +108,7 @@ public class TaskIssue {
                     MerchantModel merchantData = null;
                     if (ascriptionType != 2){
                         // 表示没有超过分配次数：继续查询卡商用户
-                        MerchantModel merchantQuery = TaskMethod.assembleMerchantQuery(0, data.getOrderMoney(),2, 1, merchantIdList);
+                        MerchantModel merchantQuery = TaskMethod.assembleMerchantQuery(0, data.getOrderMoney(),2, 0,1, merchantIdList);
                         MerchantModel merchantModel = (MerchantModel)ComponentUtil.merchantService.findByObject(merchantQuery);
                         if (merchantModel != null && merchantModel.getId() != null && merchantModel.getId() > 0){
                             // 这里表示抛开之前分配的卡商，还有卡商符合分配

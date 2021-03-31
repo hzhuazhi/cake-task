@@ -99,6 +99,10 @@ public class ServerConstant {
         ISSUE_DISTRIBUTION(14,""),
         BALANCE_KEY(15,""),
         BLACKLIST_IP(16,""),
+        //自动上下线-start
+        BANK_UP_AND_DOWN_SWITCH(17,""),
+        BANK_UP_NUM(18,""),
+        //自动上下线-end
 
 
 

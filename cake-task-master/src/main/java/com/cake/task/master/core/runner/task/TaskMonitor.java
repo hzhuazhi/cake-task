@@ -54,7 +54,7 @@ public class TaskMonitor {
      */
 //    @Scheduled(cron = "5 * * * * ?")
 //    @Scheduled(fixedDelay = 1000) // 每1分钟执行
-    @Scheduled(fixedDelay = 60000) // 每60秒执行
+//    @Scheduled(fixedDelay = 60000) // 每60秒执行
     public void monitorBank() throws Exception{
 //        log.info("----------------------------------TaskMonitor.monitorBank()----start");
         int curday = DateUtil.getDayNumber(new Date());
@@ -85,6 +85,7 @@ public class TaskMonitor {
                             if (orderList.size() == failNum){
                                 for (OrderModel dataModel : orderList){
                                     if (dataModel.getOrderStatus() == 4){
+                                        log.info("");
                                         break;
                                     }else{
                                         checkNum ++;

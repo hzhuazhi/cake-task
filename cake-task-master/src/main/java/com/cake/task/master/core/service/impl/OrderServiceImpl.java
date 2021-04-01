@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description 任务订单的Service层的实现层
  * @Author yoko
@@ -50,5 +52,15 @@ public class OrderServiceImpl<T> extends BaseServiceImpl<T> implements OrderServ
     @Override
     public String sumOrderMoney(OrderModel model) {
         return orderMapper.sumOrderMoney(model);
+    }
+
+    @Override
+    public int countSucOrderNum(OrderModel model) {
+        return orderMapper.countSucOrderNum(model);
+    }
+
+    @Override
+    public List<OrderModel> getOrderByLimitList(OrderModel model) {
+        return orderMapper.getOrderByLimitList(model);
     }
 }

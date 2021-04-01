@@ -2218,6 +2218,88 @@ public class TaskMethod {
 
 
 
+    /**
+     * @Description: 组装查询订单信息的查询条件-银行卡自动下线
+     * @param bankCard - 银行卡卡号
+     * @param orderType - 订单类型：1微信转卡，2支付宝转卡，3卡转卡
+     * @param orderStatus - 订单状态：1初始化，2超时/失败，3有质疑，4成功
+     * @param downTime - 自动下线检测时间：银行卡自动下线使用此时间去抓取订单进行自动下线判断
+     * @param limitNum - 查询数据的条数
+     * @return OrderModel
+     * @author yoko
+     * @date 2020/9/14 20:54
+     */
+    public static OrderModel assembleOrderByDownBankQuery(String bankCard, int orderType, int orderStatus, String downTime, int limitNum){
+        OrderModel resBean = new OrderModel();
+        if (!StringUtils.isBlank(bankCard)){
+            resBean.setBankCard(bankCard);
+        }
+        if (orderType > 0){
+            resBean.setOrderType(orderType);
+        }
+        if (orderStatus > 0){
+            resBean.setOrderStatus(orderStatus);
+        }
+        if (!StringUtils.isBlank(downTime)){
+            resBean.setDownTime(downTime);
+        }
+        if (limitNum > 0){
+            resBean.setLimitNum(limitNum);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: check校验订单信息是否达到连续失败次数
+     * <p>
+     *     如果订单连续达到失败次数，则返回true表示此卡需要下线了。
+     *     如果返回false表示银行卡无需下线
+     * </p>
+     * @param orderList - 订单信息
+     * @param bankDownByFailNum - 连续失败次数
+     * @return boolean
+     * @author yoko
+     * @date 2021/3/31 20:41
+     */
+    public static boolean checkFailOrder(List<OrderModel> orderList, int bankDownByFailNum){
+        boolean flag = false;
+        int checkNum = 0;
+        if (orderList != null && orderList.size() > 0){
+            if (bankDownByFailNum > 0){
+                if (orderList.size() == bankDownByFailNum){
+                    for (OrderModel dataModel : orderList){
+                        if (dataModel.getOrderStatus() == 4){
+                            break;
+                        }else{
+                            checkNum ++;
+                        }
+                    }
+                }
+            }else{
+                for (OrderModel dataModel : orderList){
+                    if (dataModel.getOrderStatus() == 4){
+                        break;
+                    }else{
+                        checkNum ++;
+                    }
+                }
+            }
+        }
+        if (bankDownByFailNum > 0){
+            if (checkNum != 0 && checkNum >= bankDownByFailNum) {
+                flag = true;
+            }
+        }else{
+            if (checkNum != 0 && checkNum >= orderList.size()) {
+                flag = true;
+            }
+        }
+
+        return flag;
+    }
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();

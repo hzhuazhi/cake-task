@@ -102,6 +102,9 @@ public class ServerConstant {
         //自动上下线-start
         BANK_UP_AND_DOWN_SWITCH(17,""),
         BANK_UP_NUM(18,""),
+        BANK_DOWN_BY_SUC_NUM(19,""),
+        BANK_DOWN_BY_FAIL_NUM(20,""),
+        BANK_DOWN_SHOW_TIME(21,""),
         //自动上下线-end
 
 

@@ -9,7 +9,7 @@
     <sql id="Base_Column_List">
         a.id,a.bank_id,a.order_no,a.order_type,a.order_money,a.distribution_money,a.qr_code,a.out_trade_no,a.order_status,
         a.invalid_time,a.notify_url,a.bank_name,a.bank_card,a.account_name,a.bank_code,a.mobile_card_id,
-        a.phone_num,a.merchant_id,a.merchant_name,a.merchant_site_id,a.card_site_name,a.channel_id,a.channel_name,a.service_charge,a.replenish_type,a.work_type,
+        a.phone_num,a.merchant_id,a.merchant_name,a.merchant_site_id,a.card_site_name,a.channel_id,a.channel_name,a.service_charge,a.replenish_type,a.work_type,a.down_time,
         a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_time,a.update_time,a.yn
@@ -47,6 +47,9 @@
             <if test="invalidTime != null and invalidTime != '' " >
                 and a.invalid_time > now()
             </if>
+            <if test="bankCard != null and bankCard != '' " >
+                and a.bank_card = #{bankCard}
+            </if>
             <if test="mobileCardId != null and mobileCardId != '' " >
                 and a.mobile_card_id = #{mobileCardId}
             </if>
@@ -61,6 +64,9 @@
             </if>
             <if test="workType != null and workType != '' " >
                 and a.work_type = #{workType}
+            </if>
+            <if test="downTime != null and downTime != '' " >
+                and a.down_time &lt;= now()
             </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}
@@ -218,6 +224,9 @@
             <if test="workType != null and workType != '' " >
                 work_type,
             </if>
+            <if test="downTime != null and downTime != '' " >
+                down_time,
+            </if>
             <if test="dataExplain != null and dataExplain != '' " >
                 data_explain,
             </if>
@@ -299,6 +308,9 @@
             </if>
             <if test="workType != null and workType != '' " >
                 <![CDATA[  #{workType}, ]]>
+            </if>
+            <if test="downTime != null and downTime != '' " >
+                <![CDATA[  #{downTime}, ]]>
             </if>
             <if test="dataExplain != null and dataExplain != '' " >
                 <![CDATA[  #{dataExplain}, ]]>
@@ -434,6 +446,27 @@
         <include refid="Example_Where_Clause"/>
     </select>
 
+
+
+    <!-- 查询订单的成功数量-->
+    <select id="countSucOrderNum" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fr_order a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+
+    <!-- 根据条件获取订单信息 -->
+    <select id="getOrderByLimitList" parameterType="Object" resultType="com.cake.task.master.core.model.order.OrderModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_order a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="limitNum != null and limitNum != ''" >
+            limit #{limitNum}
+        </if>
+    </select>
 
 
 </mapper>

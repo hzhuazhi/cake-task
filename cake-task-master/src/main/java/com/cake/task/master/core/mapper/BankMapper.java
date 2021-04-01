@@ -84,4 +84,6 @@ public interface BankMapper<T> extends BaseDao<T> {
     public BankModel getMinBankByNotUse(BankModel model);
 
 
+
+
 }

@@ -5,7 +5,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.merchant_id,a.merchant_site_id,a.channel_id,
+        a.id,a.alias,a.merchant_id,a.merchant_site_id,a.channel_id,a.link_type,
         a.remark,a.use_status,a.create_user_id,a.create_role_id,a.update_user_id,a.update_role_id,
         a.create_time,a.update_time,a.yn
     </sql>
@@ -25,6 +25,9 @@
             </if>
             <if test="channelId != null and channelId != '' " >
                 and a.channel_id = #{channelId}
+            </if>
+            <if test="linkType != null and linkType != '' " >
+                and a.link_type = #{linkType}
             </if>
             <if test="useStatus != null and useStatus != '' " >
                 and a.use_status = #{useStatus}
@@ -124,6 +127,9 @@
             <if test="channelId != null and channelId != '' " >
                 channel_id,
             </if>
+            <if test="linkType != null and linkType != '' " >
+                link_type,
+            </if>
             <if test="remark != null and remark != '' " >
                 remark,
             </if>
@@ -157,6 +163,9 @@
             </if>
             <if test="channelId != null and channelId != '' " >
                 <![CDATA[  #{channelId}, ]]>
+            </if>
+            <if test="linkType != null and linkType != '' " >
+                <![CDATA[  #{linkType}, ]]>
             </if>
             <if test="remark != null and remark != '' " >
                 <![CDATA[  #{remark}, ]]>
@@ -195,6 +204,9 @@
             </if>
             <if test="channelId != null and channelId != '' " >
                 a.channel_id = #{channelId},
+            </if>
+            <if test="linkType != null and linkType != '' " >
+                a.link_type = #{linkType},
             </if>
             <if test="remark != null and remark != '' " >
                 a.remark = #{remark},

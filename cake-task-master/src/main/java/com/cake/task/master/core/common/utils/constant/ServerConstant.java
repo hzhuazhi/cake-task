@@ -105,6 +105,7 @@ public class ServerConstant {
         BANK_DOWN_BY_SUC_NUM(19,""),
         BANK_DOWN_BY_FAIL_NUM(20,""),
         BANK_DOWN_SHOW_TIME(21,""),
+        BANK_DOWN_TIME(22,""),
         //自动上下线-end
 
 

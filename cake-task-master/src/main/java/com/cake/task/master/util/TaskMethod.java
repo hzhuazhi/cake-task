@@ -2300,6 +2300,38 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 组装查询卡商与渠道关联关系的方法
+     * @param id - 主键ID
+     * @param merchantId - 卡商ID
+     * @param channelId - 渠道ID
+     * @param linkType - 关联类型：1代收，2代付
+     * @param useStatus - 使用状态：1正常，2暂停
+     * @return com.cake.task.master.core.model.merchant.MerchantChannelModel
+     * @author yoko
+     * @date 2021/4/1 14:44
+     */
+    public static MerchantChannelModel assembleMerchantChannelQuery(long id, long merchantId, long channelId, int linkType, int useStatus){
+        MerchantChannelModel resBean = new MerchantChannelModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (merchantId > 0){
+            resBean.setMerchantId(merchantId);
+        }
+        if (channelId > 0){
+            resBean.setChannelId(channelId);
+        }
+        if (linkType > 0){
+            resBean.setLinkType(linkType);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();

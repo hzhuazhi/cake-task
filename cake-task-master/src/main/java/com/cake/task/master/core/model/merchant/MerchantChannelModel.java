@@ -40,6 +40,11 @@ public class MerchantChannelModel extends BasePage implements Serializable {
     private Long channelId;
 
     /**
+     * 绑定类型：1代收，2代付
+     */
+    private Integer linkType;
+
+    /**
      * 备注
      */
     private String remark;
@@ -194,5 +199,13 @@ public class MerchantChannelModel extends BasePage implements Serializable {
 
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+    public Integer getLinkType() {
+        return linkType;
+    }
+
+    public void setLinkType(Integer linkType) {
+        this.linkType = linkType;
     }
 }

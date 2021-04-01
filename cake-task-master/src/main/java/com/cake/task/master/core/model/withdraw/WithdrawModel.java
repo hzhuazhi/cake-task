@@ -59,6 +59,11 @@ public class WithdrawModel extends BasePage implements Serializable {
     private Long channelId;
 
     /**
+     * 商户名称/渠道名称
+     */
+    private String channelName;
+
+    /**
      * 渠道类型：1代收，2大包，3代付
      */
     private Integer channelType;
@@ -526,5 +531,14 @@ public class WithdrawModel extends BasePage implements Serializable {
 
     public void setWorkType(Integer workType) {
         this.workType = workType;
+    }
+
+
+    public String getChannelName() {
+        return channelName;
+    }
+
+    public void setChannelName(String channelName) {
+        this.channelName = channelName;
     }
 }

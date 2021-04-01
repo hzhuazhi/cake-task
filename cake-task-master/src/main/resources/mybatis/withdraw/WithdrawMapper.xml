@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.order_no,a.out_trade_no,a.order_money,a.withdraw_service_charge,a.order_status,a.withdraw_type,a.channel_id,a.channel_type,
+        a.id,a.alias,a.order_no,a.out_trade_no,a.order_money,a.withdraw_service_charge,a.order_status,a.withdraw_type,a.channel_id,a.channel_name,a.channel_type,
         a.out_type,a.merchant_id,
         a.in_bank_card,a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.picture_ads,
         a.check_status,a.check_info,a.work_type,a.data_explain,a.remark,
@@ -160,6 +160,9 @@
             <if test="channelId != null and channelId != '' " >
                 channel_id,
             </if>
+            <if test="channelName != null and channelName != '' " >
+                channel_name,
+            </if>
             <if test="channelType != null and channelType != '' " >
                 channel_type,
             </if>
@@ -250,6 +253,9 @@
             </if>
             <if test="channelId != null and channelId != '' " >
                 <![CDATA[  #{channelId}, ]]>
+            </if>
+            <if test="channelName != null and channelName != '' " >
+                <![CDATA[  #{channelName}, ]]>
             </if>
             <if test="channelType != null and channelType != '' " >
                 <![CDATA[  #{channelType}, ]]>
@@ -345,6 +351,9 @@
             </if>
             <if test="channelId != null and channelId != '' " >
                 a.channel_id = #{channelId},
+            </if>
+            <if test="channelName != null and channelName != '' " >
+                a.channel_name = #{channelName},
             </if>
             <if test="channelType != null and channelType != '' " >
                 a.channel_type = #{channelType},

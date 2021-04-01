@@ -1681,6 +1681,9 @@ public class TaskMethod {
         if (channelWithdrawModel.getChannelId() != null && channelWithdrawModel.getChannelId() > 0){
             resBean.setChannelId(channelWithdrawModel.getChannelId());
         }
+        if (!StringUtils.isBlank(channelWithdrawModel.getChannelName())){
+            resBean.setChannelName(channelWithdrawModel.getChannelName());
+        }
         if (channelWithdrawModel.getChannelType() != null && channelWithdrawModel.getChannelType() > 0){
             resBean.setChannelType(channelWithdrawModel.getChannelType());
         }

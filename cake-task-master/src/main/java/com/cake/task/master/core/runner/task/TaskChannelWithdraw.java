@@ -81,9 +81,20 @@ public class TaskChannelWithdraw {
                                 ComponentUtil.channelWithdrawService.update(channelWithdrawUpdate);
                                 // 赋值给提现汇总的纪录的渠道ID
                                 data.setChannelId(channelId);
+                                if (!StringUtils.isBlank(channelModel.getAlias())){
+                                    data.setChannelName(channelModel.getAlias());
+                                }
                             }
                         }
-
+                    }else{
+                        // 渠道ID不为空，虽然代码冗余，因为写的时间太长了，所以直接做if判断加冗余代码
+                        ChannelModel channelQuery = TaskMethod.assembleChannelQuery(data.getChannelId(), null, 0, 0 , 0);
+                        ChannelModel channelModel = (ChannelModel)ComponentUtil.channelService.findByObject(channelQuery);
+                        if (channelModel != null && channelModel.getId() != null){
+                            if (!StringUtils.isBlank(channelModel.getAlias())){
+                                data.setChannelName(channelModel.getAlias());
+                            }
+                        }
                     }
                     // 组装添加数据录入到提现汇总表中
                     WithdrawModel withdrawModel = TaskMethod.assembleWithdrawByChannel(data, 3);

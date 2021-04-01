@@ -24,6 +24,11 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
     private Long channelId;
 
     /**
+     * 商户名称/渠道名称
+     */
+    private String channelName;
+
+    /**
      * 名称/别名
      */
     private String alias;
@@ -526,5 +531,13 @@ public class ChannelWithdrawModel extends BasePage implements Serializable {
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
+    }
+
+    public String getChannelName() {
+        return channelName;
+    }
+
+    public void setChannelName(String channelName) {
+        this.channelName = channelName;
     }
 }

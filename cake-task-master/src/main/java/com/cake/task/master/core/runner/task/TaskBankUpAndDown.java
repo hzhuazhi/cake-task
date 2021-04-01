@@ -55,7 +55,7 @@ public class TaskBankUpAndDown {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-//    @Scheduled(fixedDelay = 4000) // 每4秒执行
+    @Scheduled(fixedDelay = 4000) // 每4秒执行
     public void bankUp() throws Exception{
 //        log.info("----------------------------------TaskBankUpAndDown.bankUp()----start");
         // 策略：获取自动上下线银行卡开关

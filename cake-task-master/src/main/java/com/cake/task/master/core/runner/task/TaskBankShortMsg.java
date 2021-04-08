@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,6 +75,16 @@ public class TaskBankShortMsg {
         balanceKey = strategybalanceKeyModel.getStgValue();
         balanceMatchingKey = strategybalanceKeyModel.getStgBigValue();
 
+
+        // 策略：黑名单名字
+        String blacklistName = null;
+        List<String> blacklistNameList = null;// 黑名单名字集合
+        StrategyModel strategyBlacklistNameQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BLACKLIST_NAME.getStgType());
+        StrategyModel strategyBlacklistNameModel = ComponentUtil.strategyService.getStrategyModel(strategyBlacklistNameQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        blacklistName = strategyBlacklistNameModel.getStgBigValue();
+        blacklistNameList = TaskMethod.getBlacklistNameList(blacklistName);
+
+
         // 获取银行短信数据
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 0, 1, 0, 0, 0, 0, 0,null);
         List<BankShortMsgModel> synchroList = ComponentUtil.taskBankShortMsgService.getDataList(statusQuery);
@@ -110,6 +121,16 @@ public class TaskBankShortMsg {
                     continue;
                 }
             }
+
+            // 判断短信内容是否有黑名单名字
+            boolean flag_blacklistName = TaskMethod.checkBlacklistName(data.getSmsContent(), blacklistNameList);
+            if (flag_blacklistName){
+                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"短信内容包含有策略中的黑名单名字!" );
+                // 更新状态
+                ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);
+                continue;
+            }
+
 
             // 获取端口号的银行卡数据
             BankModel bankQuery = TaskMethod.assembleBankQuery(0, data.getMobileCardId(), 0, 0, null, data.getSmsNum(), null,0,0,0, 0);

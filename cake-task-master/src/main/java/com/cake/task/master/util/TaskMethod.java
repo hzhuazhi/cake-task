@@ -2363,6 +2363,59 @@ public class TaskMethod {
         return resList;
     }
 
+    /**
+     * @Description: 拆解出黑名单名字
+     * @param blacklistName - 黑名单名字：张三#李四#王五#轩六
+     * @return
+     * @author yoko
+     * @date 2021/4/8 16:16
+    */
+    public  static List<String> getBlacklistNameList(String blacklistName){
+        List<String> resList = new ArrayList<>();
+        if (!StringUtils.isBlank(blacklistName)){
+            String [] strArr = blacklistName.split("#");
+            if (strArr != null && strArr.length > 0){
+                for (String str : strArr){
+                    resList.add(str);
+                }
+            }else {
+                return null;
+            }
+        }else {
+            return null;
+        }
+        return resList;
+    }
+
+
+    /**
+     * @Description: check短信内容是否有包含黑名单的名字
+     * <p>
+     *     如果短信内容包含黑名单的名字则返回true
+     * </p>
+     * @param smsContent - 收款短信内容
+     * @param blacklistNameList - 黑名单名字集合
+     * @return boolean
+     * @author yoko
+     * @date 2021/4/8 16:32
+     */
+    public static boolean checkBlacklistName(String smsContent, List<String> blacklistNameList){
+        if (!StringUtils.isBlank(smsContent)){
+            if (blacklistNameList != null && blacklistNameList.size() > 0){
+                for (String str : blacklistNameList){
+                    if (smsContent.indexOf(str) > -1){
+                        return true;
+                    }
+                }
+            }else {
+                return false;
+            }
+        }else {
+            return false;
+        }
+        return false;
+    }
+
 
 
     public static void main(String []args){
@@ -2410,9 +2463,24 @@ public class TaskMethod {
         System.out.println("flag:" + flag);
         String strategyData = "1:渠道1#2:渠道2#4:渠道4";
         List<Long> idList = TaskMethod.getChannelByBankDownByNotChannel(strategyData);
-        for (int i=0; i<= idList.size(); i++){
+        for (int i=0; i< idList.size(); i++){
             System.out.println("idList-data:" + idList.get(i));
         }
+
+        String strategyData1 = "张三#李四#王五#轩六";
+//        String strategyData1 = null;
+        List<String> strList = TaskMethod.getBlacklistNameList(strategyData1);
+        for (int i=0; i< strList.size(); i++){
+            System.out.println("strList-data:" + strList.get(i));
+        }
+        String smsContent2 = "您的借记卡账户张三_2，于10月01日网上支付收入人民币20.01元,交易后余额为20.00元.";
+        List<String> blacklistNameList = new ArrayList<>();
+        blacklistNameList.add("张三");
+        blacklistNameList.add("李四");
+        blacklistNameList.add("王五");
+        boolean flag1 = TaskMethod.checkBlacklistName(smsContent2, blacklistNameList);
+        System.out.println("flag1:" + flag1);
+
     }
 
 }

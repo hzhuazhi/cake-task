@@ -3,6 +3,7 @@ package com.cake.task.master.core.model.order;
 import com.cake.task.master.core.protocol.page.BasePage;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description 任务订单的实体属性Bean
@@ -240,6 +241,11 @@ public class OrderModel extends BasePage implements Serializable {
     private Integer curdayEnd;
 
     private Integer limitNum;
+
+    /**
+     * SQL-not in集合查询
+     */
+    private List<Long> notInChannelIdList;
 
     public OrderModel(){
 
@@ -619,5 +625,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setDownTime(String downTime) {
         this.downTime = downTime;
+    }
+
+    public List<Long> getNotInChannelIdList() {
+        return notInChannelIdList;
+    }
+
+    public void setNotInChannelIdList(List<Long> notInChannelIdList) {
+        this.notInChannelIdList = notInChannelIdList;
     }
 }

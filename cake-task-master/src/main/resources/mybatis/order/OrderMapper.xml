@@ -77,6 +77,12 @@
             <if test="startTime != null and startTime != '' and endTime != null and endTime != '' " >
                 and a.create_time >= #{startTime} and a.create_time &lt;= #{endTime}
             </if>
+            <if test="notInChannelIdList != null and notInChannelIdList.size()>0">
+                and a.channel_id not in
+                <foreach item="item" index="index" collection="notInChannelIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
 
             and a.yn = 0
         </trim>

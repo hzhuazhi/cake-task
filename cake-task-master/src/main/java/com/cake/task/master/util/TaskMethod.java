@@ -2228,11 +2228,12 @@ public class TaskMethod {
      * @param orderStatus - 订单状态：1初始化，2超时/失败，3有质疑，4成功
      * @param downTime - 自动下线检测时间：银行卡自动下线使用此时间去抓取订单进行自动下线判断
      * @param limitNum - 查询数据的条数
+     * @param notInChannelIdList - 不包含的渠道集合
      * @return OrderModel
      * @author yoko
      * @date 2020/9/14 20:54
      */
-    public static OrderModel assembleOrderByDownBankQuery(String bankCard, int orderType, int orderStatus, String downTime, int limitNum){
+    public static OrderModel assembleOrderByDownBankQuery(String bankCard, int orderType, int orderStatus, String downTime, int limitNum, List<Long> notInChannelIdList){
         OrderModel resBean = new OrderModel();
         if (!StringUtils.isBlank(bankCard)){
             resBean.setBankCard(bankCard);
@@ -2248,6 +2249,9 @@ public class TaskMethod {
         }
         if (limitNum > 0){
             resBean.setLimitNum(limitNum);
+        }
+        if (notInChannelIdList != null && notInChannelIdList.size() > 0){
+            resBean.setNotInChannelIdList(notInChannelIdList);
         }
         return resBean;
     }
@@ -2335,6 +2339,31 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 拆解策略里面的渠道ID值
+     * @param strategyData - 策略值：1:渠道1#2:渠道2
+     * @return java.util.List<java.lang.Long>
+     * @author yoko
+     * @date 2021/4/8 11:04
+     */
+    public static List<Long> getChannelByBankDownByNotChannel(String strategyData){
+        List<Long> resList = new ArrayList<Long>();
+        if (!StringUtils.isBlank(strategyData)){
+            String [] channelStrArr = strategyData.split("#");
+            for (String channelStr : channelStrArr){
+                String [] channelArr = channelStr.split(":");
+                if (channelArr != null && channelArr.length != 0){
+                    resList.add(Long.parseLong(channelArr[0]));
+                }
+            }
+
+        }else {
+            return null;
+        }
+        return resList;
+    }
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();
@@ -2379,6 +2408,11 @@ public class TaskMethod {
 
         boolean flag = StringUtil.getBigDecimalSubtract("101","100.01");
         System.out.println("flag:" + flag);
+        String strategyData = "1:渠道1#2:渠道2#4:渠道4";
+        List<Long> idList = TaskMethod.getChannelByBankDownByNotChannel(strategyData);
+        for (int i=0; i<= idList.size(); i++){
+            System.out.println("idList-data:" + idList.get(i));
+        }
     }
 
 }

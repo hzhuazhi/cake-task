@@ -176,6 +176,15 @@ public class TaskBankUpAndDown {
         // 自动下线卡成功订单的数量
         int bankDownBySucNum = strategyBankDownBySucNumModel.getStgNumValue();
 
+
+        // 策略：自动下线卡不计渠道失败
+        StrategyModel strategyBankDownByNotChannelQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_DOWN_BY_NOT_CHANNEL.getStgType());
+        StrategyModel strategyBankDownByNotChannelModel = ComponentUtil.strategyService.getStrategyModel(strategyBankDownByNotChannelQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        // 换算出不计渠道失败的渠道
+        List<Long> channelIdList = TaskMethod.getChannelByBankDownByNotChannel(strategyBankDownByNotChannelModel.getStgBigValue());// 不在计算失败的渠道ID集合
+
+
+
         // 策略：自动下线卡失败订单数
         StrategyModel strategyBankDownByFailNumQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_DOWN_BY_FAIL_NUM.getStgType());
         StrategyModel strategyBankDownByFailNumModel = ComponentUtil.strategyService.getStrategyModel(strategyBankDownByFailNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
@@ -223,24 +232,24 @@ public class TaskBankUpAndDown {
                         String checkChange = "";
                         int changeStatus = 0;
                         // 查询银行卡成功订单数量
-                        OrderModel sucNumOrderQuery = TaskMethod.assembleOrderByDownBankQuery(bankData.getBankCard(), 2,4,null,0);
+                        OrderModel sucNumOrderQuery = TaskMethod.assembleOrderByDownBankQuery(bankData.getBankCard(), 2,4,null,0, null);
                         int sumNum = ComponentUtil.orderService.countSucOrderNum(sucNumOrderQuery);
                         if (sumNum >= bankDownBySucNum){
                             // 表示已经超过策略中的成功订单数量了：需要下线此卡
                             changeStatus = 2;
-                            checkChange = "检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard() + "，已成功订单数：" + sumNum + "，已经超过设定允许成功订单数：" + bankDownBySucNum;
+                            checkChange = "《请重新换卡》 "+ "，检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard() + "，已成功订单数：" + sumNum + "，已经超过设定允许成功订单数：" + bankDownBySucNum;
                             flag = true;
                         }else {
                             // 查询在下线检测时间范围内的订单集合-无订单条数限制
-                            OrderModel orderQuery = TaskMethod.assembleOrderByDownBankQuery(bankData.getBankCard(), 2,0,"1", 0);
+                            OrderModel orderQuery = TaskMethod.assembleOrderByDownBankQuery(bankData.getBankCard(), 2,0,"1", 0, channelIdList);
                             List<OrderModel> orderList = ComponentUtil.orderService.findByCondition(orderQuery);
                             if (orderList != null && orderList.size() >0 && orderList.size() >= bankDownByFailNum){
                                 flag = TaskMethod.checkFailOrder(orderList, 0);
                                 if (flag){
                                     // 表示新卡，并且已经连续超过策略中的失败订单数量了：需要下线此卡
                                     changeStatus = 3;
-                                    checkChange = "检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard() + "，连续失败订单数：" + orderList.size() + "，已经超过设定允许失败订单数：" + bankDownByFailNum
-                                    + "，此卡属于新卡请核对卡号是否输入正确！";
+                                    checkChange = "《该卡为新卡,请确定卡号是否正确》"+"，检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard() +
+                                            "，连续失败订单数：" + orderList.size() + "，已经超过设定允许失败订单数：" + bankDownByFailNum;
                                 }
                             }else {
                                 // 在最上层因为只要有待上线的卡flag=true了，所以这里需要更改成false
@@ -251,14 +260,14 @@ public class TaskBankUpAndDown {
                                 // 这里注意：因为新卡连续监测没有达到要下线的要求，所以要继续check
 
                                 // 查询在下线检测时间范围内的订单集合-订单条数限制
-                                OrderModel orderByDownTimeQuery = TaskMethod.assembleOrderByDownBankQuery(bankData.getBankCard(), 2,0,"1", bankDownByFailNum);
+                                OrderModel orderByDownTimeQuery = TaskMethod.assembleOrderByDownBankQuery(bankData.getBankCard(), 2,0,"1", bankDownByFailNum, channelIdList);
                                 List<OrderModel> orderLimitList = ComponentUtil.orderService.getOrderByLimitList(orderByDownTimeQuery);
                                 if (orderList != null && orderList.size() >0 && orderList.size() >= bankDownByFailNum){
                                     flag = TaskMethod.checkFailOrder(orderLimitList, bankDownByFailNum);
                                     if (flag){
                                         // 表示已经连续超过策略中的失败订单数量了：需要下线此卡
                                         changeStatus = 2;
-                                        checkChange = "检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard() + "，连续失败订单数：" + bankDownByFailNum + "，已经超过设定允许失败订单数：" + bankDownByFailNum;
+                                        checkChange = "《请重新换卡》" + "，检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard() + "，连续失败订单数：" + bankDownByFailNum + "，已经超过设定允许失败订单数：" + bankDownByFailNum;
                                     }
                                 }
                             }

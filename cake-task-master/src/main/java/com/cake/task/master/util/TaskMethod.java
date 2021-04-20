@@ -2418,6 +2418,47 @@ public class TaskMethod {
 
 
 
+
+    /**
+     * @Description: 解析短信获取银行卡-原始卡
+     * <p>
+     *     解析短信，根据短信的尾号匹配银行卡原始卡的尾号；
+     *     如果可以匹配到银行原始卡的尾号，则返回
+     * </p>
+     * @param bankList - 银行卡集合
+     * @param smsContent - 短信内容
+     * @param lastNumKey - 尾号开始位的关键字
+     * @return long
+     * @author yoko
+     * @date 2020/9/14 19:13
+     */
+    public static BankModel getBankIdBySmsContentAndleadBankCard(List<BankModel> bankList, String smsContent, String lastNumKey){
+        String [] lastNumKeyArr = lastNumKey.split("#");
+        for (BankModel bankModel : bankList){
+            for (String str : lastNumKeyArr){
+                int start = 0;
+                int end = 0;
+                if (smsContent.indexOf(str) > -1){
+                    if (!StringUtils.isBlank(bankModel.getLeadBankCard())){
+                        String leadLastNum = bankModel.getLeadBankCard().substring(bankModel.getLeadBankCard().length()- 4);// 获取原始卡的尾号
+                        start = smsContent.indexOf(str) + str.length();
+                        end = start + leadLastNum.length();
+                        // 从短信内容中截取银行卡尾号
+                        String sms_lastNum = smsContent.substring(start, end);
+                        if (!StringUtils.isBlank(sms_lastNum)){
+                            if (sms_lastNum.equals(leadLastNum)){
+                                return bankModel;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();
         BankShortMsgStrategyModel bankShortMsgStrategyModel1 = new BankShortMsgStrategyModel();
@@ -2480,6 +2521,9 @@ public class TaskMethod {
         blacklistNameList.add("王五");
         boolean flag1 = TaskMethod.checkBlacklistName(smsContent2, blacklistNameList);
         System.out.println("flag1:" + flag1);
+
+        String lastStr = "1234";
+        System.out.println("lastStr:" + lastStr.substring(lastStr.length()- 4));
 
     }
 

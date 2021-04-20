@@ -149,6 +149,26 @@ public class TaskBankShortMsg {
                     // 解析短信，获取收款金额
                     String money = TaskMethod.getBankMoney(bankShortMsgStrategyList, data.getSmsContent());
                     if (StringUtils.isBlank(money)){
+
+                        // 没有解析收款金额：则此短信可能属于下发短信
+                        // 下发短信，也需要检测此短信内容中的余额
+                        BankModel lead_bank_matching = TaskMethod.getBankIdBySmsContentAndleadBankCard(bankList, data.getSmsContent(), lastNumKey);
+                        if (lead_bank_matching != null && lead_bank_matching.getId() != null && lead_bank_matching.getId() > 0){
+                            // 检测余额
+                            String balance = TaskMethod.getBankBalance(balanceKey, balanceMatchingKey, data.getSmsContent());
+                            if (!StringUtils.isBlank(balance)){
+                                // 更新银行卡的余额
+                                BankModel bankModel = TaskMethod.assembleBankUpdate(lead_bank_matching.getId(), balance);
+                                if (bankModel != null){
+                                    // 更新银行卡余额
+                                    log.info("");
+                                    ComponentUtil.bankService.update(bankModel);
+                                }
+                            }
+                        }
+
+
+
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"拆解金额失败：1.银行收款短信解析策略可能不完善。2.短信可能不是银行收款短信!");
                         // 更新状态
                         ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);
@@ -160,6 +180,24 @@ public class TaskBankShortMsg {
                     // 解析短信，定位银行卡ID
                     BankModel bank_matching = TaskMethod.getBankIdBySmsContent(bankList, data.getSmsContent(), lastNumKey);
                     if (bank_matching == null || bank_matching.getId() == null || bank_matching.getId() <= 0){
+
+                        // 没有定位到银行卡ID：则此短信可能属于下发短信
+                        // 下发短信，也需要检测此短信内容中的余额
+                        BankModel lead_bank_matching = TaskMethod.getBankIdBySmsContentAndleadBankCard(bankList, data.getSmsContent(), lastNumKey);
+                        if (lead_bank_matching != null && lead_bank_matching.getId() != null && lead_bank_matching.getId() > 0){
+                            // 检测余额
+                            String balance = TaskMethod.getBankBalance(balanceKey, balanceMatchingKey, data.getSmsContent());
+                            if (!StringUtils.isBlank(balance)){
+                                // 更新银行卡的余额
+                                BankModel bankModel = TaskMethod.assembleBankUpdate(lead_bank_matching.getId(), balance);
+                                if (bankModel != null){
+                                    // 更新银行卡余额
+                                    ComponentUtil.bankService.update(bankModel);
+                                }
+                            }
+                        }
+
+
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 2, 0, 0,0,"匹配银行卡尾号失败：没有匹配到相对应的银行卡尾号!");
                         // 更新状态
                         ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);

@@ -147,6 +147,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private BankLeadCollectionService bankLeadCollectionService;
 
+    @Autowired
+    private BankCollectionDayService bankCollectionDayService;
+
 
 
 
@@ -255,6 +258,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.bankLeadService = bankLeadService;
         ComponentUtil.bankLeadLinkService = bankLeadLinkService;
         ComponentUtil.bankLeadCollectionService = bankLeadCollectionService;
+        ComponentUtil.bankCollectionDayService = bankCollectionDayService;
 
 
 

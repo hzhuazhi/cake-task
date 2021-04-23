@@ -2458,6 +2458,33 @@ public class TaskMethod {
     }
 
 
+    /**
+     * @Description: 银行卡收款信息_日期分割的数据
+     * @param leadBankId - 原始银行卡ID
+     * @param bankId - 银行卡ID
+     * @param orderNo - 订单号
+     * @param money - 成功金额
+     * @return com.cake.task.master.core.model.bank.BankCollectionDayModel
+     * @author yoko
+     * @date 2021/4/21 16:28
+     */
+    public static BankCollectionDayModel assembleBankCollectionDayAdd(long leadBankId, long bankId, String orderNo, String money){
+        BankCollectionDayModel resBean = new BankCollectionDayModel();
+        int curday = DateUtil.getDayNumber(new Date());
+        if (leadBankId > 0){
+            resBean.setLeadBankId(leadBankId);
+        }
+        resBean.setBankId(bankId);
+        resBean.setOrderNo(orderNo);
+        resBean.setMoney(money);
+        resBean.setCurday(curday);
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        resBean.setSuffix(String.valueOf(curday));
+        return resBean;
+    }
+
+
 
     public static void main(String []args){
         List<BankShortMsgStrategyModel> bankShortMsgStrategyList = new ArrayList<>();

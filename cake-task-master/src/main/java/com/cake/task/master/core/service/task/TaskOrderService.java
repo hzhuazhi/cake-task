@@ -1,6 +1,7 @@
 package com.cake.task.master.core.service.task;
 
 import com.cake.task.master.core.common.service.BaseService;
+import com.cake.task.master.core.model.bank.BankCollectionDayModel;
 import com.cake.task.master.core.model.bank.BankCollectionModel;
 import com.cake.task.master.core.model.bank.BankLeadCollectionModel;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
@@ -65,5 +66,6 @@ public interface TaskOrderService<T> extends BaseService<T> {
      * @date 2020/11/10 19:28
      */
     public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney,
-                                      MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, BankLeadCollectionModel bankLeadCollectionModel) throws Exception;
+                                      MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, BankLeadCollectionModel bankLeadCollectionModel,
+                                      BankCollectionDayModel bankCollectionDayAdd) throws Exception;
 }

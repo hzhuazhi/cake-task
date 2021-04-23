@@ -51,6 +51,7 @@ public class ComponentUtil {
     public static BankLeadService bankLeadService;
     public static BankLeadLinkService bankLeadLinkService;
     public static BankLeadCollectionService bankLeadCollectionService;
+    public static BankCollectionDayService bankCollectionDayService;
 
 
 

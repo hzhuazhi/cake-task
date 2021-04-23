@@ -171,17 +171,22 @@ public class TaskOrder {
                     }
 
                     // 添加主卡的收款纪录
+                    long leadBankId = 0;
                     BankLeadCollectionModel bankLeadCollectionAdd = null;
                     if (bankLeadModel != null && bankLeadModel.getId() != null && bankLeadModel.getId() > 0){
                         bankLeadCollectionAdd = TaskMethod.assembleBankLeadCollectionAdd(bankLeadModel.getId(), data.getBankId(), data.getOrderNo(), data.getOrderMoney());
+                        leadBankId = bankLeadModel.getId();
                     }
+
+                    // 添加银行卡收款信息_日期分割
+                    BankCollectionDayModel bankCollectionDayAdd = TaskMethod.assembleBankCollectionDayAdd(leadBankId, data.getBankId(), data.getOrderNo(), data.getOrderMoney());
 
                     // 锁住这个卡商
                     String lockKey_merchantId = CachedKeyUtils.getCacheKey(CacheKey.LOCK_MERCHANT_MONEY, data.getMerchantId());
                     boolean flagLock_merchantId = ComponentUtil.redisIdService.lock(lockKey_merchantId);
                     if (flagLock_merchantId){
                         // 执行订单成功的逻辑
-                        boolean flag_handle = ComponentUtil.taskOrderService.handleSuccessOrder(bankCollectionAdd, merchantUpdate, merchantProfitModel, interestProfitList, bankLeadCollectionAdd);
+                        boolean flag_handle = ComponentUtil.taskOrderService.handleSuccessOrder(bankCollectionAdd, merchantUpdate, merchantProfitModel, interestProfitList, bankLeadCollectionAdd, bankCollectionDayAdd);
                         if (flag_handle){
 
                             // 判断是否是补单，不是补单则需要释放银行卡的挂单金额

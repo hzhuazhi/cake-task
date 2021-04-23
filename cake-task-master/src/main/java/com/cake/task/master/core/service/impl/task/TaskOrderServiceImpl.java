@@ -5,6 +5,7 @@ import com.cake.task.master.core.common.exception.ServiceException;
 import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.mapper.*;
 import com.cake.task.master.core.mapper.task.TaskOrderMapper;
+import com.cake.task.master.core.model.bank.BankCollectionDayModel;
 import com.cake.task.master.core.model.bank.BankCollectionModel;
 import com.cake.task.master.core.model.bank.BankLeadCollectionModel;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
@@ -51,6 +52,9 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
     @Autowired
     private BankLeadCollectionMapper bankLeadCollectionMapper;
 
+    @Autowired
+    private BankCollectionDayMapper bankCollectionDayMapper;
+
 
 
     public BaseDao<T> getDao() {
@@ -74,12 +78,13 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, BankLeadCollectionModel bankLeadCollectionModel) throws Exception {
+    public boolean handleSuccessOrder(BankCollectionModel bankCollectionModel, MerchantModel merchantUpdateMoney, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, BankLeadCollectionModel bankLeadCollectionModel, BankCollectionDayModel bankCollectionDayAdd) throws Exception {
         int num1 = 0;
         int num2 = 0;
         int num3 = 0;
         int num4 = 0;
         int num5 = 0;
+        int num6 = 0;
         try {
             num1 = bankCollectionMapper.add(bankCollectionModel);
             num2 = merchantMapper.updateMoney(merchantUpdateMoney);
@@ -102,11 +107,12 @@ public class TaskOrderServiceImpl<T> extends BaseServiceImpl<T> implements TaskO
             }else {
                 num5 = bankLeadCollectionMapper.add(bankLeadCollectionModel);
             }
+            num6 = bankCollectionDayMapper.add(bankCollectionDayAdd);
 
-            if (num1> 0 && num2 > 0 && num3 > 0 && num4 > 0 && num5 > 0){
+            if (num1> 0 && num2 > 0 && num3 > 0 && num4 > 0 && num5 > 0 && num6 > 0){
                 return true;
             }else {
-                throw new ServiceException("handleSuccessOrderOut", "五个执行更新SQL其中有一个或者多个响应行为0");
+                throw new ServiceException("handleSuccessOrderOut", "六个执行更新SQL其中有一个或者多个响应行为0");
 //                throw new RuntimeException();
             }
 

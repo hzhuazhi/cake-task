@@ -1,6 +1,8 @@
 package com.cake.task.master.util;
 import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.StringUtil;
+import com.cake.task.master.core.common.utils.constant.CacheKey;
+import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.model.bank.*;
 import com.cake.task.master.core.model.channel.ChannelBankModel;
@@ -367,12 +369,13 @@ public class TaskMethod {
      * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
      * @param changeStatus - 换卡状态：1初始化，2待换卡（成功10多单后、或者后面订单连续几单未成功），3驳回（上线连续几单都未成功），4换卡完毕
      * @param nextBankId - 自动上线下银行卡使用：下一个银行卡ID
+     * @param suffix - 表的下标位
      * @return BankModel
      * @author yoko
      * @date 2020/9/14 17:19
      */
     public static BankModel assembleBankQuery(long id, long mobileCardId, long bankTypeId, long merchantId, String bankCard, String smsNum, String lastNum,
-                                              int isOk, int useStatus, int changeStatus, long nextBankId){
+                                              int isOk, int useStatus, int changeStatus, long nextBankId, String suffix){
         BankModel resBean = new BankModel();
         if (id > 0){
             resBean.setId(id);
@@ -407,6 +410,10 @@ public class TaskMethod {
         if (nextBankId > 0){
             resBean.setNextBankId(nextBankId);
         }
+        if (!StringUtils.isBlank(suffix)){
+            resBean.setSuffix(suffix);
+        }
+
         return resBean;
     }
 
@@ -2482,6 +2489,118 @@ public class TaskMethod {
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
         resBean.setSuffix(String.valueOf(curday));
         return resBean;
+    }
+
+
+
+    /**
+     * @Description: 银行卡集合排序
+     * <p>
+     *     排序方式：小于正在使用的最大银行卡ID放在集合的后面，大于正在使用的最大银行卡ID放集合的前面
+     * </p>
+     * @param bankList - 银行卡集合
+     * @param maxBankId - 正在使用的最大银行卡ID
+     * @return java.util.List<BankModel>
+     * @author yoko
+     * @date 2020/10/10 11:49
+     */
+    public static List<BankModel> sortBankList(List<BankModel> bankList, long maxBankId){
+        if (maxBankId > 0){
+            List<BankModel> resList = new ArrayList<>();
+            List<BankModel> noList = new ArrayList<>();// 没有给出过出码的银行集合
+            List<BankModel> yesList = new ArrayList<>();// 有给出过出码的银行集合
+            for (BankModel bankModel : bankList){
+                if (bankModel.getId() > maxBankId){
+                    noList.add(bankModel);
+                }else {
+                    yesList.add(bankModel);
+                }
+            }
+            if (noList != null && noList.size() > 0){
+                resList.addAll(noList);
+            }
+            if (yesList != null && yesList.size() > 0){
+                resList.addAll(yesList);
+            }
+            return resList;
+        }else {
+            return bankList;
+        }
+    }
+
+
+
+    /**
+     * @Description: check校验银行卡限量
+     * @param bankModel - 银行卡信息
+     * @param payType - 支付类型：1微信转卡，2支付宝转卡，3卡转卡
+     * @return
+     * @author yoko
+     * @date 2020/9/12 21:19
+     */
+    public static boolean checkBankLimit(BankModel bankModel, int payType){
+        boolean flag = true;
+        if (payType == 1){
+            String dayMoney = getRedisDataByKey(CacheKey.WX_IN_DAY_MONEY, bankModel.getId());
+            if (!StringUtils.isBlank(dayMoney)){
+                return false;
+            }
+            String monthMoney = getRedisDataByKey(CacheKey.WX_IN_MONTH_MONEY, bankModel.getId());
+            if (!StringUtils.isBlank(monthMoney)){
+                return false;
+            }
+            String dayNum = getRedisDataByKey(CacheKey.WX_IN_DAY_NUM, bankModel.getId());
+            if (!StringUtils.isBlank(dayNum)){
+                return false;
+            }
+        }else if (payType == 2){
+            String dayMoney = getRedisDataByKey(CacheKey.ZFB_IN_DAY_MONEY, bankModel.getId());
+            if (!StringUtils.isBlank(dayMoney)){
+                return false;
+            }
+            String monthMoney = getRedisDataByKey(CacheKey.ZFB_IN_MONTH_MONEY, bankModel.getId());
+            if (!StringUtils.isBlank(monthMoney)){
+                return false;
+            }
+            String dayNum = getRedisDataByKey(CacheKey.ZFB_IN_DAY_NUM, bankModel.getId());
+            if (!StringUtils.isBlank(dayNum)){
+                return false;
+            }
+        }else if (payType == 3){
+            String dayMoney = getRedisDataByKey(CacheKey.CARD_IN_DAY_MONEY, bankModel.getId());
+            if (!StringUtils.isBlank(dayMoney)){
+                return false;
+            }
+            String monthMoney = getRedisDataByKey(CacheKey.CARD_IN_MONTH_MONEY, bankModel.getId());
+            if (!StringUtils.isBlank(monthMoney)){
+                return false;
+            }
+            String dayNum = getRedisDataByKey(CacheKey.CARD_IN_DAY_NUM, bankModel.getId());
+            if (!StringUtils.isBlank(dayNum)){
+                return false;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * @Description: 组装缓存key查询缓存中存在的数据
+     * @param cacheKey - 缓存的类型key
+     * @param obj - 数据的ID
+     * @return
+     * @author yoko
+     * @date 2020/5/20 14:59
+     */
+    public static String getRedisDataByKey(String cacheKey, Object obj){
+        String str = null;
+        String strKeyCache = CachedKeyUtils.getCacheKey(cacheKey, obj);
+        String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
+        if (StringUtils.isBlank(strCache)){
+            return str;
+        }else{
+            str = strCache;
+            return str;
+        }
     }
 
 

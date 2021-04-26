@@ -74,4 +74,14 @@ public class BankServiceImpl<T> extends BaseServiceImpl<T> implements BankServic
     public BankModel getMinBankByNotUse(BankModel model) {
         return bankMapper.getMinBankByNotUse(model);
     }
+
+    @Override
+    public List<BankModel> getBankListByOrderId(BankModel model) {
+        return bankMapper.getBankListByOrderId(model);
+    }
+
+    @Override
+    public List<BankModel> getBankListByDayMoney(BankModel model) {
+        return bankMapper.getBankListByDayMoney(model);
+    }
 }

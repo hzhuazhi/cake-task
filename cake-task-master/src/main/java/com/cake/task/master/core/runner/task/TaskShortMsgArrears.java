@@ -91,7 +91,7 @@ public class TaskShortMsgArrears {
                         int num = ComponentUtil.mobileCardService.update(mobileCardUpdate);
                         if (num > 0){
                             // 查询涉及到的银行卡
-                            BankModel bankQuery = TaskMethod.assembleBankQuery(0, mobileCardModel.getId(), 0, 0,null,null,null,0,0,0,0);
+                            BankModel bankQuery = TaskMethod.assembleBankQuery(0, mobileCardModel.getId(), 0, 0,null,null,null,0,0,0,0, null);
                             List<BankModel> bankList = ComponentUtil.bankService.findByCondition(bankQuery);
                             String involveBank = TaskMethod.assembleInvolveBank(bankList);
 

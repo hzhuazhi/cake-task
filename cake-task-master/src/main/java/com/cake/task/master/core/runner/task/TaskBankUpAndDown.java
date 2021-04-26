@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,6 +59,8 @@ public class TaskBankUpAndDown {
     @Scheduled(fixedDelay = 4000) // 每4秒执行
     public void bankUp() throws Exception{
 //        log.info("----------------------------------TaskBankUpAndDown.bankUp()----start");
+        int curday = DateUtil.getDayNumber(new Date());
+        String suffix = String.valueOf(curday);
         // 策略：获取自动上下线银行卡开关
         StrategyModel strategyBankUpAndDownSwitchQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_UP_AND_DOWN_SWITCH.getStgType());
         StrategyModel strategyBankUpAndDownSwitchModel = ComponentUtil.strategyService.getStrategyModel(strategyBankUpAndDownSwitchQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
@@ -69,6 +72,12 @@ public class TaskBankUpAndDown {
         // 获取当前配置的可上线卡的数量
         int bankUpNum = TaskMethod.getBankUpNum(strategyBankUpNumModel);
 
+
+        // 策略：获取自动上线卡的规则
+        StrategyModel strategyBankUpRuleQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_UP_RULE.getStgType());
+        StrategyModel strategyBankUpRuleModel = ComponentUtil.strategyService.getStrategyModel(strategyBankUpRuleQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        int bankUpRule = strategyBankUpRuleModel.getStgNumValue();// 自动上线卡的规则：int值等于1则按照银行卡ID从小到大，int值等于2则按照金额最小的优先上线
+
         if (bankUpAndDownSwitch == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
             // 获取卡商集合：获取代付的卡商集合
             MerchantModel merchantQuery = TaskMethod.assembleMerchantQuery(0, null,0, 1,1, null);
@@ -77,7 +86,7 @@ public class TaskBankUpAndDown {
                 boolean flag = false;// 是否需要进行上线卡：true表示需要上线卡，false表示无需上线卡
                 // 根据卡商ID，查询卡商此时有多少张卡处于上线状态
                 BankModel bankUseNumQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
-                        null,null,null,2,1,4,0);
+                        null,null,null,2,1,4,0, suffix);
                 int useNum = ComponentUtil.bankService.countUseNum(bankUseNumQuery);
                 if (useNum < bankUpNum){
                     // 表示目前正在上线使用的卡数量少于现在要求的上线卡的数量：则需要添加上线卡
@@ -87,7 +96,7 @@ public class TaskBankUpAndDown {
                 if (flag){
                     // 计算目前有多少张卡可以上线
                     BankModel bankCanUseNumQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
-                            null,null,null,2,2,4,0);
+                            null,null,null,2,2,4,0, suffix);
                     int canUseNum = ComponentUtil.bankService.countCanUseNum(bankCanUseNumQuery);
                     if (canUseNum > 0){
                         // 表示有可以上线的卡正在候着
@@ -97,7 +106,62 @@ public class TaskBankUpAndDown {
                     }
                 }
 
-                long nexBankId = 0;// 下一个银行卡ID
+
+                BankModel upBankModel = null;// 要更新上线的的卡信息
+
+                List<BankModel> sortList = null;// 排序的银行卡集合：按照银行卡ID从小到大、按照成功金额从小到大
+                if (flag){
+                    // 组装查询可以上线的银行卡的查询条件
+                    BankModel bankCanUseQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
+                            null,null,null,2,2,4,0, suffix);
+                    if (bankUpRule == 1){
+                        // 根据银行卡ID从小到大上线
+                        long maxBankId = 0;// 正在使用的最大银行卡ID
+                        // 查询可用的银行卡信息集合-根据银行卡ID升序排列
+                        List<BankModel> bankList = ComponentUtil.bankService.getBankListByOrderId(bankCanUseQuery);
+                        if (bankList != null && bankList.size() > 0){
+                            // 获取正在使用的最大银行卡ID
+                            BankModel bankCanUseMaxQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
+                                    null,null,null,2,1,4, 0, suffix);
+                            maxBankId = ComponentUtil.bankService.getMaxBankIdByUse(bankCanUseMaxQuery);
+                            sortList = TaskMethod.sortBankList(bankList, maxBankId);
+                        }
+
+                    }else if (bankUpRule == 2){
+                        // 根据银行卡收款金额最小的优先上线
+                        sortList = ComponentUtil.bankService.getBankListByDayMoney(bankCanUseQuery);
+                    }
+
+                    if (sortList != null && sortList.size() > 0){
+                        // check筛选可用的银行卡
+                        for (BankModel checkBankModel : sortList){
+                            boolean checkBank = TaskMethod.checkBankLimit(checkBankModel, 2);
+                            if (checkBank){
+                                upBankModel = new BankModel();
+                                upBankModel = checkBankModel;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (flag){
+                    if (upBankModel != null && upBankModel.getId() != null && upBankModel.getId() > 0){
+                        // 锁住这个银行卡ID
+                        String lockKey = CachedKeyUtils.getCacheKey(TkCacheKey.LOCK_BANK_UPDATE_USE, upBankModel.getId());
+                        boolean flagLock = ComponentUtil.redisIdService.lock(lockKey);
+                        if (flagLock){
+                            // 银行卡上线：更新银行卡使用状态
+                            BankModel upModel = TaskMethod.assembleBankAllUpdate(upBankModel.getId(), 0,0,null,1,0,null,null);
+                            ComponentUtil.bankService.update(upModel);
+                        }
+                        // 解锁
+                        ComponentUtil.redisIdService.delLock(lockKey);
+                    }
+                }
+
+
+                /*long nexBankId = 0;// 下一个银行卡ID
                 if (flag){
                     // 获取正在使用的最大银行卡ID
                     BankModel bankCanUseNumQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
@@ -137,7 +201,7 @@ public class TaskBankUpAndDown {
                         // 解锁
                         ComponentUtil.redisIdService.delLock(lockKey);
                     }
-                }
+                }*/
             }
 
         }
@@ -165,6 +229,10 @@ public class TaskBankUpAndDown {
     @Scheduled(fixedDelay = 9000) // 每9秒执行
     public void bankDown() throws Exception{
 //        log.info("----------------------------------TaskBankUpAndDown.bankDown()----start");
+
+        int curday = DateUtil.getDayNumber(new Date());
+        String suffix = String.valueOf(curday);
+
         // 策略：获取自动上下线银行卡开关
         StrategyModel strategyBankUpAndDownSwitchQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.BANK_UP_AND_DOWN_SWITCH.getStgType());
         StrategyModel strategyBankUpAndDownSwitchModel = ComponentUtil.strategyService.getStrategyModel(strategyBankUpAndDownSwitchQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
@@ -205,7 +273,7 @@ public class TaskBankUpAndDown {
                 boolean flag = false;// 是否需要进行下线卡：true表示需要下线卡，false表示无需下线卡
                 // 计算目前有多少张卡可以上线
                 BankModel bankCanUseNumQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
-                        null,null,null,2,2,4,0);
+                        null,null,null,2,2,4,0, suffix);
                 int canUseNum = ComponentUtil.bankService.countCanUseNum(bankCanUseNumQuery);
                 if (canUseNum > 0){
                     // 表示有可以上线的卡正在候着
@@ -218,7 +286,7 @@ public class TaskBankUpAndDown {
                 if (flag){
                     // 查询已上线的所有卡
                     BankModel bankQuery = TaskMethod.assembleBankQuery(0, 0, 0, merchantModel.getId(),
-                            null,null,null,2,1,4,0);
+                            null,null,null,2,1,4,0, suffix);
                     bankList = ComponentUtil.bankService.findByCondition(bankQuery);
                     if (bankList == null || bankList.size() == 0){
                         // 这里表示没有已上线的卡，所以不存在下线
@@ -273,6 +341,19 @@ public class TaskBankUpAndDown {
                             }
 
                         }
+
+                        if (!flag){
+                            // check银行的日限、月限
+                            boolean checkBank = TaskMethod.checkBankLimit(bankData, 2);
+                            if (!checkBank){
+                                // 表示已经超过放量策略中的日收款额度，余额收款额度，日收款次数的限制了：需要下线此卡
+                                changeStatus = 2;
+                                checkChange = "《请重新换卡，该卡已超过放量额度策略：日额度、月额度、日收款次数中的一项》 "+ "，检测时间：" + DateUtil.getNowPlusTime() + "，银行卡号：" + bankData.getBankCard();
+                                flag = true;
+                            }
+                        }
+
+
 
                         if (flag){
                             // 锁住这个银行卡ID

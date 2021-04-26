@@ -83,4 +83,24 @@ public interface BankService<T> extends BaseService<T> {
      */
     public BankModel getMinBankByNotUse(BankModel model);
 
+
+    /**
+     * @Description: 查询银行卡集合，根据银行卡ID升序排列
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2021/4/26 10:10
+     */
+    public List<BankModel> getBankListByOrderId(BankModel model);
+
+
+    /**
+     * @Description: 查询银行卡集合，根据当日收款金额的升序排列
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2021/4/26 11:07
+    */
+    public List<BankModel> getBankListByDayMoney(BankModel model);
+
 }

@@ -581,4 +581,27 @@
         limit 1
     </select>
 
+    <!-- 查询银行卡集合，根据银行卡ID升序排列 -->
+    <select id="getBankListByOrderId" parameterType="Object" resultType="com.cake.task.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_bank a
+        <include refid="Example_Where_Clause"/>
+        order by a.id asc
+    </select>
+
+
+    <!-- 查询银行卡集合，根据当日收款金额的升序排列 -->
+    <select id="getBankListByDayMoney" parameterType="Object" resultType="com.cake.task.master.core.model.bank.BankModel">
+        select
+        <include refid="Base_Column_List" />,ifnull(convert(b.money,decimal(19,2)), '0.00') as day_money
+        from tb_fr_bank a
+        left join (
+            select a.bank_id,ifnull(sum(convert(a.money,decimal(19,2))), '0.00') as money from tb_fr_bank_collection_day_${suffix} a
+            group by a.bank_id
+        ) b on a.id = b.bank_id
+        <include refid="Example_Where_Clause"/>
+        order by day_money + 1 asc
+    </select>
+
 </mapper>

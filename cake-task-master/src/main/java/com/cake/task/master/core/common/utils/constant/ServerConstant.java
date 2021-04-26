@@ -109,6 +109,7 @@ public class ServerConstant {
         BANK_DOWN_BY_NOT_CHANNEL(23,""),
         //自动上下线-end
         BLACKLIST_NAME(24,""),
+        BANK_UP_RULE(25,""),
 
 
 

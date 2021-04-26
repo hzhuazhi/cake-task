@@ -301,6 +301,16 @@ public class BankModel extends BasePage implements Serializable {
      */
     private Long nextBankId;
 
+    /**
+     * 当天的收款金额
+     */
+    private String dayMoney;
+
+    /**
+     * 表的下表位
+     */
+    private String suffix;
+
 
     public Long getId() {
         return id;
@@ -736,5 +746,21 @@ public class BankModel extends BasePage implements Serializable {
 
     public void setNextBankId(Long nextBankId) {
         this.nextBankId = nextBankId;
+    }
+
+    public String getDayMoney() {
+        return dayMoney;
+    }
+
+    public void setDayMoney(String dayMoney) {
+        this.dayMoney = dayMoney;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 }

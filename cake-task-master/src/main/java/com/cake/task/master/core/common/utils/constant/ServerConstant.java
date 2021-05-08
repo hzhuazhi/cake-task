@@ -110,6 +110,9 @@ public class ServerConstant {
         //自动上下线-end
         BLACKLIST_NAME(24,""),
         BANK_UP_RULE(25,""),
+        IS_LOCK_MONEY(26,""),
+        IS_TRANSFER_USER(27,""),
+        TRANSFER_USER_RULE(28,""),
 
 
 

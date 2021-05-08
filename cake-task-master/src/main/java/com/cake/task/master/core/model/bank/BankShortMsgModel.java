@@ -67,6 +67,11 @@ public class BankShortMsgModel extends BasePage implements Serializable {
     private String lastNum;
 
     /**
+     * 转账用户：用户转账的银行归属名字
+     */
+    private String transferUser;
+
+    /**
      * 订单状态：1初始化，2失败，3脏数据，4成功
      */
     private Integer orderStatus;
@@ -319,5 +324,13 @@ public class BankShortMsgModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public String getTransferUser() {
+        return transferUser;
+    }
+
+    public void setTransferUser(String transferUser) {
+        this.transferUser = transferUser;
     }
 }

@@ -5,6 +5,7 @@ import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.HttpSendUtils;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
+import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
 import com.cake.task.master.core.model.bank.*;
 import com.cake.task.master.core.model.interest.InterestMerchantModel;
@@ -12,6 +13,7 @@ import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
 import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderModel;
+import com.cake.task.master.core.model.strategy.StrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.util.ComponentUtil;
 import com.cake.task.master.util.TaskMethod;
@@ -109,6 +111,15 @@ public class TaskOrder {
         int curday = DateUtil.getDayNumber(new Date());// 当天
         int curdayStart = DateUtil.getMinMonthDate();// 月初
         int curdayEnd = DateUtil.getMaxMonthDate();// 月末
+
+
+        // 策略数据：派单是否锁金额
+        int isLockMoney = 0;// 派单是否锁金额：1锁金额，2不锁金额
+        StrategyModel strategyIsLockMoneyQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.IS_LOCK_MONEY.getStgType());
+        StrategyModel strategyIsLockMoneyModel = ComponentUtil.strategyService.getStrategyModel(strategyIsLockMoneyQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        isLockMoney = strategyIsLockMoneyModel.getStgNumValue();
+
+
         // 获取已成功订单数据
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 0, 0, 0, 0,0,4,null);
         List<OrderModel> synchroList = ComponentUtil.taskOrderService.getDataList(statusQuery);
@@ -191,9 +202,12 @@ public class TaskOrder {
 
                             // 判断是否是补单，不是补单则需要释放银行卡的挂单金额
                             if (data.getReplenishType() == 1){
-                                // 删除redis：删除银行卡此金额的挂单
-                                String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ORDER_MONEY, data.getBankId(), data.getDistributionMoney());
-                                ComponentUtil.redisService.remove(strKeyCache);
+                                // 派单是否锁金额，1锁金额，所以需要删除redis
+                                if (isLockMoney == 1){
+                                    // 删除redis：删除银行卡此金额的挂单
+                                    String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.BANK_ORDER_MONEY, data.getBankId(), data.getDistributionMoney());
+                                    ComponentUtil.redisService.remove(strKeyCache);
+                                }
                             }
 
                             statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 0, 0, 0,0,null);

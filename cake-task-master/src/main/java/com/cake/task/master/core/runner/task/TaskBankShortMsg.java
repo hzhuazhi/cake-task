@@ -85,6 +85,19 @@ public class TaskBankShortMsg {
         blacklistNameList = TaskMethod.getBlacklistNameList(blacklistName);
 
 
+        // 策略数据：是否根据付款人姓名匹配订单
+        int isTransferUser = 0;// 是否根据付款人姓名匹配订单：1无需根据付款人姓名匹配，2需要根据付款人姓名匹配
+        StrategyModel strategyIsTransferUserQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.IS_TRANSFER_USER.getStgType());
+        StrategyModel strategyIsTransferUserModel = ComponentUtil.strategyService.getStrategyModel(strategyIsTransferUserQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        isTransferUser = strategyIsTransferUserModel.getStgNumValue();
+
+        // 策略数据：付款人姓名截取规则
+        List<String> transferUserRuleList = null;// 付款人姓名截取规则：@区分开始截取跟结束截取，#表示分割截取规则。
+        StrategyModel strategyTransferUserRuleQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.TRANSFER_USER_RULE.getStgType());
+        StrategyModel strategyTransferUserRuleModel = ComponentUtil.strategyService.getStrategyModel(strategyTransferUserRuleQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        transferUserRuleList = TaskMethod.getTransferUserRuleListByStrategy(strategyTransferUserRuleModel.getStgBigValue());
+
+
         // 获取银行短信数据
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 0, 1, 0, 0, 0, 0, 0,null);
         List<BankShortMsgModel> synchroList = ComponentUtil.taskBankShortMsgService.getDataList(statusQuery);
@@ -229,10 +242,16 @@ public class TaskBankShortMsg {
                         }
                     }
 
+                    // 检测付款人姓名
+                    String transferUser = "";
+                    if (isTransferUser == 2){
+                        transferUser = TaskMethod.getTransferUserBySms(transferUserRuleList, data.getSmsContent());
+                    }
+
 
 
                     // 更新银行卡短信信息的扩充数据
-                    BankShortMsgModel bankShortMsgModelUpdate = TaskMethod.assembleBankShortMsgUpdate(data.getId(), null, bank_matching.getId(), bank_matching.getBankTypeId(), money, bank_matching.getLastNum());
+                    BankShortMsgModel bankShortMsgModelUpdate = TaskMethod.assembleBankShortMsgUpdate(data.getId(), null, bank_matching.getId(), bank_matching.getBankTypeId(), money, bank_matching.getLastNum(), transferUser);
                     int num = ComponentUtil.bankShortMsgService.update(bankShortMsgModelUpdate);
                     if (num > 0){
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 3, 0, 0,0,null);
@@ -278,6 +297,14 @@ public class TaskBankShortMsg {
         StrategyModel strategyInvalidTimeNumModel = ComponentUtil.strategyService.getStrategyModel(strategyInvalidTimeNumQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
         invalidTimeNum_strategy = strategyInvalidTimeNumModel.getStgNumValue();
 
+
+        // 策略数据：是否根据付款人姓名匹配订单
+        int isTransferUser = 0;// 是否根据付款人姓名匹配订单：1无需根据付款人姓名匹配，2需要根据付款人姓名匹配
+        StrategyModel strategyIsTransferUserQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.IS_TRANSFER_USER.getStgType());
+        StrategyModel strategyIsTransferUserModel = ComponentUtil.strategyService.getStrategyModel(strategyIsTransferUserQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        isTransferUser = strategyIsTransferUserModel.getStgNumValue();
+
+
         // 获取银行短信数据-已经扩充完毕
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 3, 0, 0, 0,0,0,null);
         List<BankShortMsgModel> synchroList = ComponentUtil.taskBankShortMsgService.getDataList(statusQuery);
@@ -308,8 +335,25 @@ public class TaskBankShortMsg {
 
                     String startTime = DateUtil.addAndSubtractDateMinute(data.getCreateTime(), -invalidTimeNum);// 数据的创建时间减订单超时时间=特定时间的前几分中的时间
                     String endTime = data.getCreateTime();
+
+                    // check付款人名字
+                    String transferUser = null;
+                    if (isTransferUser == 2){
+                        if (!StringUtils.isBlank(data.getTransferUser())){
+                            transferUser = data.getTransferUser();
+                        }else{
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"匹配订单失败：没有检测到付款人名字!");
+                            // 更新状态
+                            ComponentUtil.taskBankShortMsgService.updateStatus(statusModel);
+                            // 解锁
+                            ComponentUtil.redisIdService.delLock(lockKey);
+                            continue;
+                        }
+                    }
+
+
                      // 查询订单
-                    OrderModel orderQuery = TaskMethod.assembleOrderQuery(0, data.getBankId(), null,0,null, data.getMoney(), 1, null, 1, startTime, endTime);
+                    OrderModel orderQuery = TaskMethod.assembleOrderQuery(0, data.getBankId(), null,0,null, data.getMoney(), 1, null, 1, startTime, endTime, transferUser);
                     List<OrderModel> orderList = ComponentUtil.orderService.findByCondition(orderQuery);
                     if (orderList == null || orderList.size() <= 0){
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"匹配订单失败：根据银行卡ID、金额、订单状态、创建时间未匹配到订单!");
@@ -333,7 +377,7 @@ public class TaskBankShortMsg {
 
                     // 只匹配到一个订单号
                     // 更新银行卡短信信息的扩充数据
-                    BankShortMsgModel bankShortMsgModelUpdate = TaskMethod.assembleBankShortMsgUpdate(data.getId(), orderList.get(0).getOrderNo(), 0, 0, null, null);
+                    BankShortMsgModel bankShortMsgModelUpdate = TaskMethod.assembleBankShortMsgUpdate(data.getId(), orderList.get(0).getOrderNo(), 0, 0, null, null, null);
                     ComponentUtil.bankShortMsgService.update(bankShortMsgModelUpdate);
 
                     // 更新订单号的状态

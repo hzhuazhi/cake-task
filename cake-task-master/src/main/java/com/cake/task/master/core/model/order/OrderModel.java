@@ -137,6 +137,11 @@ public class OrderModel extends BasePage implements Serializable {
     private String serviceCharge;
 
     /**
+     * 转账用户：用户转账的银行归属名字
+     */
+    private String transferUser;
+
+    /**
      * 是否是补单：1初始化不是补单，2是补单
      */
     private Integer replenishType;
@@ -633,5 +638,13 @@ public class OrderModel extends BasePage implements Serializable {
 
     public void setNotInChannelIdList(List<Long> notInChannelIdList) {
         this.notInChannelIdList = notInChannelIdList;
+    }
+
+    public String getTransferUser() {
+        return transferUser;
+    }
+
+    public void setTransferUser(String transferUser) {
+        this.transferUser = transferUser;
     }
 }

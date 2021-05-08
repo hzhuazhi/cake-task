@@ -604,11 +604,12 @@ public class TaskMethod {
      * @param bankTypeId - 银行卡类型
      * @param money - 收款金额
      * @param lastNum - 银行卡尾号
+     * @param transferUser - 付款人姓名
      * @return BankShortMsgStrategyModel
      * @author yoko
      * @date 2020/9/14 19:59
      */
-    public static BankShortMsgModel assembleBankShortMsgUpdate(long id, String orderNo, long bankId, long bankTypeId, String money, String lastNum){
+    public static BankShortMsgModel assembleBankShortMsgUpdate(long id, String orderNo, long bankId, long bankTypeId, String money, String lastNum, String transferUser){
         BankShortMsgModel resBean = new BankShortMsgModel();
         if (id > 0){
             resBean.setId(id);
@@ -630,6 +631,9 @@ public class TaskMethod {
         }
         if (!StringUtils.isBlank(lastNum)){
             resBean.setLastNum(lastNum);
+        }
+        if (!StringUtils.isBlank(transferUser)){
+            resBean.setTransferUser(transferUser);
         }
         return resBean;
     }
@@ -653,7 +657,7 @@ public class TaskMethod {
      * @date 2020/9/14 20:54
      */
     public static OrderModel assembleOrderQuery(long id, long bankId, String orderNo, int orderType, String orderMoney, String distributionMoney, int orderStatus,
-                                                String orderStatusStr, int replenishType, String startTime, String endTime){
+                                                String orderStatusStr, int replenishType, String startTime, String endTime, String transferUser){
         OrderModel resBean = new OrderModel();
         if (id > 0){
             resBean.setId(id);
@@ -685,6 +689,9 @@ public class TaskMethod {
         if (!StringUtils.isBlank(startTime) && !StringUtils.isBlank(endTime)){
             resBean.setStartTime(startTime);
             resBean.setEndTime(endTime);
+        }
+        if (!StringUtils.isBlank(transferUser)){
+            resBean.setTransferUser(transferUser);
         }
         return resBean;
     }
@@ -2603,6 +2610,72 @@ public class TaskMethod {
         }
     }
 
+    /**
+     * @Description: 付款人姓名截取规则：#表示分割截取规则，根据#进行组装数据
+     * @param strategyData
+     * @return
+     * @author yoko
+     * @date 2021/5/8 14:08
+    */
+    public static List<String> getTransferUserRuleListByStrategy(String strategyData){
+        List<String> resList = new ArrayList<>();
+        if (!StringUtils.isBlank(strategyData)){
+            String[] strArr = strategyData.split("#");
+            for(String str : strArr){
+                resList.add(str);
+            }
+        }else {
+            return null;
+        }
+        return resList;
+    }
+
+    /**
+     * @Description: 从短信内容中获取付款人名字
+     * @param transferUserRuleList - 截取付款人的开始以及截至规则
+     * @param smsContent - 短信内容
+     * @return java.lang.String
+     * @author yoko
+     * @date 2021/5/8 14:52
+     */
+    public static String getTransferUserBySms(List<String> transferUserRuleList, String smsContent){
+        String str = null;
+        int startIndex = 0;
+        int endIndex = 0;
+        if (transferUserRuleList != null && transferUserRuleList.size() > 0){
+            for (String strRule : transferUserRuleList){
+                String [] strRuleArr = strRule.split("@");
+                startIndex = getIndexOfByStr(smsContent, strRuleArr[0]);
+                if (startIndex > 0){
+                    startIndex = startIndex + strRuleArr[0].length();
+                }else {
+                    continue;
+                }
+
+//            endIndex = getIndexOfByStr(smsContent, bankShortMsgStrategyModel.getEndMoney());
+                endIndex = getIndexOfByStrByIndex(smsContent, strRuleArr[1], startIndex);
+                if (endIndex > 0){
+                }else {
+                    continue;
+                }
+
+                if (startIndex <= 0 || endIndex <= 0){
+                    continue;
+                }
+
+                String transferUser = smsContent.substring(startIndex, endIndex);
+                if (!StringUtils.isBlank(transferUser)){
+                    str = transferUser;
+                }else {
+                    continue;
+                }
+            }
+        }else{
+            return null;
+        }
+
+        return str;
+    }
 
 
     public static void main(String []args){
@@ -2670,6 +2743,19 @@ public class TaskMethod {
 
         String lastStr = "1234";
         System.out.println("lastStr:" + lastStr.substring(lastStr.length()- 4));
+
+        String str2 = "1对方户名：@，#aasdas@121";
+        List<String> strList1 = getTransferUserRuleListByStrategy(str2);
+        System.out.println("strList1:" + strList1.size());
+        if (strList1 != null && strList1.size() > 0){
+            for (String str3 : strList1){
+                System.out.println("str3:" + str3);
+            }
+        }
+
+        String smsData = "您尾号1335卡4月30日18:37手机银行支出(跨行汇款)1,700元，余额279.33元，对方户名：李学辉，对方账户尾号：1376";
+        String transferUser = getTransferUserBySms(strList1, smsData);
+        System.out.println("transferUser:" + transferUser);
 
     }
 

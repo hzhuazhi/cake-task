@@ -4,6 +4,7 @@ import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
+import com.cake.task.master.core.common.utils.sandpay.model.AgentPayResponse;
 import com.cake.task.master.core.model.bank.*;
 import com.cake.task.master.core.model.channel.ChannelBankModel;
 import com.cake.task.master.core.model.channel.ChannelModel;
@@ -17,6 +18,9 @@ import com.cake.task.master.core.model.mobilecard.MobileCardModel;
 import com.cake.task.master.core.model.mobilecard.MobileCardShortMsgModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayGainModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayGainResultModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import com.cake.task.master.core.model.shortmsg.ShortMsgArrearsModel;
 import com.cake.task.master.core.model.shortmsg.ShortMsgStrategyModel;
 import com.cake.task.master.core.model.strategy.StrategyModel;
@@ -2675,6 +2679,251 @@ public class TaskMethod {
         }
 
         return str;
+    }
+
+
+    /**
+     * @Description: 组装查询代付的查询条件
+     * @param id - 代付主键ID
+     * @param merchantId - 卡商ID
+     * @param isOk - 是否测试通过：1未通过，2通过；收到银行卡短信，并且解析短信模板配置正确
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayModel
+     * @author yoko
+     * @date 2021/6/22 16:45
+     */
+    public static ReplacePayModel assembleReplacePayQuery(long id, long merchantId, int isOk, int useStatus){
+        ReplacePayModel resBean = new ReplacePayModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (merchantId > 0){
+            resBean.setMerchantId(merchantId);
+        }
+        if (isOk > 0){
+            resBean.setIsOk(isOk);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装更新代付余额的方法
+     * @param id - 主键ID
+     * @param balance - 余额
+     * @param useBalance - 可用余额
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayModel
+     * @author yoko
+     * @date 2021/6/22 16:54
+     */
+    public static ReplacePayModel assembleReplacePayUpdateBalance(long id, String balance, String useBalance){
+        ReplacePayModel resBean = new ReplacePayModel();
+        resBean.setId(id);
+        if (!StringUtils.isBlank(balance)){
+            resBean.setBalance(balance);
+        }
+        if (!StringUtils.isBlank(useBalance)){
+            resBean.setUseBalance(useBalance);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询第三方代付主动拉取结果的查询数据
+     * @param limitNum - 查询条数
+     * @param runType - 运算类型
+     * @param sendType - 发送类型
+     * @param id - 主键ID
+     * @param replacePayId - 代付ID
+     * @param nextTime - 下次查询时间
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayGainModel
+     * @author yoko
+     * @date 2021/6/22 18:13
+     */
+    public static ReplacePayGainModel assembleReplacePayGainQuery(int limitNum, int runType, int sendType, long id, long replacePayId, String nextTime){
+        ReplacePayGainModel resBean = new ReplacePayGainModel();
+        if (limitNum > 0){
+            resBean.setLimitNum(limitNum);
+        }
+        if (runType > 0){
+            resBean.setRunStatus(ServerConstant.PUBLIC_CONSTANT.RUN_STATUS_THREE);
+            resBean.setRunNum(ServerConstant.PUBLIC_CONSTANT.RUN_NUM_FIVE);
+        }
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (replacePayId > 0){
+            resBean.setReplacePayId(replacePayId);
+        }
+        if (!StringUtils.isBlank(nextTime)){
+            resBean.setNextTime(nextTime);
+        }
+        if (sendType > 0){
+            resBean.setSendStatus(ServerConstant.PUBLIC_CONSTANT.RUN_STATUS_THREE);
+            resBean.setSendNum(ServerConstant.PUBLIC_CONSTANT.RUN_NUM_FIVE);
+        }
+        return resBean;
+
+    }
+
+    /**
+     * @Description: 组装查询代付信息的查询条件
+     * @param id - 主键ID
+     * @return
+     * @author yoko
+     * @date 2021/6/22 18:36
+    */
+    public static ReplacePayModel assembleReplacePayByIdQuery(long id){
+        ReplacePayModel resBean = new ReplacePayModel();
+        resBean.setId(id);
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装更新第三方代付主动拉取结果的方法
+     * @param id - 主键ID
+     * @param runStatus - 运行状态
+     * @param sendStatus - 发送状态
+     * @param nextTime - 下次查询时间
+     * @param nowGainDataTime - 当前主动获取订单的间隔时间
+     * @param dataExplain - 解析说明
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayGainModel
+     * @author yoko
+     * @date 2021/6/22 18:42
+     */
+    public static ReplacePayGainModel assembleReplacePayGainUpdate(long id, int runStatus, int sendStatus, String nextTime, String nowGainDataTime, String dataExplain){
+        ReplacePayGainModel resBean = new ReplacePayGainModel();
+        resBean.setId(id);
+        if (runStatus > 0){
+            resBean.setRunStatus(runStatus);
+            if (runStatus == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
+                // 表示失败：失败则需要运行次数加一
+                resBean.setRunNum(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+            }
+        }
+        if (sendStatus > 0){
+            resBean.setSendStatus(sendStatus);
+            if (sendStatus == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
+                // 表示失败：失败则需要运行次数加一
+                resBean.setSendNum(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+            }
+        }
+        if (!StringUtils.isBlank(nextTime)){
+            resBean.setNextTime(nextTime);
+        }
+        if (!StringUtils.isBlank(nowGainDataTime)){
+            resBean.setNowGainDataTime(nowGainDataTime);
+        }
+        if (!StringUtils.isBlank(dataExplain)){
+            resBean.setDataExplain(dataExplain);
+        }
+        return resBean;
+    }
+
+    /**
+     * @Description: 组装第三方代付主动拉取结果的下次查询时间
+     * @param replacePayModel - 代付信息
+     * @param nowGainDataTime - 第三方代付主动拉取结果的当前时间间隔
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayGainModel
+     * @author yoko
+     * @date 2021/6/22 19:16
+     */
+    public static ReplacePayGainModel assembleReplacePayGainTime(ReplacePayModel replacePayModel, String nowGainDataTime){
+        ReplacePayGainModel resBean = new ReplacePayGainModel();
+        if (replacePayModel.getGainDataTimeType() == 1){
+            // 主动获取订单结果的间隔时间类型：1任意时间都可查询，2固定时间，3集合某时间间隔（5分钟，8分钟....）
+            // 主动获取订单结果的间隔时间类型：1任意时间都可查询
+            String next_time = DateUtil.addDateMinute(1);
+            resBean.setNextTime(next_time);
+            resBean.setNowGainDataTime("1");
+        }else if (replacePayModel.getGainDataTimeType() == 2){
+            String next_time = DateUtil.addDateMinute(Integer.parseInt(replacePayModel.getGainDataTime()));
+            resBean.setNextTime(next_time);
+            resBean.setNowGainDataTime("1");
+        }else if (replacePayModel.getGainDataTimeType() == 3){
+//            List<String> strList = new ArrayList<>();
+            String next_time = "";
+            String nowGainDataTime_up = "";
+            String [] strArr = replacePayModel.getGainDataTime().split("#");
+            if (nowGainDataTime.equals("1")){
+                next_time = DateUtil.addDateMinute(Integer.parseInt(strArr[0]));
+                nowGainDataTime_up = strArr[0];
+            }else{
+                int strArrSize = strArr.length;
+                int num = 0;
+                for (String str : strArr){
+                    num ++;
+                    if (str.equals(nowGainDataTime)){
+                        break;
+                    }
+                }
+                if (strArrSize != num){
+                    next_time = DateUtil.addDateMinute(Integer.parseInt(strArr[num + 1]));
+                    nowGainDataTime_up = strArr[num + 1];
+                }else{
+                    next_time = DateUtil.addDateMinute(1);
+                    nowGainDataTime_up = "-1";
+                }
+
+            }
+            resBean.setNextTime(next_time);
+            resBean.setNowGainDataTime(nowGainDataTime_up);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装第三方代付主动拉取结果返回的订单结果的方法
+     * @param replacePayGainModel - 第三方代付主动拉取结果的信息
+     * @param agentPayResponse -  第三方返回的订单信息
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayGainResultModel
+     * @author yoko
+     * @date 2021/6/22 19:53
+     */
+    public static ReplacePayGainResultModel assembleReplacePayGainResultAdd(ReplacePayGainModel replacePayGainModel, AgentPayResponse agentPayResponse){
+        ReplacePayGainResultModel resBean = new ReplacePayGainResultModel();
+        resBean.setReplacePayId(replacePayGainModel.getReplacePayId());
+        resBean.setOrderNo(replacePayGainModel.getOrderNo());
+        resBean.setTradeTime(replacePayGainModel.getTradeTime());
+        resBean.setSupplierTradeNo(agentPayResponse.sandSerial);
+        resBean.setTranFee(agentPayResponse.tranFee);
+        resBean.setTradeStatus(4);
+        resBean.setExtraFee(agentPayResponse.extraFee);
+        resBean.setHolidayFee(agentPayResponse.holidayFee);
+
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+
+    /**
+     * @Description: 组装更新代付订单状态的信息
+     * @param replacePayGainResultModel - 第三方代付主动拉取结果返回的订单结果
+     * @param orderStatus - 订单状态：1初始化，2超时，3质疑，4成功
+     * @return com.cake.task.master.core.model.order.OrderOutModel
+     * @author yoko
+     * @date 2021/6/23 15:19
+     */
+    public static OrderOutModel assembleOrderOutUpdateBySand(ReplacePayGainResultModel replacePayGainResultModel, int orderStatus){
+        OrderOutModel resBean = new OrderOutModel();
+        resBean.setOrderNo(replacePayGainResultModel.getOrderNo());
+        resBean.setOrderStatus(orderStatus);
+        if (!StringUtils.isBlank(replacePayGainResultModel.getSupplierTradeNo())){
+            resBean.setSupplierTradeNo(replacePayGainResultModel.getSupplierTradeNo());
+        }
+        if (!StringUtils.isBlank(replacePayGainResultModel.getTranFee())){
+            resBean.setSupplierServiceCharge(replacePayGainResultModel.getTranFee());
+        }
+        return resBean;
     }
 
 

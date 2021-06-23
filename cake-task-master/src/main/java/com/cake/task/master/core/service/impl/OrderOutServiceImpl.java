@@ -3,6 +3,7 @@ package com.cake.task.master.core.service.impl;
 import com.cake.task.master.core.common.dao.BaseDao;
 import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.mapper.OrderOutMapper;
+import com.cake.task.master.core.model.order.OrderOutModel;
 import com.cake.task.master.core.service.OrderOutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,9 +47,8 @@ public class OrderOutServiceImpl<T> extends BaseServiceImpl<T> implements OrderO
     }
 
 
-
-
-
-
-
+    @Override
+    public int updateOrderStatusBySand(OrderOutModel model) {
+        return orderOutMapper.updateOrderStatusBySand(model);
+    }
 }

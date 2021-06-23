@@ -55,6 +55,16 @@ public class OrderOutModel extends BasePage implements Serializable {
     private String serviceCharge;
 
     /**
+     * 订单处理类型：1我方处理，2第三方处理
+     */
+    private Integer handleType;
+
+    /**
+     * 代付订单出码状态:1初始化（我方处理默认初始化），2出码成功（第三方反馈结果），3出码失败
+     */
+    private Integer outStatus;
+
+    /**
      * 失效时间：审核失效时间，超过多久没有点击审核通过则默认审核通过
      */
     private String invalidTime;
@@ -118,6 +128,32 @@ public class OrderOutModel extends BasePage implements Serializable {
      * 商户名称
      */
     private String channelName;
+
+    /**
+     * 归属代付资源ID：对应表tb_fr_replace_pay的主键ID
+     */
+    private Long replacePayId;
+
+
+    /**
+     * 代付名称
+     */
+    private String replacePayName;
+
+    /**
+     *上游订单号：供应商订单号、对接放的订单号
+     */
+    private String supplierTradeNo;
+
+    /**
+     * 交易时间时间戳
+     */
+    private String tradeTime;
+
+    /**
+     * 上游手续费
+     */
+    private String supplierServiceCharge;
 
     /**
      * 充值记录银行卡转账图片凭证
@@ -611,5 +647,61 @@ public class OrderOutModel extends BasePage implements Serializable {
 
     public void setFailInfo(String failInfo) {
         this.failInfo = failInfo;
+    }
+
+    public Integer getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(Integer handleType) {
+        this.handleType = handleType;
+    }
+
+    public Integer getOutStatus() {
+        return outStatus;
+    }
+
+    public void setOutStatus(Integer outStatus) {
+        this.outStatus = outStatus;
+    }
+
+    public Long getReplacePayId() {
+        return replacePayId;
+    }
+
+    public void setReplacePayId(Long replacePayId) {
+        this.replacePayId = replacePayId;
+    }
+
+    public String getSupplierTradeNo() {
+        return supplierTradeNo;
+    }
+
+    public void setSupplierTradeNo(String supplierTradeNo) {
+        this.supplierTradeNo = supplierTradeNo;
+    }
+
+    public String getTradeTime() {
+        return tradeTime;
+    }
+
+    public void setTradeTime(String tradeTime) {
+        this.tradeTime = tradeTime;
+    }
+
+    public String getSupplierServiceCharge() {
+        return supplierServiceCharge;
+    }
+
+    public void setSupplierServiceCharge(String supplierServiceCharge) {
+        this.supplierServiceCharge = supplierServiceCharge;
+    }
+
+    public String getReplacePayName() {
+        return replacePayName;
+    }
+
+    public void setReplacePayName(String replacePayName) {
+        this.replacePayName = replacePayName;
     }
 }

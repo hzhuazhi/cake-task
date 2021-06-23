@@ -150,6 +150,21 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private BankCollectionDayService bankCollectionDayService;
 
+    @Autowired
+    private static ReplacePayService replacePayService;
+
+    @Autowired
+    private static ReplacePayStrategyService replacePayStrategyService;
+
+    @Autowired
+    private static ReplacePayInfoService replacePayInfoService;
+
+    @Autowired
+    private static ReplacePayGainService replacePayGainService;
+
+    @Autowired
+    private static ReplacePayGainResultService replacePayGainResultService;
+
 
 
 
@@ -205,6 +220,12 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private TaskMerchantWithdrawService taskMerchantWithdrawService;
 
+    @Autowired
+    private TaskReplacePayGainService taskReplacePayGainService;
+
+    @Autowired
+    private TaskReplacePayGainResultService taskReplacePayGainResultService;
+
 
 
 
@@ -259,6 +280,12 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.bankLeadLinkService = bankLeadLinkService;
         ComponentUtil.bankLeadCollectionService = bankLeadCollectionService;
         ComponentUtil.bankCollectionDayService = bankCollectionDayService;
+        ComponentUtil.replacePayService = replacePayService;
+        ComponentUtil.replacePayStrategyService = replacePayStrategyService;
+        ComponentUtil.replacePayInfoService = replacePayInfoService;
+        ComponentUtil.replacePayGainService = replacePayGainService;
+        ComponentUtil.replacePayGainResultService = replacePayGainResultService;
+
 
 
 
@@ -278,6 +305,8 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskChannelWithdrawService = taskChannelWithdrawService;
         ComponentUtil.taskWithdrawService = taskWithdrawService;
         ComponentUtil.taskMerchantWithdrawService = taskMerchantWithdrawService;
+        ComponentUtil.taskReplacePayGainService = taskReplacePayGainService;
+        ComponentUtil.taskReplacePayGainResultService = taskReplacePayGainResultService;
 
 
         runThread = new RunThread();

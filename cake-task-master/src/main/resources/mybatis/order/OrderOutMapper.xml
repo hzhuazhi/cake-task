@@ -5,9 +5,9 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.order_no,a.order_money,a.out_trade_no,a.order_status,a.order_type,a.service_charge,a.invalid_time,a.in_bank_card,
+        a.id,a.alias,a.order_no,a.order_money,a.out_trade_no,a.order_status,a.order_type,a.service_charge,a.handle_type,a.out_status,a.invalid_time,a.in_bank_card,
         a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.merchant_id,a.merchant_name,a.merchant_site_id,a.merchant_site_name,
-        a.channel_id,a.channel_name,a.picture_ads,a.fail_info,a.check_status,a.check_info,a.notify_url,a.operate_status,a.work_type,a.data_explain,
+        a.channel_id,a.channel_name,a.replace_pay_id,a.replace_pay_name,a.supplier_trade_no,a.trade_time,a.supplier_service_charge,a.picture_ads,a.fail_info,a.check_status,a.check_info,a.notify_url,a.operate_status,a.work_type,a.data_explain,
         a.remark,a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_user_id,a.create_role_id,a.update_user_id,a.update_role_id,
         a.create_time,a.update_time,a.yn
@@ -31,6 +31,18 @@
             </if>
             <if test="orderType != null and orderType != '' " >
                 and a.order_type = #{orderType}
+            </if>
+            <if test="handleType != null and handleType != '' " >
+                and a.handle_type = #{handleType}
+            </if>
+            <if test="outStatus != null and outStatus != '' " >
+                and a.out_status = #{outStatus}
+            </if>
+            <if test="replacePayId != null and replacePayId != '' " >
+                and a.replace_pay_id = #{replacePayId}
+            </if>
+            <if test="supplierTradeNo != null and supplierTradeNo != '' " >
+                and a.supplier_trade_no = #{supplierTradeNo}
             </if>
             <if test="invalidTimeStart != null and invalidTimeStart != '' " >
                 and a.invalid_time > now()
@@ -160,6 +172,12 @@
             <if test="serviceCharge != null and serviceCharge != '' " >
                 service_charge,
             </if>
+            <if test="handleType != null and handleType != '' " >
+                handle_type,
+            </if>
+            <if test="outStatus != null and outStatus != '' " >
+                out_status,
+            </if>
             <if test="invalidTime != null and invalidTime != '' " >
                 invalid_time,
             </if>
@@ -198,6 +216,21 @@
             </if>
             <if test="channelName != null and channelName != '' " >
                 channel_name,
+            </if>
+            <if test="replacePayId != null and replacePayId != '' " >
+                replace_pay_id,
+            </if>
+            <if test="replacePayName != null and replacePayName != '' " >
+                replace_pay_name,
+            </if>
+            <if test="supplierTradeNo != null and supplierTradeNo != '' " >
+                supplier_trade_no,
+            </if>
+            <if test="tradeTime != null and tradeTime != '' " >
+                trade_time,
+            </if>
+            <if test="supplierServiceCharge != null and supplierServiceCharge != '' " >
+                supplier_service_charge,
             </if>
             <if test="pictureAds != null and pictureAds != '' " >
                 picture_ads,
@@ -269,6 +302,12 @@
             <if test="serviceCharge != null and serviceCharge != '' " >
                 <![CDATA[  #{serviceCharge}, ]]>
             </if>
+            <if test="handleType != null and handleType != '' " >
+                <![CDATA[  #{handleType}, ]]>
+            </if>
+            <if test="outStatus != null and outStatus != '' " >
+                <![CDATA[  #{outStatus}, ]]>
+            </if>
             <if test="invalidTime != null and invalidTime != '' " >
                 <![CDATA[  #{invalidTime}, ]]>
             </if>
@@ -307,6 +346,21 @@
             </if>
             <if test="channelName != null and channelName != '' " >
                 <![CDATA[  #{channelName}, ]]>
+            </if>
+            <if test="replacePayId != null and replacePayId != '' " >
+                <![CDATA[  #{replacePayId}, ]]>
+            </if>
+            <if test="replacePayName != null and replacePayName != '' " >
+                <![CDATA[  #{replacePayName}, ]]>
+            </if>
+            <if test="supplierTradeNo != null and supplierTradeNo != '' " >
+                <![CDATA[  #{supplierTradeNo}, ]]>
+            </if>
+            <if test="tradeTime != null and tradeTime != '' " >
+                <![CDATA[  #{tradeTime}, ]]>
+            </if>
+            <if test="supplierServiceCharge != null and supplierServiceCharge != '' " >
+                <![CDATA[  #{supplierServiceCharge}, ]]>
             </if>
             <if test="pictureAds != null and pictureAds != '' " >
                 <![CDATA[  #{pictureAds}, ]]>
@@ -382,6 +436,12 @@
             <if test="serviceCharge != null and serviceCharge != '' " >
                 a.service_charge = #{serviceCharge},
             </if>
+            <if test="handleType != null and handleType != '' " >
+                a.handle_type = #{handleType},
+            </if>
+            <if test="outStatus != null and outStatus != '' " >
+                a.out_status = #{outStatus},
+            </if>
             <if test="invalidTime != null and invalidTime != '' " >
                 a.invalid_time = #{invalidTime},
             </if>
@@ -420,6 +480,21 @@
             </if>
             <if test="channelName != null and channelName != '' " >
                 a.channel_name = #{channelName},
+            </if>
+            <if test="replacePayId != null and replacePayId != '' " >
+                a.replace_pay_id = #{replacePayId},
+            </if>
+            <if test="replacePayName != null and replacePayName != '' " >
+                a.replace_pay_name = #{replacePayName},
+            </if>
+            <if test="supplierTradeNo != null and supplierTradeNo != '' " >
+                a.supplier_trade_no = #{supplierTradeNo},
+            </if>
+            <if test="tradeTime != null and tradeTime != '' " >
+                a.trade_time = #{tradeTime},
+            </if>
+            <if test="supplierServiceCharge != null and supplierServiceCharge != '' " >
+                a.supplier_service_charge = #{supplierServiceCharge},
             </if>
             <if test="pictureAds != null and pictureAds != '' " >
                 a.picture_ads = #{pictureAds},
@@ -473,6 +548,30 @@
         </trim>
         where 1=1
         <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+
+
+    <!-- 更新代付订单的订单状态 -->
+    <update id="updateOrderStatusBySand" parameterType="com.cake.task.master.core.model.order.OrderOutModel">
+        UPDATE tb_fr_order_out a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="supplierTradeNo != null and supplierTradeNo != '' " >
+                a.supplier_trade_no = #{supplierTradeNo},
+            </if>
+            <if test="supplierServiceCharge != null and supplierServiceCharge != '' " >
+                a.supplier_service_charge = #{supplierServiceCharge},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.order_no = #{orderNo}
+        and a.yn = 0
     </update>
 
 

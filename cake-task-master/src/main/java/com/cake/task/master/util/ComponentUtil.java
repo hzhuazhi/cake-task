@@ -52,6 +52,11 @@ public class ComponentUtil {
     public static BankLeadLinkService bankLeadLinkService;
     public static BankLeadCollectionService bankLeadCollectionService;
     public static BankCollectionDayService bankCollectionDayService;
+    public static ReplacePayService replacePayService;
+    public static ReplacePayStrategyService replacePayStrategyService;
+    public static ReplacePayInfoService replacePayInfoService;
+    public static ReplacePayGainService replacePayGainService;
+    public static ReplacePayGainResultService replacePayGainResultService;
 
 
 
@@ -71,5 +76,7 @@ public class ComponentUtil {
     public static TaskChannelWithdrawService taskChannelWithdrawService;
     public static TaskWithdrawService taskWithdrawService;
     public static TaskMerchantWithdrawService taskMerchantWithdrawService;
+    public static TaskReplacePayGainService taskReplacePayGainService;
+    public static TaskReplacePayGainResultService taskReplacePayGainResultService;
 
 }

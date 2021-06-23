@@ -141,4 +141,9 @@ public interface CacheKey {
      */
     String CHANNEL_ID = "-23";
 
+    /**
+     * 代付数据
+     */
+    String REPLACE_PAY = "-24";
+
 }

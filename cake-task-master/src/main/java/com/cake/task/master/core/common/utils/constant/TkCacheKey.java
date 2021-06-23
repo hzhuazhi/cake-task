@@ -181,6 +181,17 @@ public interface TkCacheKey {
      */
     String LOCK_BANK_UPDATE_USE = "-32";
 
+    /**
+     * LOCK-第三方代付主动拉取结果的数据处理
+     */
+    String LOCK_REPLACE_PAY_GAIN = "-33";
+
+    /**
+     * LOCK-第三方代付主动拉取结果返回的订单结果
+     */
+    String LOCK_REPLACE_PAY_GAIN_RESULT = "-34";
+
+
 
 
 }

@@ -6,11 +6,13 @@ import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.mapper.InterestProfitMapper;
 import com.cake.task.master.core.mapper.MerchantBalanceDeductMapper;
 import com.cake.task.master.core.mapper.MerchantProfitMapper;
+import com.cake.task.master.core.mapper.ReplacePayInfoMapper;
 import com.cake.task.master.core.mapper.task.TaskOrderOutMapper;
 import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
 import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayInfoModel;
 import com.cake.task.master.core.service.task.TaskOrderOutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,9 @@ public class TaskOrderOutServiceImpl<T> extends BaseServiceImpl<T> implements Ta
     @Autowired
     private InterestProfitMapper interestProfitMapper;
 
+    @Autowired
+    private ReplacePayInfoMapper replacePayInfoMapper;
+
 
 
     public BaseDao<T> getDao() {
@@ -63,12 +68,14 @@ public class TaskOrderOutServiceImpl<T> extends BaseServiceImpl<T> implements Ta
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public boolean handleSuccessOrderOut(MerchantBalanceDeductModel merchantBalanceDeductUpdate, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList) throws Exception {
+    public boolean handleSuccessOrderOut(MerchantBalanceDeductModel merchantBalanceDeductUpdate, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, ReplacePayInfoModel replacePayInfoModel) throws Exception {
         int num1 = 0;
         int num2 = 0;
         int num3 = 0;
+        int num4 = 0;
         try {
             num1 = merchantBalanceDeductMapper.updateOrderStatusByOrderNo(merchantBalanceDeductUpdate);
+            num4 = replacePayInfoMapper.add(replacePayInfoModel);// 注意：这里没有把这个方法写到事物判断里面了
             if (merchantProfitModel == null){
                 num2 = 1;
             }else {

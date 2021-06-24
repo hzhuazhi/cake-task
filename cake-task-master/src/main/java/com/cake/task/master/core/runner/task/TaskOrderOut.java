@@ -1,6 +1,7 @@
 package com.cake.task.master.core.runner.task;
 
 import com.alibaba.fastjson.JSON;
+import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.HttpSendUtils;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
@@ -10,6 +11,8 @@ import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
 import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayInfoModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayStrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.util.ComponentUtil;
 import com.cake.task.master.util.HodgepodgeMethod;
@@ -22,6 +25,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +69,9 @@ public class TaskOrderOut {
     @Scheduled(fixedDelay = 5000) // 每秒执行
     public void orderStatus() throws Exception{
 //        log.info("----------------------------------TaskOrderOut.orderStatus()----start");
+        int curday = DateUtil.getDayNumber(new Date());// 当天
+        int curdayStart = DateUtil.getMinMonthDate();// 月初
+        int curdayEnd = DateUtil.getMaxMonthDate();// 月末
 
         // 获取未跑的代付订单，并且订单状态不是初始化的
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 0, 0, 1, 0,0,0,null);
@@ -98,13 +105,42 @@ public class TaskOrderOut {
                         List<InterestMerchantModel> interestMerchantList = ComponentUtil.interestMerchantService.findByCondition(interestMerchantQuery);
                         // 组装利益者的利益
                         List<InterestProfitModel> interestProfitList = TaskMethod.assembleInterestProfitListByOrderOut(interestMerchantList, data, 2);
+                        // 组装代付成功数据
+                        ReplacePayInfoModel replacePayInfoModel = TaskMethod.assembleReplacePayInfoAdd(0, data.getReplacePayId(), data.getOrderNo(), data.getOrderMoney());
+
+
                         // 执行事务-正式处理逻辑
-                        flag = ComponentUtil.taskOrderOutService.handleSuccessOrderOut(merchantBalanceDeductUpdate, merchantProfitModel, interestProfitList);
+                        flag = ComponentUtil.taskOrderOutService.handleSuccessOrderOut(merchantBalanceDeductUpdate, merchantProfitModel, interestProfitList, replacePayInfoModel);
                     }
 
                     if (flag){
                         // 成功
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 0, 0, 0,0,null);
+
+                        // 计算第三方的放量限制
+                        if (data.getReplacePayId() != null && data.getReplacePayId() > 0){
+                            // 获取此代付的放量策略
+                            ReplacePayStrategyModel replacePayStrategyQuery = TaskMethod.assembleReplacePayStrategyQuery(0, data.getReplacePayId(), 1);
+                            ReplacePayStrategyModel replacePayStrategyModel = (ReplacePayStrategyModel)ComponentUtil.replacePayStrategyService.findByObject(replacePayStrategyQuery);
+                            if (replacePayStrategyModel != null && replacePayStrategyModel.getId() != null && replacePayStrategyModel.getId() > 0){
+                                // 获取日代付成功的次数
+                                OrderOutModel orderByDayNumQuery = TaskMethod.assembleOrderOutByLimitQuery(data.getReplacePayId(), 0, 4, 0,curday, 0, 0);
+                                int dayNum = ComponentUtil.orderOutService.countOrder(orderByDayNumQuery);
+
+                                // 获取日代付成功的金额
+                                OrderOutModel orderByDayMoneyQuery = TaskMethod.assembleOrderOutByLimitQuery(data.getReplacePayId(), 0, 4, 0,curday, 0, 0);
+                                String dayMoney = ComponentUtil.orderOutService.sumOrderMoney(orderByDayMoneyQuery);
+
+                                // 获取月代付成功的金额
+                                OrderOutModel orderByMonthMoneyQuery = TaskMethod.assembleOrderOutByLimitQuery(data.getReplacePayId(), 0, 4,0, 0, curdayStart, curdayEnd);
+                                String monthMoney = ComponentUtil.orderOutService.sumOrderMoney(orderByMonthMoneyQuery);
+
+                                // check代付的放量限制：如果超过策略的放量，则会存redis缓存
+                                ComponentUtil.replacePayStrategyService.replacePayStrategyLimit(replacePayStrategyModel, dayNum, dayMoney, monthMoney);
+                            }
+
+
+                        }
                     }else {
                         // 失败
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,null);

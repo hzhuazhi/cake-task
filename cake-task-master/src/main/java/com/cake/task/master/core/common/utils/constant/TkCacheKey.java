@@ -191,6 +191,10 @@ public interface TkCacheKey {
      */
     String LOCK_REPLACE_PAY_GAIN_RESULT = "-34";
 
+    /**
+     * 代付数据
+     */
+    String REPLACE_PAY = "-35";
 
 
 

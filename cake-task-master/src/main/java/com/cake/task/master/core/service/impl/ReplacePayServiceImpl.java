@@ -7,6 +7,7 @@ import com.cake.task.master.core.common.service.impl.BaseServiceImpl;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
+import com.cake.task.master.core.common.utils.constant.TkCacheKey;
 import com.cake.task.master.core.mapper.ReplacePayMapper;
 import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import com.cake.task.master.core.service.ReplacePayService;
@@ -66,7 +67,7 @@ public class ReplacePayServiceImpl<T> extends BaseServiceImpl<T> implements Repl
     public ReplacePayModel getReplacePayModel(ReplacePayModel model, int isCache) throws Exception {
         ReplacePayModel dataModel = null;
         if (isCache == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO){
-            String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.REPLACE_PAY, model.getId());
+            String strKeyCache = CachedKeyUtils.getCacheKey(TkCacheKey.REPLACE_PAY, model.getId());
             String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
             if (!StringUtils.isBlank(strCache)) {
                 // 从缓存里面获取数据

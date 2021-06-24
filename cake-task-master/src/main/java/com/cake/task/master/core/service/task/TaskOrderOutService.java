@@ -5,6 +5,7 @@ import com.cake.task.master.core.model.interest.InterestProfitModel;
 import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
 import com.cake.task.master.core.model.merchant.MerchantProfitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayInfoModel;
 
 import java.util.List;
 
@@ -44,9 +45,10 @@ public interface TaskOrderOutService<T> extends BaseService<T> {
      * @param merchantBalanceDeductUpdate - 卡商扣款流水的订单信息
      * @param merchantProfitModel - 卡商收益信息
      * @param interestProfitList - 利益者收益信息集合
+     * @param replacePayInfoModel -
      * @return
      * @author yoko
      * @date 2020/11/10 19:28
     */
-    public boolean handleSuccessOrderOut(MerchantBalanceDeductModel merchantBalanceDeductUpdate, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList) throws Exception;
+    public boolean handleSuccessOrderOut(MerchantBalanceDeductModel merchantBalanceDeductUpdate, MerchantProfitModel merchantProfitModel, List<InterestProfitModel> interestProfitList, ReplacePayInfoModel replacePayInfoModel) throws Exception;
 }

@@ -20,6 +20,11 @@ public class ReplacePayInfoModel extends BasePage implements Serializable {
     private Long id;
 
     /**
+     * 归属银行卡ID：对应表tb_fn_bank的主键ID
+     */
+    private Long bankId;
+
+    /**
      * 归属代付资源ID：对应表tb_fr_replace_pay的主键ID
      */
     private Long replacePayId;
@@ -161,5 +166,13 @@ public class ReplacePayInfoModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public Long getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(Long bankId) {
+        this.bankId = bankId;
     }
 }

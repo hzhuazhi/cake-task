@@ -142,8 +142,36 @@ public interface CacheKey {
     String CHANNEL_ID = "-23";
 
     /**
-     * 代付数据
+     * 转账用户的IP
      */
-    String REPLACE_PAY = "-24";
+    String TRANSFER_USER_IP = "-24";
+
+    /**
+     * 给出代付的ID纪录
+     */
+    String REPLACE_PAY = "-25";
+
+
+
+
+
+
+    /**
+     * 代付日付款金额
+     * task:需要检测付款限制
+     */
+    String OUT_DAY_MONEY = "-26";
+
+    /**
+     * 代付月付款金额
+     * task:需要检测付款限制
+     */
+    String OUT_MONTH_MONEY = "-27";
+
+    /**
+     * 代付日付款次数
+     * task:需要检测收款限制
+     */
+    String OUT_DAY_NUM = "-28";
 
 }

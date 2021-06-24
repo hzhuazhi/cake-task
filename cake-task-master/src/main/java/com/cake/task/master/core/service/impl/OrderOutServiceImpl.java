@@ -51,4 +51,14 @@ public class OrderOutServiceImpl<T> extends BaseServiceImpl<T> implements OrderO
     public int updateOrderStatusBySand(OrderOutModel model) {
         return orderOutMapper.updateOrderStatusBySand(model);
     }
+
+    @Override
+    public int countOrder(OrderOutModel model) {
+        return orderOutMapper.countOrder(model);
+    }
+
+    @Override
+    public String sumOrderMoney(OrderOutModel model) {
+        return orderOutMapper.sumOrderMoney(model);
+    }
 }

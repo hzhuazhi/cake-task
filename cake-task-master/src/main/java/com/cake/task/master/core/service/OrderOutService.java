@@ -24,4 +24,23 @@ public interface OrderOutService<T> extends BaseService<T> {
      * @date 2021/6/23 14:37
      */
     public int updateOrderStatusBySand(OrderOutModel model);
+
+
+    /**
+     * @Description: 计算订单数量
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2021/6/23 16:53
+     */
+    public int countOrder(OrderOutModel model);
+
+    /**
+     * @Description: 计算订单金额
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2021/6/23 16:54
+     */
+    public String sumOrderMoney(OrderOutModel model);
 }

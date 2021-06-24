@@ -18,9 +18,7 @@ import com.cake.task.master.core.model.mobilecard.MobileCardModel;
 import com.cake.task.master.core.model.mobilecard.MobileCardShortMsgModel;
 import com.cake.task.master.core.model.order.OrderModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
-import com.cake.task.master.core.model.replacepay.ReplacePayGainModel;
-import com.cake.task.master.core.model.replacepay.ReplacePayGainResultModel;
-import com.cake.task.master.core.model.replacepay.ReplacePayModel;
+import com.cake.task.master.core.model.replacepay.*;
 import com.cake.task.master.core.model.shortmsg.ShortMsgArrearsModel;
 import com.cake.task.master.core.model.shortmsg.ShortMsgStrategyModel;
 import com.cake.task.master.core.model.strategy.StrategyModel;
@@ -2925,6 +2923,101 @@ public class TaskMethod {
         }
         return resBean;
     }
+
+
+
+    /**
+     * @Description: 代付成功信息的数据组装
+     * @param bankId - 银行卡ID
+     * @param replacePayId - 代付ID
+     * @param orderNo - 订单号
+     * @param money - 成功金额
+     * @return com.cake.task.master.core.model.bank.BankCollectionDayModel
+     * @author yoko
+     * @date 2021/4/21 16:28
+     */
+    public static ReplacePayInfoModel assembleReplacePayInfoAdd(long bankId, long replacePayId, String orderNo, String money){
+        ReplacePayInfoModel resBean = new ReplacePayInfoModel();
+        if (bankId > 0){
+            resBean.setBankId(bankId);
+        }
+        if (replacePayId > 0){
+            resBean.setReplacePayId(replacePayId);
+        }
+        resBean.setOrderNo(orderNo);
+        resBean.setMoney(money);
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装代付放量策略的查询条件
+     * @param id - 代付策略的主键ID
+     * @param replacePayId - 代付资源ID
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayStrategyModel
+     * @author yoko
+     * @date 2021/6/23 16:48
+     */
+    public static ReplacePayStrategyModel assembleReplacePayStrategyQuery(long id, long replacePayId, int useStatus){
+        ReplacePayStrategyModel resBean = new ReplacePayStrategyModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (replacePayId > 0){
+            resBean.setReplacePayId(replacePayId);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询代付订单信息来限制代付的查询条件
+     * @param replacePayId - 代付ID
+     * @param orderType - 订单类型：1手动转账，2API转账
+     * @param orderStatus - 订单状态
+     * @param handleType - 订单处理类型：1我方处理，2第三方处理
+     * @param curday - 创建日期
+     * @param curdayStart - 开始日期
+     * @param curdayEnd - 结束日期
+     * @return OrderModel
+     * @author yoko
+     * @date 2020/9/15 10:58
+     */
+    public static OrderOutModel assembleOrderOutByLimitQuery(long replacePayId, int orderType, int orderStatus, int handleType, int curday, int curdayStart, int curdayEnd){
+        OrderOutModel resBean = new OrderOutModel();
+        if (replacePayId > 0){
+            resBean.setReplacePayId(replacePayId);
+        }
+        if (orderType > 0){
+            resBean.setOrderType(orderType);
+        }
+        if (orderStatus > 0){
+            resBean.setOrderStatus(orderStatus);
+        }
+        if (handleType > 0){
+            resBean.setHandleType(handleType);
+        }
+        if (curday > 0){
+            resBean.setCurday(curday);
+        }
+        if (curdayStart > 0){
+            resBean.setCurdayStart(curdayStart);
+        }
+        if (curdayEnd > 0){
+            resBean.setCurdayEnd(curdayEnd);
+        }
+        return resBean;
+    }
+
+
+
 
 
     public static void main(String []args){

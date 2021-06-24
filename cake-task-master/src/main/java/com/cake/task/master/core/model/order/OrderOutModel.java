@@ -280,6 +280,9 @@ public class OrderOutModel extends BasePage implements Serializable {
      */
     private String invalidTimeEnd;
 
+    private Integer curdayStart;
+    private Integer curdayEnd;
+
 
     public Long getId() {
         return id;
@@ -703,5 +706,21 @@ public class OrderOutModel extends BasePage implements Serializable {
 
     public void setReplacePayName(String replacePayName) {
         this.replacePayName = replacePayName;
+    }
+
+    public Integer getCurdayStart() {
+        return curdayStart;
+    }
+
+    public void setCurdayStart(Integer curdayStart) {
+        this.curdayStart = curdayStart;
+    }
+
+    public Integer getCurdayEnd() {
+        return curdayEnd;
+    }
+
+    public void setCurdayEnd(Integer curdayEnd) {
+        this.curdayEnd = curdayEnd;
     }
 }

@@ -1,5 +1,6 @@
 package com.cake.task.master.core.runner.task;
 
+import com.alibaba.fastjson.JSON;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
 import com.cake.task.master.core.common.utils.sandpay.method.OrderQuery;
@@ -9,6 +10,7 @@ import com.cake.task.master.core.model.replacepay.ReplacePayGainResultModel;
 import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import com.cake.task.master.util.ComponentUtil;
 import com.cake.task.master.util.TaskMethod;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,8 +78,25 @@ public class TaskReplacePayGain {
                         // 调用衫德，获取订单状态
                         AgentPayResponse sandResponse = OrderQuery.sandOrderQuery(replacePayModel, data);
                         if (sandResponse != null){
-                            // 成功
-                            replacePayGainUpdate = TaskMethod.assembleReplacePayGainUpdate(data.getId(), 3,0, null, null, dataExplain);
+                            log.info("TaskReplacePayGain.orderStatusQuery()...sandResponse:"+ JSON.toJSONString(sandResponse));
+
+                            // 判断订单状态
+                            if (!StringUtils.isBlank(sandResponse.resultFlag)){
+                                if (sandResponse.resultFlag.equals("2")){
+                                    // 银行结果处理中，拉取的状态的状态则定为失败
+                                    dataExplain = "查询衫德订单订单状态时，返回处理中(等银行返回明确结果)";
+                                    replacePayGainTime = TaskMethod.assembleReplacePayGainTime(replacePayModel, data.getNowGainDataTime());
+                                    replacePayGainUpdate = TaskMethod.assembleReplacePayGainUpdate(data.getId(), 2,0, replacePayGainTime.getNextTime(), replacePayGainTime.getNowGainDataTime(), dataExplain);
+                                }else{
+                                    // 成功
+                                    replacePayGainUpdate = TaskMethod.assembleReplacePayGainUpdate(data.getId(), 3,0, null, null, dataExplain);
+                                }
+                            }else {
+                                // 失败
+                                dataExplain = "查询衫德订单订单状态时，返回空状态码";
+                                replacePayGainTime = TaskMethod.assembleReplacePayGainTime(replacePayModel, data.getNowGainDataTime());
+                                replacePayGainUpdate = TaskMethod.assembleReplacePayGainUpdate(data.getId(), 2,0, replacePayGainTime.getNextTime(), replacePayGainTime.getNowGainDataTime(), dataExplain);
+                            }
 
                             // 添加数据到：第三方代付主动拉取结果返回的订单结果表中
                             ReplacePayGainResultModel replacePayGainResultAdd = TaskMethod.assembleReplacePayGainResultAdd(data, sandResponse);

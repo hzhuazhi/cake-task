@@ -129,6 +129,10 @@ public class StatusModel implements Serializable {
     private Integer operateStatusStart;
     private Integer operateStatusEnd;
 
+    private Long replacePayId;
+
+    private Long orderNo;
+
     public Long getId() {
         return id;
     }
@@ -337,5 +341,21 @@ public class StatusModel implements Serializable {
 
     public void setOperateStatusEnd(Integer operateStatusEnd) {
         this.operateStatusEnd = operateStatusEnd;
+    }
+
+    public Long getReplacePayId() {
+        return replacePayId;
+    }
+
+    public void setReplacePayId(Long replacePayId) {
+        this.replacePayId = replacePayId;
+    }
+
+    public Long getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(Long orderNo) {
+        this.orderNo = orderNo;
     }
 }

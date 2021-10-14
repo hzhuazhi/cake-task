@@ -151,19 +151,19 @@ public class AutowireRunner implements ApplicationRunner {
     private BankCollectionDayService bankCollectionDayService;
 
     @Autowired
-    private static ReplacePayService replacePayService;
+    private ReplacePayService replacePayService;
 
     @Autowired
-    private static ReplacePayStrategyService replacePayStrategyService;
+    private ReplacePayStrategyService replacePayStrategyService;
 
     @Autowired
-    private static ReplacePayInfoService replacePayInfoService;
+    private ReplacePayInfoService replacePayInfoService;
 
     @Autowired
-    private static ReplacePayGainService replacePayGainService;
+    private ReplacePayGainService replacePayGainService;
 
     @Autowired
-    private static ReplacePayGainResultService replacePayGainResultService;
+    private ReplacePayGainResultService replacePayGainResultService;
 
 
 

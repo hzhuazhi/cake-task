@@ -2891,7 +2891,11 @@ public class TaskMethod {
         resBean.setTradeTime(replacePayGainModel.getTradeTime());
         resBean.setSupplierTradeNo(agentPayResponse.sandSerial);
         resBean.setTranFee(agentPayResponse.tranFee);
-        resBean.setTradeStatus(4);
+        if (agentPayResponse.resultFlag.equals("0")){
+            resBean.setTradeStatus(4);
+        }else if (agentPayResponse.resultFlag.equals("1")){
+            resBean.setTradeStatus(2);
+        }
         resBean.setExtraFee(agentPayResponse.extraFee);
         resBean.setHolidayFee(agentPayResponse.holidayFee);
 
@@ -2906,20 +2910,24 @@ public class TaskMethod {
     /**
      * @Description: 组装更新代付订单状态的信息
      * @param replacePayGainResultModel - 第三方代付主动拉取结果返回的订单结果
-     * @param orderStatus - 订单状态：1初始化，2超时，3质疑，4成功
      * @return com.cake.task.master.core.model.order.OrderOutModel
      * @author yoko
      * @date 2021/6/23 15:19
      */
-    public static OrderOutModel assembleOrderOutUpdateBySand(ReplacePayGainResultModel replacePayGainResultModel, int orderStatus){
+    public static OrderOutModel assembleOrderOutUpdateBySand(ReplacePayGainResultModel replacePayGainResultModel){
         OrderOutModel resBean = new OrderOutModel();
         resBean.setOrderNo(replacePayGainResultModel.getOrderNo());
-        resBean.setOrderStatus(orderStatus);
+        resBean.setOrderStatus(replacePayGainResultModel.getTradeStatus());
         if (!StringUtils.isBlank(replacePayGainResultModel.getSupplierTradeNo())){
             resBean.setSupplierTradeNo(replacePayGainResultModel.getSupplierTradeNo());
         }
         if (!StringUtils.isBlank(replacePayGainResultModel.getTranFee())){
             resBean.setSupplierServiceCharge(replacePayGainResultModel.getTranFee());
+        }
+        if (replacePayGainResultModel.getTradeStatus() != 4){
+            if (!StringUtils.isBlank(replacePayGainResultModel.getRemark())){
+                resBean.setFailInfo(replacePayGainResultModel.getRemark());
+            }
         }
         return resBean;
     }

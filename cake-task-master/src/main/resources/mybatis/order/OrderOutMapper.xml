@@ -573,6 +573,9 @@
             <if test="supplierServiceCharge != null and supplierServiceCharge != '' " >
                 a.supplier_service_charge = #{supplierServiceCharge},
             </if>
+            <if test="failInfo != null and failInfo != '' " >
+                a.fail_info = #{failInfo},
+            </if>
             a.update_time = NOW(),
         </trim>
         where 1=1

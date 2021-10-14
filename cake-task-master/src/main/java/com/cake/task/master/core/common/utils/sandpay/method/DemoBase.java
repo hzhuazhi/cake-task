@@ -134,7 +134,8 @@ public class DemoBase {
 			try {
 				logger.info("请求报文：\n"+reqMap);
 				System.out.println("请求报文：\n"+reqMap);
-				result = HttpClient.doPost(SDKConfig.getConfig().getUrl() + reqAddr, reqMap, connectTimeout, readTimeout);
+//				result = HttpClient.doPost(SDKConfig.getConfig().getUrl() + reqAddr, reqMap, connectTimeout, readTimeout);
+				result = HttpClient.doPost("https://caspay.sandpay.com.cn/agent-main/openapi" + reqAddr, reqMap, connectTimeout, readTimeout);
 				result = URLDecoder.decode(result, encoding);
 			} catch (IOException e) {
 				logger.error(e.getMessage());

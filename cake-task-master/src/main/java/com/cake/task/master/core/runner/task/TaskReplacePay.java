@@ -51,6 +51,7 @@ public class TaskReplacePay {
      */
 //    @Scheduled(cron = "1 * * * * ?")
     @Scheduled(fixedDelay = 60000) // 每分钟执行
+//    @Scheduled(fixedDelay = 6000) // 每分钟执行
     public void sandBalanceQuery() throws Exception{
 //        log.info("----------------------------------TaskReplacePay.sandBalanceQuery()----start");
 

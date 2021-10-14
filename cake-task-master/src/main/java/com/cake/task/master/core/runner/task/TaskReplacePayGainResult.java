@@ -41,11 +41,11 @@ public class TaskReplacePayGainResult {
 
 
     /**
-     * @Description: 处理第三方成功订单
+     * @Description: 处理第三方订单
      * <p>
      *     每秒运行一次
-     *     1.查询未跑的成功订单。
-     *     2.更新代付订单表的订单状态。
+     *     1.查询未跑的订单。
+     *     2.更新代付订单表的订单状态(成功/失败)。
      * </p>
      * @author yoko
      * @date 2019/12/6 20:25
@@ -55,7 +55,7 @@ public class TaskReplacePayGainResult {
 //        log.info("----------------------------------TaskReplacePayGainResult.success()----start");
 
         // 获取未跑的第三方成功订单
-        StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 0, 0, 0, 0,0,4,null);
+        StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 0, 0, 0, 0,0,0,null);
         List<ReplacePayGainResultModel> synchroList = ComponentUtil.taskReplacePayGainResultService.getDataList(statusQuery);
         for (ReplacePayGainResultModel data : synchroList){
             try{
@@ -65,7 +65,7 @@ public class TaskReplacePayGainResult {
                 if (flagLock){
                     StatusModel statusModel = null;
 
-                    OrderOutModel orderOutUpdate = TaskMethod.assembleOrderOutUpdateBySand(data, 4);
+                    OrderOutModel orderOutUpdate = TaskMethod.assembleOrderOutUpdateBySand(data);
                     int num = ComponentUtil.orderOutService.updateOrderStatusBySand(orderOutUpdate);
                     if (num > 0){
                         statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 0, 0, 0,0,null);

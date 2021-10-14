@@ -13,12 +13,15 @@
  */
 package com.cake.task.master.core.common.utils.sandpay.method;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cake.task.master.core.common.utils.BeanUtils;
 import com.cake.task.master.core.common.utils.sandpay.CertUtil;
 import com.cake.task.master.core.common.utils.sandpay.SDKConfig;
 import com.cake.task.master.core.common.utils.sandpay.model.AgentPayResponse;
 import com.cake.task.master.core.model.replacepay.ReplacePayModel;
+import com.cake.task.master.util.HodgepodgeMethod;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +79,14 @@ public class MerBalanceQuery {
 			logger.info("响应描述：["+resp.getString("respDesc")+"]");
 			logger.info("余额：["+resp.getString("balance")+"]");
 			if (resp.getString("respCode").equals("0000")){
-				AgentPayResponse result = BeanUtils.copy(resp, AgentPayResponse.class);
+//				AgentPayResponse result = BeanUtils.copy(resp, AgentPayResponse.class);
+				AgentPayResponse result = JSON.parseObject(resp.toJSONString(), AgentPayResponse.class);
+				if (!StringUtils.isBlank(result.getBalance())){
+					result.setBalance(HodgepodgeMethod.sandPayBalance(result.getBalance()));
+				}
+				if (!StringUtils.isBlank(result.getCreditAmt())){
+					result.setCreditAmt(HodgepodgeMethod.sandPayBalance(result.getCreditAmt()));
+				}
 				return result;
 			}else {
 				return null;

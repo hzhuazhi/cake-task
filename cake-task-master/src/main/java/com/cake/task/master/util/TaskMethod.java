@@ -2890,15 +2890,26 @@ public class TaskMethod {
         resBean.setOrderNo(replacePayGainModel.getOrderNo());
         resBean.setTradeTime(replacePayGainModel.getTradeTime());
         resBean.setSupplierTradeNo(agentPayResponse.sandSerial);
-        resBean.setTranFee(agentPayResponse.tranFee);
+        if (!StringUtils.isBlank(agentPayResponse.tranFee)){
+            if (agentPayResponse.tranFee.length() == 12){
+                resBean.setTranFee(HodgepodgeMethod.sandPayBalance(agentPayResponse.tranFee));
+            }
+        }
         if (agentPayResponse.resultFlag.equals("0")){
             resBean.setTradeStatus(4);
         }else if (agentPayResponse.resultFlag.equals("1")){
             resBean.setTradeStatus(2);
         }
-        resBean.setExtraFee(agentPayResponse.extraFee);
-        resBean.setHolidayFee(agentPayResponse.holidayFee);
-
+        if (!StringUtils.isBlank(agentPayResponse.extraFee)){
+            if (agentPayResponse.extraFee.length() == 12){
+                resBean.setExtraFee(HodgepodgeMethod.sandPayBalance(agentPayResponse.extraFee));
+            }
+        }
+        if (!StringUtils.isBlank(agentPayResponse.holidayFee)){
+            if (agentPayResponse.holidayFee.length() == 12){
+                resBean.setHolidayFee(HodgepodgeMethod.sandPayBalance(agentPayResponse.holidayFee));
+            }
+        }
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));

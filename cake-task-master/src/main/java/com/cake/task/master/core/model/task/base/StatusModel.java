@@ -133,6 +133,11 @@ public class StatusModel implements Serializable {
 
     private Long orderNo;
 
+    /**
+     * 代付资源类型：1杉德支付，2金服支付
+     */
+    private Integer resourceType;
+
     public Long getId() {
         return id;
     }
@@ -357,5 +362,13 @@ public class StatusModel implements Serializable {
 
     public void setOrderNo(Long orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public Integer getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(Integer resourceType) {
+        this.resourceType = resourceType;
     }
 }

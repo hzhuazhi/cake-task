@@ -7,7 +7,7 @@
     <sql id="Base_Column_List">
         a.id,a.alias,a.order_no,a.order_money,a.out_trade_no,a.order_status,a.order_type,a.service_charge,a.handle_type,a.out_status,a.invalid_time,a.in_bank_card,
         a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.merchant_id,a.merchant_name,a.merchant_site_id,a.merchant_site_name,
-        a.channel_id,a.channel_name,a.replace_pay_id,a.replace_pay_name,a.supplier_trade_no,a.trade_time,a.supplier_service_charge,a.picture_ads,a.fail_info,a.check_status,a.check_info,a.notify_url,a.operate_status,a.work_type,a.data_explain,
+        a.channel_id,a.channel_name,a.replace_pay_id,a.replace_pay_name,a.resource_type,a.supplier_trade_no,a.trade_time,a.supplier_service_charge,a.picture_ads,a.fail_info,a.check_status,a.check_info,a.notify_url,a.operate_status,a.work_type,a.data_explain,
         a.remark,a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_user_id,a.create_role_id,a.update_user_id,a.update_role_id,
         a.create_time,a.update_time,a.yn
@@ -34,6 +34,9 @@
             </if>
             <if test="lessThan != null and lessThan != '' " >
                 and a.order_status &lt; #{lessThan}
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                and a.resource_type = #{resourceType}
             </if>
             <if test="curday != null and curday != '' " >
                 and a.curday = #{curday}

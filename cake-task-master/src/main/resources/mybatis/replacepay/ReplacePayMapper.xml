@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.alias,a.company_name,a.company_ads,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.bank_name,a.bank_card,a.subbranch_name,
+        a.id,a.alias,a.company_name,a.company_ads,a.resource_type,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.bank_name,a.bank_card,a.subbranch_name,
         a.account_name,a.balance,a.use_balance,a.out_interface_ads,a.in_interface_ads,a.balance_interface_ads,a.business_num,a.platform_business_num,
         a.account_attribute,a.account_type,a.telephone_num,a.public_key,a.public_key_path,a.private_key,a.private_key_path,a.sand_key,a.sand_key_path,
         a.version_num,a.pay_type,a.gain_data_type,a.gain_data_time_type,a.gain_data_time,
@@ -22,6 +22,9 @@
         <trim  suffixOverrides="," >
             <if test="id != null and id != '' " >
                 and a.id = #{id}
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                and a.resource_type = #{resourceType}
             </if>
             <if test="bankTypeId != null and bankTypeId != '' " >
                 and a.bank_type_id = #{bankTypeId}
@@ -136,6 +139,9 @@
             <if test="companyAds != null and companyAds != '' " >
                 company_ads,
             </if>
+            <if test="resourceType != null and resourceType != '' " >
+                resource_type,
+            </if>
             <if test="bankTypeId != null and bankTypeId != '' " >
                 bank_type_id,
             </if>
@@ -244,6 +250,9 @@
             </if>
             <if test="companyAds != null and companyAds != '' " >
                 <![CDATA[  #{companyAds}, ]]>
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                <![CDATA[  #{resourceType}, ]]>
             </if>
             <if test="bankTypeId != null and bankTypeId != '' " >
                 <![CDATA[  #{bankTypeId}, ]]>
@@ -359,6 +368,9 @@
             </if>
             <if test="companyAds != null and companyAds != '' " >
                 a.company_ads = #{companyAds},
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                a.resource_type = #{resourceType},
             </if>
             <if test="bankTypeId != null and bankTypeId != '' " >
                 a.bank_type_id = #{bankTypeId},
@@ -491,7 +503,7 @@
 
     <!-- 获取代付的出码集合数据-->
     <select id="getReplacePayList" parameterType="Object" resultType="com.cake.task.master.core.model.replacepay.ReplacePayModel">
-        select a1.id,a1.alias,a1.company_name,a1.company_ads,a1.bank_type_id,a1.merchant_id,a1.merchant_site_id,a1.bank_name,a1.bank_card,a1.subbranch_name,
+        select a1.id,a1.alias,a1.company_name,a1.company_ads,a1.resource_type,a1.bank_type_id,a1.merchant_id,a1.merchant_site_id,a1.bank_name,a1.bank_card,a1.subbranch_name,
         a1.account_name,a1.balance,a1.use_balance,a1.out_interface_ads,a1.in_interface_ads,a1.balance_interface_ads,a1.business_num,a1.platform_business_num,
         a1.account_attribute,a1.account_type,a1.telephone_num,a1.public_key,a1.public_key_path,a1.private_key,a1.private_key_path,a1.sand_key,a1.sand_key_path,
         a1.version_num,a1.pay_type,a1.gain_data_type,a1.gain_data_time_type,a1.gain_data_time,
@@ -499,7 +511,7 @@
         a1.create_time,a1.update_time,a1.yn,
         a1.id as replace_pay_strategy_id, a1.replace_pay_id,a1.priority,a1.open_time_slot,a1.out_day_money,a1.out_month_money,a1.out_day_num,
         ifnull(convert(a2.money,decimal(19,2)), '0.00') as day_money from (
-        select a.id,a.alias,a.company_name,a.company_ads,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.bank_name,a.bank_card,a.subbranch_name,
+        select a.id,a.alias,a.company_name,a.company_ads,a.resource_type,a.bank_type_id,a.merchant_id,a.merchant_site_id,a.bank_name,a.bank_card,a.subbranch_name,
         a.account_name,a.balance,a.use_balance,a.out_interface_ads,a.in_interface_ads,a.balance_interface_ads,a.business_num,a.platform_business_num,
         a.account_attribute,a.account_type,a.telephone_num,a.public_key,a.public_key_path,a.private_key,a.private_key_path,a.sand_key,a.sand_key_path,
         a.version_num,a.pay_type,a.gain_data_type,a.gain_data_time_type,a.gain_data_time,
@@ -513,6 +525,7 @@
           and a.use_status = 1
           and a.balance > #{money}
           and a.use_balance > #{money}
+          and a.resource_type = #{resourceType}
             <if test="merchantIdList != null and merchantIdList.size()>0">
                 and a.merchant_id in
                 <foreach item="item" index="index" collection="merchantIdList" open="(" separator="," close=")">

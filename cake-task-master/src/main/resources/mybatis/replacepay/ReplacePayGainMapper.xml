@@ -7,7 +7,7 @@
 
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
-        a.id,a.replace_pay_id,a.order_no,a.order_money,a.trade_time,
+        a.id,a.replace_pay_id,a.resource_type,a.order_no,a.order_money,a.trade_time,
         a.next_time,a.now_gain_data_time,a.data_explain,a.remark,
         a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_time,a.update_time,a.yn
@@ -23,6 +23,9 @@
             </if>
             <if test="replacePayId != null and replacePayId != '' " >
                 and a.replace_pay_id = #{replacePayId}
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                and a.resource_type = #{resourceType}
             </if>
             <if test="orderNo != null and orderNo != '' " >
                 and a.order_no = #{orderNo}
@@ -119,6 +122,9 @@
             <if test="replacePayId != null and replacePayId != '' " >
                 replace_pay_id,
             </if>
+            <if test="resourceType != null and resourceType != '' " >
+                resource_type,
+            </if>
             <if test="orderNo != null and orderNo != '' " >
                 order_no,
             </if>
@@ -155,6 +161,9 @@
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="replacePayId != null and replacePayId != '' " >
                 <![CDATA[  #{replacePayId}, ]]>
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                <![CDATA[  #{resourceType}, ]]>
             </if>
             <if test="orderNo != null and orderNo != '' " >
                 <![CDATA[  #{orderNo}, ]]>
@@ -196,6 +205,9 @@
         <trim prefix="set" suffixOverrides=",">
             <if test="replacePayId != null and replacePayId != '' " >
                 a.replace_pay_id = #{replacePayId},
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                a.resource_type = #{resourceType},
             </if>
             <if test="orderNo != null and orderNo != '' " >
                 a.order_no = #{tradeTime},

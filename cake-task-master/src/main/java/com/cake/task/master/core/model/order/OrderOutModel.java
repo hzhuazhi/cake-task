@@ -141,6 +141,11 @@ public class OrderOutModel extends BasePage implements Serializable {
     private String replacePayName;
 
     /**
+     * 代付资源类型：1杉德支付，2金服支付
+     */
+    private Integer resourceType;
+
+    /**
      *上游订单号：供应商订单号、对接放的订单号
      */
     private String supplierTradeNo;
@@ -722,5 +727,13 @@ public class OrderOutModel extends BasePage implements Serializable {
 
     public void setCurdayEnd(Integer curdayEnd) {
         this.curdayEnd = curdayEnd;
+    }
+
+    public Integer getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(Integer resourceType) {
+        this.resourceType = resourceType;
     }
 }

@@ -41,6 +41,12 @@ public class ReplacePayModel extends BasePage implements Serializable {
     private String companyAds;
 
     /**
+     * 代付资源类型：1杉德支付，2金服支付
+     */
+    private Integer resourceType;
+
+
+    /**
      * 银行卡归属类型：对应表tb_fr_bank_type的主键ID
      */
     private Long bankTypeId;
@@ -677,5 +683,13 @@ public class ReplacePayModel extends BasePage implements Serializable {
 
     public void setMerchantIdList(List<Long> merchantIdList) {
         this.merchantIdList = merchantIdList;
+    }
+
+    public Integer getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(Integer resourceType) {
+        this.resourceType = resourceType;
     }
 }

@@ -1,10 +1,10 @@
 package com.cake.task.master.core.common.utils.jinfupay;
 
 import com.alibaba.fastjson.JSON;
-import com.hz.cake.master.core.common.utils.HttpUtil;
-import com.hz.cake.master.core.common.utils.jinfupay.model.JinFuPayResponse;
-import com.hz.cake.master.core.model.order.OrderOutModel;
-import com.hz.cake.master.core.model.replacepay.ReplacePayModel;
+import com.cake.task.master.core.common.utils.HttpUtil;
+import com.cake.task.master.core.common.utils.jinfupay.model.JinFuPayResponse;
+import com.cake.task.master.core.model.order.OrderOutModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

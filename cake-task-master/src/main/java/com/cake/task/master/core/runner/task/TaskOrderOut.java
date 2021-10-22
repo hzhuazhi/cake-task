@@ -189,6 +189,13 @@ public class TaskOrderOut {
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 0, 0, 0, 1, 0,1,0,null);
         List<OrderOutModel> synchroList = ComponentUtil.taskOrderOutService.getDataList(statusQuery);
         for (OrderOutModel data : synchroList){
+            if (data.getOrderStatus() == 3){
+                // 有质疑的订单不同步：并且直接修改成失败
+                StatusModel statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 0, 0, 0, 2,0,"有质疑的订单!");
+                // 更新状态
+                ComponentUtil.taskOrderOutService.updateStatus(statusModel);
+                continue;
+            }
             try{
                 // 锁住这个数据流水
                 String lockKey = CachedKeyUtils.getCacheKeyTask(TkCacheKey.LOCK_ORDER_OUT_SEND, data.getId());

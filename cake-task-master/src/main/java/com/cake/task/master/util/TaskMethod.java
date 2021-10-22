@@ -4,6 +4,8 @@ import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
+import com.cake.task.master.core.common.utils.jinfupay.model.JinFuPayResponse;
+import com.cake.task.master.core.common.utils.jinfupay.model.ResultResponse;
 import com.cake.task.master.core.common.utils.sandpay.model.AgentPayResponse;
 import com.cake.task.master.core.model.bank.*;
 import com.cake.task.master.core.model.channel.ChannelBankModel;
@@ -2684,19 +2686,23 @@ public class TaskMethod {
      * @Description: 组装查询代付的查询条件
      * @param id - 代付主键ID
      * @param merchantId - 卡商ID
+     * @param resourceType - 代付资源类型：1杉德支付，2金服支付
      * @param isOk - 是否测试通过：1未通过，2通过；收到银行卡短信，并且解析短信模板配置正确
      * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
      * @return com.cake.task.master.core.model.replacepay.ReplacePayModel
      * @author yoko
      * @date 2021/6/22 16:45
      */
-    public static ReplacePayModel assembleReplacePayQuery(long id, long merchantId, int isOk, int useStatus){
+    public static ReplacePayModel assembleReplacePayQuery(long id, long merchantId, int resourceType, int isOk, int useStatus){
         ReplacePayModel resBean = new ReplacePayModel();
         if (id > 0){
             resBean.setId(id);
         }
         if (merchantId > 0){
             resBean.setMerchantId(merchantId);
+        }
+        if (resourceType > 0){
+            resBean.setResourceType(resourceType);
         }
         if (isOk > 0){
             resBean.setIsOk(isOk);
@@ -2737,12 +2743,13 @@ public class TaskMethod {
      * @param sendType - 发送类型
      * @param id - 主键ID
      * @param replacePayId - 代付ID
+     * @param resourceType - 代付资源类型：1杉德支付，2金服支付
      * @param nextTime - 下次查询时间
      * @return com.cake.task.master.core.model.replacepay.ReplacePayGainModel
      * @author yoko
      * @date 2021/6/22 18:13
      */
-    public static ReplacePayGainModel assembleReplacePayGainQuery(int limitNum, int runType, int sendType, long id, long replacePayId, String nextTime){
+    public static ReplacePayGainModel assembleReplacePayGainQuery(int limitNum, int runType, int sendType, long id, long replacePayId, int resourceType, String nextTime){
         ReplacePayGainModel resBean = new ReplacePayGainModel();
         if (limitNum > 0){
             resBean.setLimitNum(limitNum);
@@ -2756,6 +2763,9 @@ public class TaskMethod {
         }
         if (replacePayId > 0){
             resBean.setReplacePayId(replacePayId);
+        }
+        if (resourceType > 0){
+            resBean.setResourceType(resourceType);
         }
         if (!StringUtils.isBlank(nextTime)){
             resBean.setNextTime(nextTime);
@@ -2861,8 +2871,8 @@ public class TaskMethod {
                     }
                 }
                 if (strArrSize != num){
-                    next_time = DateUtil.addDateMinute(Integer.parseInt(strArr[num + 1]));
-                    nowGainDataTime_up = strArr[num + 1];
+                    next_time = DateUtil.addDateMinute(Integer.parseInt(strArr[num]));
+                    nowGainDataTime_up = strArr[num];
                 }else{
                     next_time = DateUtil.addDateMinute(1);
                     nowGainDataTime_up = "-1";
@@ -2887,6 +2897,7 @@ public class TaskMethod {
     public static ReplacePayGainResultModel assembleReplacePayGainResultAdd(ReplacePayGainModel replacePayGainModel, AgentPayResponse agentPayResponse){
         ReplacePayGainResultModel resBean = new ReplacePayGainResultModel();
         resBean.setReplacePayId(replacePayGainModel.getReplacePayId());
+        resBean.setResourceType(1);// 代付资源类型：1杉德支付，2金服支付
         resBean.setOrderNo(replacePayGainModel.getOrderNo());
         resBean.setTradeTime(replacePayGainModel.getTradeTime());
         resBean.setSupplierTradeNo(agentPayResponse.sandSerial);
@@ -3034,6 +3045,81 @@ public class TaskMethod {
         }
         return resBean;
     }
+
+
+
+    /**
+     * @Description: 组装更新代付余额的方法-金服
+     * @param id - 主键ID
+     * @param jinFuPayResponse - 金服协议接口返回的信息
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayModel
+     * @author yoko
+     * @date 2021/6/22 16:54
+     */
+    public static ReplacePayModel assembleReplacePayUpdateBalanceByJinFu(long id, JinFuPayResponse jinFuPayResponse){
+        ReplacePayModel resBean = new ReplacePayModel();
+        resBean.setId(id);
+        ResultResponse resultResponse = jinFuPayResponse.result;
+        if (resultResponse != null){
+            if (!StringUtils.isBlank(resultResponse.balance)){
+                if (resultResponse.balance.equals("0.0")){
+                   resBean.setBalance("0.00");
+                }else {
+                    resBean.setBalance(resultResponse.balance);
+                }
+            }else {
+                return null;
+            }
+            if (!StringUtils.isBlank(resultResponse.quota)){
+                if (resultResponse.quota.equals("0.0")){
+                    resBean.setUseBalance("0.00");
+                }else {
+                    resBean.setUseBalance(resultResponse.quota);
+                }
+            }
+        }else {
+            return null;
+        }
+        return resBean;
+    }
+
+
+
+    /**
+     * @Description: 组装第三方代付主动拉取结果返回的订单结果的方法-金服
+     * @param replacePayGainModel - 第三方代付主动拉取结果的信息
+     * @param resultResponse -  第三方返回的订单信息-金服
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayGainResultModel
+     * @author yoko
+     * @date 2021/6/22 19:53
+     */
+    public static ReplacePayGainResultModel assembleReplacePayGainResultByJinFuAdd(ReplacePayGainModel replacePayGainModel, ResultResponse resultResponse){
+        ReplacePayGainResultModel resBean = new ReplacePayGainResultModel();
+        resBean.setReplacePayId(replacePayGainModel.getReplacePayId());
+        resBean.setResourceType(2);// 代付资源类型：1杉德支付，2金服支付
+        resBean.setOrderNo(replacePayGainModel.getOrderNo());
+        resBean.setTradeTime(replacePayGainModel.getTradeTime());
+        if (!StringUtils.isBlank(resultResponse.order_id)){
+            resBean.setSupplierTradeNo(resultResponse.order_id);
+        }
+
+        if (resultResponse.status.equals("SUCCESS")){
+            resBean.setTradeStatus(4);
+        }else if (resultResponse.status.equals("FAIL")){
+            resBean.setTradeStatus(2);
+        }else if (resultResponse.status.equals("REFUND")){
+            resBean.setTradeStatus(3);
+        }
+
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+
+
 
 
 

@@ -34,7 +34,7 @@
                 and a.order_money = #{orderMoney}
             </if>
             <if test="nextTime != null and nextTime != '' " >
-                and a.next_time >= now()
+                and a.next_time &lt;= now()
             </if>
             <if test="runNum != null and runNum != '' " >
                 and a.run_num &lt; #{runNum}
@@ -85,7 +85,7 @@
         UPDATE tb_fr_replace_pay_gain a
         <trim prefix="set" suffixOverrides=",">
             <if test="nextTime != null and nextTime != '' " >
-                a.next_time = #{tradeTime},
+                a.next_time = #{nextTime},
             </if>
             <if test="nowGainDataTime != null and nowGainDataTime != '' " >
                 a.now_gain_data_time = #{nowGainDataTime},

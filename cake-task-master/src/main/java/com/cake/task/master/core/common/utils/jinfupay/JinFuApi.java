@@ -69,6 +69,7 @@ public class JinFuApi {
         String parameter = JSON.toJSONString(sendDataMap);
         String resData = HttpUtil.doPostJson(replacePayModel.getInInterfaceAds(), parameter);
         log.info("----JinFuApi.jinFuQueryOrder----resData:" + resData);
+//        resData = "{\"code\":0,\"count\":0,\"data\":null,\"message\":null,\"msg\":\"查询成功!\",\"result\":{\"pay_date\":\"2021-10-20 16:20:12\",\"pay_fund_order_id\":\"20211020110070101506420012895951\",\"arrival_time_end\":\"2021-10-20 23:59:59\",\"trans_amount\":\"100.00\",\"order_id\":\"20211020110070100006420098065691\",\"status\":\"REFUND\"},\"status\":0}";
         JinFuPayResponse result = JSON.parseObject(resData, JinFuPayResponse.class);
         return result;
     }
@@ -88,7 +89,7 @@ public class JinFuApi {
         String mySign = SecurityUtil.sign(replacePayModel.getPublicKey(), SecurityUtil.map2str(sendDataMap));
         sendDataMap.put("sign", mySign);
         String parameter = JSON.toJSONString(sendDataMap);
-        String resData = HttpUtil.doPostJson(replacePayModel.getInInterfaceAds(), parameter);
+        String resData = HttpUtil.doPostJson(replacePayModel.getBalanceInterfaceAds(), parameter);
         log.info("----JinFuApi.jinFuQueryBalance----resData:" + resData);
         JinFuPayResponse result = JSON.parseObject(resData, JinFuPayResponse.class);
         return result;

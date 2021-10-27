@@ -1,8 +1,15 @@
 package com.cake.task.master.util;
+import com.cake.task.master.core.model.merchant.MerchantModel;
+import com.cake.task.master.core.model.order.OrderOutLimitModel;
+import com.cake.task.master.core.model.order.OrderOutModel;
+import com.cake.task.master.core.model.order.OrderOutPrepareModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayModel;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -51,6 +58,141 @@ public class HodgepodgeMethod {
         Double tmp = amt.divide(new BigDecimal(100)).doubleValue();
         str = tmp.toString();
         return str;
+    }
+
+
+    /**
+     * @Description: 组装代付查询黑名单的查询条件
+     * @param accountName - 开户人姓名
+     * @param bankCard - 开户人卡号
+     * @return com.hz.cake.master.core.model.order.OrderOutLimitModel
+     * @Author: yoko
+     * @Date 2021/10/25 15:22
+     */
+    public static OrderOutLimitModel assembleOrderOutLimitQuery(String accountName, String bankCard){
+        OrderOutLimitModel resBean = new OrderOutLimitModel();
+        if (!StringUtils.isBlank(accountName)){
+            resBean.setAccountName(accountName);
+        }
+        if (!StringUtils.isBlank(bankCard)){
+            resBean.setBankCard(bankCard);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装添加代付订单信息
+     * @param orderOutPrepareModel - 预备代付订单信息
+     * @param replacePayModel - 第三方资源信息表
+     * @param merchantList - 卡商信息集合
+     * @param serviceCharge - 手续费
+     * @param outStatus - 代付订单出码状态:1初始化（我方处理默认初始化），2出码成功（第三方反馈结果），3出码失败
+     * @param tradeTime - 交易时间时间戳
+     * @param invalidTime - 订单失效时间
+     * @param failInfo - 失败缘由
+     * @return com.cake.task.master.core.model.order.OrderOutModel
+     * @Author: yoko
+     * @Date 2021/10/27 16:57
+     */
+    public static OrderOutModel assembleOrderOutAdd(OrderOutPrepareModel orderOutPrepareModel, ReplacePayModel replacePayModel,
+                                                    List<MerchantModel> merchantList, String serviceCharge, int outStatus,String tradeTime,
+                                                    String invalidTime, String failInfo){
+        OrderOutModel resBean = new OrderOutModel();
+        if (!StringUtils.isBlank(orderOutPrepareModel.getOrderNo())){
+            resBean.setOrderNo(orderOutPrepareModel.getOrderNo());
+        }else {
+            return null;
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getOrderMoney())){
+            resBean.setOrderMoney(orderOutPrepareModel.getOrderMoney());
+        }else {
+            return null;
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getOutTradeNo())){
+            resBean.setOutTradeNo(orderOutPrepareModel.getOutTradeNo());
+        }else {
+            return null;
+        }
+        resBean.setOrderType(orderOutPrepareModel.getOrderType());
+        if (!StringUtils.isBlank(serviceCharge)){
+            resBean.setServiceCharge(serviceCharge);
+        }
+        resBean.setHandleType(orderOutPrepareModel.getHandleType());
+        resBean.setOutStatus(outStatus);
+        if (!StringUtils.isBlank(invalidTime)){
+            resBean.setInvalidTime(invalidTime);
+        }
+
+        if (!StringUtils.isBlank(orderOutPrepareModel.getInBankCard())){
+            resBean.setInBankCard(orderOutPrepareModel.getInBankCard());
+        }else {
+            return null;
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getInBankName())){
+            resBean.setInBankName(orderOutPrepareModel.getInBankName());
+        }else {
+            return null;
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getInAccountName())){
+            resBean.setInAccountName(orderOutPrepareModel.getInAccountName());
+        }else {
+            return null;
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getInBankSubbranch())){
+            resBean.setInBankSubbranch(orderOutPrepareModel.getInBankSubbranch());
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getInBankProvince())){
+            resBean.setInBankProvince(orderOutPrepareModel.getInBankProvince());
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getInBankCity())){
+            resBean.setInBankCity(orderOutPrepareModel.getInBankCity());
+        }
+
+        if (replacePayModel != null && replacePayModel.getId() != null){
+            // 三方代付信息
+            resBean.setReplacePayId(replacePayModel.getId());
+            resBean.setReplacePayName(replacePayModel.getAlias());
+            resBean.setResourceType(replacePayModel.getResourceType());
+
+
+            // 卡商信息
+            MerchantModel merchantModel = null;
+            if (merchantList != null && merchantList.size() > 0){
+                for (MerchantModel merchantData : merchantList){
+                    if (merchantData.getId() == replacePayModel.getMerchantId()){
+                        merchantModel = merchantData;
+                    }
+                }
+
+//                resBean.setOrderType(merchantModel.getPayType());
+                resBean.setMerchantId(merchantModel.getId());
+                if (!StringUtils.isBlank(merchantModel.getAcName())){
+                    resBean.setMerchantName(merchantModel.getAcName());
+                }
+            }
+        }
+
+        resBean.setChannelId(orderOutPrepareModel.getChannelId());
+        if (!StringUtils.isBlank(orderOutPrepareModel.getChannelName())){
+            resBean.setChannelName(orderOutPrepareModel.getChannelName());
+        }
+        if (!StringUtils.isBlank(tradeTime)){
+            resBean.setTradeTime(String.valueOf(tradeTime));
+        }
+        if (!StringUtils.isBlank(failInfo)){
+            resBean.setFailInfo(failInfo);
+        }
+        if (!StringUtils.isBlank(orderOutPrepareModel.getNotifyUrl())){
+            resBean.setNotifyUrl(orderOutPrepareModel.getNotifyUrl());
+        }
+
+        resBean.setCurday(orderOutPrepareModel.getCurday());
+        resBean.setCurhour(orderOutPrepareModel.getCurhour());
+        resBean.setCurminute(orderOutPrepareModel.getCurminute());
+
+        return resBean;
+
     }
 
 

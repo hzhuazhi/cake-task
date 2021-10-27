@@ -6,8 +6,10 @@
     <!-- 定义数据库基本列,只适用代替单表的*-->
     <sql id="Base_Column_List">
         a.id,a.alias,a.order_no,a.order_money,a.out_trade_no,a.order_status,a.order_type,a.service_charge,a.handle_type,a.out_status,a.invalid_time,a.in_bank_card,
-        a.in_bank_name,a.in_account_name,a.out_bank_name,a.out_bank_card,a.out_account_name,a.merchant_id,a.merchant_name,a.merchant_site_id,a.merchant_site_name,
-        a.channel_id,a.channel_name,a.replace_pay_id,a.replace_pay_name,a.resource_type,a.supplier_trade_no,a.trade_time,a.supplier_service_charge,a.picture_ads,a.fail_info,a.check_status,a.check_info,a.notify_url,a.operate_status,a.work_type,a.data_explain,
+        a.in_bank_name,a.in_account_name,a.in_bank_subbranch,a.in_bank_province,a.in_bank_city,
+        a.out_bank_name,a.out_bank_card,a.out_account_name,a.merchant_id,a.merchant_name,a.merchant_site_id,a.merchant_site_name,
+        a.channel_id,a.channel_name,a.replace_pay_id,a.replace_pay_name,a.resource_type,a.supplier_trade_no,a.trade_time,a.supplier_service_charge,a.picture_ads,a.check_status,a.check_info,a.notify_url,a.operate_status,
+        a.is_excel,a.work_type,a.data_explain,
         a.remark,a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.send_num,a.send_status,
         a.create_user_id,a.create_role_id,a.update_user_id,a.update_role_id,
         a.create_time,a.update_time,a.yn
@@ -196,6 +198,15 @@
             <if test="inAccountName != null and inAccountName != '' " >
                 in_account_name,
             </if>
+            <if test="inBankSubbranch != null and inBankSubbranch != '' " >
+                in_bank_subbranch,
+            </if>
+            <if test="inBankProvince != null and inBankProvince != '' " >
+                in_bank_province,
+            </if>
+            <if test="inBankCity != null and inBankCity != '' " >
+                in_bank_city,
+            </if>
             <if test="outBankName != null and outBankName != '' " >
                 out_bank_name,
             </if>
@@ -244,6 +255,9 @@
             <if test="pictureAds != null and pictureAds != '' " >
                 picture_ads,
             </if>
+            <if test="failInfo != null and failInfo != '' " >
+                fail_info,
+            </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 check_status,
             </if>
@@ -255,6 +269,9 @@
             </if>
             <if test="operateStatus != null and operateStatus != '' " >
                 operate_status,
+            </if>
+            <if test="isExcel != null and isExcel != '' " >
+                is_excel,
             </if>
             <if test="workType != null and workType != '' " >
                 work_type,
@@ -329,6 +346,15 @@
             <if test="inAccountName != null and inAccountName != '' " >
                 <![CDATA[  #{inAccountName}, ]]>
             </if>
+            <if test="inBankSubbranch != null and inBankSubbranch != '' " >
+                <![CDATA[  #{inBankSubbranch}, ]]>
+            </if>
+            <if test="inBankProvince != null and inBankProvince != '' " >
+                <![CDATA[  #{inBankProvince}, ]]>
+            </if>
+            <if test="inBankCity != null and inBankCity != '' " >
+                <![CDATA[  #{inBankCity}, ]]>
+            </if>
             <if test="outBankName != null and outBankName != '' " >
                 <![CDATA[  #{outBankName}, ]]>
             </if>
@@ -377,6 +403,9 @@
             <if test="pictureAds != null and pictureAds != '' " >
                 <![CDATA[  #{pictureAds}, ]]>
             </if>
+            <if test="failInfo != null and failInfo != '' " >
+                <![CDATA[  #{failInfo}, ]]>
+            </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 <![CDATA[  #{checkStatus}, ]]>
             </if>
@@ -388,6 +417,9 @@
             </if>
             <if test="operateStatus != null and operateStatus != '' " >
                 <![CDATA[  #{operateStatus}, ]]>
+            </if>
+            <if test="isExcel != null and isExcel != '' " >
+                <![CDATA[  #{isExcel}, ]]>
             </if>
             <if test="workType != null and workType != '' " >
                 <![CDATA[  #{workType}, ]]>
@@ -466,6 +498,15 @@
             <if test="inAccountName != null and inAccountName != '' " >
                 a.in_account_name = #{inAccountName},
             </if>
+            <if test="inBankSubbranch != null and inBankSubbranch != '' " >
+                a.in_bank_subbranch = #{inBankSubbranch},
+            </if>
+            <if test="inBankProvince != null and inBankProvince != '' " >
+                a.in_bank_province = #{inBankProvince},
+            </if>
+            <if test="inBankCity != null and inBankCity != '' " >
+                a.in_bank_city = #{inBankCity},
+            </if>
             <if test="outBankName != null and outBankName != '' " >
                 a.out_bank_name = #{outBankName},
             </if>
@@ -513,6 +554,9 @@
             </if>
             <if test="pictureAds != null and pictureAds != '' " >
                 a.picture_ads = #{pictureAds},
+            </if>
+            <if test="failInfo != null and failInfo != '' " >
+                a.fail_info = #{failInfo},
             </if>
             <if test="checkStatus != null and checkStatus != '' " >
                 a.check_status = #{checkStatus},

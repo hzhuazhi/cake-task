@@ -232,6 +232,9 @@ public class AutowireRunner implements ApplicationRunner {
     @Autowired
     private TaskReplacePayGainResultService taskReplacePayGainResultService;
 
+    @Autowired
+    private TaskOrderOutPrepareService taskOrderOutPrepareService;
+
 
 
 
@@ -315,6 +318,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskMerchantWithdrawService = taskMerchantWithdrawService;
         ComponentUtil.taskReplacePayGainService = taskReplacePayGainService;
         ComponentUtil.taskReplacePayGainResultService = taskReplacePayGainResultService;
+        ComponentUtil.taskOrderOutPrepareService = taskOrderOutPrepareService;
 
 
         runThread = new RunThread();

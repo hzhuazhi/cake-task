@@ -80,5 +80,6 @@ public class ComponentUtil {
     public static TaskMerchantWithdrawService taskMerchantWithdrawService;
     public static TaskReplacePayGainService taskReplacePayGainService;
     public static TaskReplacePayGainResultService taskReplacePayGainResultService;
+    public static TaskOrderOutPrepareService taskOrderOutPrepareService;
 
 }

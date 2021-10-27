@@ -85,6 +85,21 @@ public class OrderOutModel extends BasePage implements Serializable {
     private String inAccountName;
 
     /**
+     * 收款银行开户支行
+     */
+    private String inBankSubbranch;
+
+    /**
+     * 收款银行开户省份
+     */
+    private String inBankProvince;
+
+    /**
+     * 收款银行开户城市
+     */
+    private String inBankCity;
+
+    /**
      * 付款银行名称/归属开户行
      */
     private String outBankName;
@@ -189,6 +204,11 @@ public class OrderOutModel extends BasePage implements Serializable {
      * 操作状态：1初始化，2锁定
      */
     private Integer operateStatus;
+
+    /**
+     * 是否被导出过:1初始化未被导出，2已被导出过
+     */
+    private Integer isExcel;
 
     /**
      * 补充数据的类型：1初始化，2补充数据失败（其它原因等..），3补充数据成功
@@ -375,6 +395,30 @@ public class OrderOutModel extends BasePage implements Serializable {
 
     public void setInAccountName(String inAccountName) {
         this.inAccountName = inAccountName;
+    }
+
+    public String getInBankSubbranch() {
+        return inBankSubbranch;
+    }
+
+    public void setInBankSubbranch(String inBankSubbranch) {
+        this.inBankSubbranch = inBankSubbranch;
+    }
+
+    public String getInBankProvince() {
+        return inBankProvince;
+    }
+
+    public void setInBankProvince(String inBankProvince) {
+        this.inBankProvince = inBankProvince;
+    }
+
+    public String getInBankCity() {
+        return inBankCity;
+    }
+
+    public void setInBankCity(String inBankCity) {
+        this.inBankCity = inBankCity;
     }
 
     public String getOutBankName() {
@@ -735,5 +779,13 @@ public class OrderOutModel extends BasePage implements Serializable {
 
     public void setResourceType(Integer resourceType) {
         this.resourceType = resourceType;
+    }
+
+    public Integer getIsExcel() {
+        return isExcel;
+    }
+
+    public void setIsExcel(Integer isExcel) {
+        this.isExcel = isExcel;
     }
 }

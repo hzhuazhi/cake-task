@@ -196,6 +196,11 @@ public interface TkCacheKey {
      */
     String REPLACE_PAY = "-35";
 
+    /**
+     * LOCK-代付预备
+     */
+    String LOCK_ORDER_OUT_PREPARE = "-36";
+
 
 
 }

@@ -85,10 +85,15 @@ public class TaskOrderOut {
                     StatusModel statusModel = null;
                     boolean flag = false;
                     if (data.getOrderStatus() == 2){
-                        // 更新卡商的扣款流水订单状态
-                        MerchantBalanceDeductModel merchantBalanceDeductUpdate = TaskMethod.assembleMerchantBalanceDeductUpdateByOrderNo(data.getOrderNo(), data.getOrderStatus());
-                        int num = ComponentUtil.merchantBalanceDeductService.updateOrderStatusByOrderNo(merchantBalanceDeductUpdate);
-                        if (num > 0){
+                        if (data.getOutStatus() <= 2){
+                            // 这里是拉单成功的，卡商才会有扣款流水，如果拉单失败，则没有扣款流水。
+                            // 更新卡商的扣款流水订单状态
+                            MerchantBalanceDeductModel merchantBalanceDeductUpdate = TaskMethod.assembleMerchantBalanceDeductUpdateByOrderNo(data.getOrderNo(), data.getOrderStatus());
+                            int num = ComponentUtil.merchantBalanceDeductService.updateOrderStatusByOrderNo(merchantBalanceDeductUpdate);
+                            if (num > 0){
+                                flag = true;
+                            }
+                        }else{
                             flag = true;
                         }
 

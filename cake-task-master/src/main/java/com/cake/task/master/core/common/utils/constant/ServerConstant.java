@@ -113,6 +113,14 @@ public class ServerConstant {
         IS_LOCK_MONEY(26,""),
         IS_TRANSFER_USER(27,""),
         TRANSFER_USER_RULE(28,""),
+        REPLACE_PAY_RULE(29,""),
+        REPLACE_PAY_INVALID_TIME_NUM(30,""),
+        EXCEL_NUM(31,""),
+        EXCEL_MONEY(32,""),
+        REPLACE_PAY_TYPE(33,""),
+        REPLACE_PAY_BLACK_LIST_RULE(34,""),
+        REPLACE_PAY_DELAY_TIME_NUM(35,""),
+        REPLACE_PAY_CHECK(36,""),
 
 
 

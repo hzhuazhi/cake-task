@@ -4,9 +4,12 @@ import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
 import com.cake.task.master.core.common.utils.constant.TkCacheKey;
+import com.cake.task.master.core.model.merchant.MerchantChannelModel;
+import com.cake.task.master.core.model.merchant.MerchantModel;
 import com.cake.task.master.core.model.order.OrderOutLimitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
 import com.cake.task.master.core.model.order.OrderOutPrepareModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import com.cake.task.master.core.model.strategy.StrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
 import com.cake.task.master.util.ComponentUtil;
@@ -58,7 +61,7 @@ public class TaskOrderOutPrepare {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 20000) // 每20秒执行
+//    @Scheduled(fixedDelay = 20000) // 每20秒执行
     public void sendThreeApi() throws Exception{
 //        log.info("----------------------------------TaskOrderOutPrepare.sendThreeApi()----start");
 
@@ -130,55 +133,89 @@ public class TaskOrderOutPrepare {
                                 DateUtil.getNowLongTime(),null, failInfo);
                     }else{
                         // 不属于黑名单
+                        int resourceType = data.getResourceType();// 代付资源类型：1杉德支付，2金服支付
+                        boolean flag_check = true;// 所有check校验的状态
 
                         // 根据渠道获取关联的卡商
-                        MerchantChannelModel merchantChannelQuery = HodgepodgeMethod.assembleMerchantChannelQuery(0,0,0, channelModel.getId(), 1);
+                        MerchantChannelModel merchantChannelQuery = HodgepodgeMethod.assembleMerchantChannelQuery(0,0,0, data.getChannelId(), 1);
                         List<MerchantChannelModel> merchantChannelList = ComponentUtil.merchantChannelService.findByCondition(merchantChannelQuery);
-                        HodgepodgeMethod.checkMerchantChannelIsNull(merchantChannelList);
+                        if (merchantChannelList == null || merchantChannelList.size() <= 0){
+                            // 成功：因为task运算是成功的
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+
+                            // 组装拉单失败的代付订单信息
+                            failInfo = "代付订单时,商户与渠道关联关系数据为空!";
+                            orderOutModel = HodgepodgeMethod.assembleOrderOutAdd(data, null, null, null, 3,
+                                    DateUtil.getNowLongTime(),null, failInfo);
+
+                            flag_check = false;
+                        }
 
                         // 获取卡商的集合ID
                         List<Long> merchantIdList = null;
-                        if (merchantChannelList != null && merchantChannelList.size() > 0){
-                            merchantIdList = merchantChannelList.stream().map(MerchantChannelModel::getMerchantId).collect(Collectors.toList());
+                        if (flag_check){
+                            if (merchantChannelList != null && merchantChannelList.size() > 0){
+                                merchantIdList = merchantChannelList.stream().map(MerchantChannelModel::getMerchantId).collect(Collectors.toList());
+                            }
                         }
 
+                        List<MerchantModel> merchantList = null;
+                        if (flag_check){
+                            // 根据渠道与卡商的关联关系中的卡商ID获取卡商集合
+                            MerchantModel merchantModel = HodgepodgeMethod.assembleMerchantQuery(0, 0, 2, merchantIdList, data.getOrderMoney(), 1);
+                            merchantList = ComponentUtil.merchantService.findByCondition(merchantModel);
+                            if (merchantList == null || merchantList.size() <= 0){
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                        // 根据渠道与卡商的关联关系中的卡商ID获取卡商集合
-                        MerchantModel merchantModel = HodgepodgeMethod.assembleMerchantQuery(0, 0, 2, merchantIdList, requestModel.money, 1);
-                        List<MerchantModel> merchantList = ComponentUtil.merchantService.findByCondition(merchantModel);
-                        HodgepodgeMethod.checkMerchantIsNullByOutOrder(merchantList);
+                                // 组装拉单失败的代付订单信息
+                                failInfo = "代付订单时,卡商数据为空!";
+                                orderOutModel = HodgepodgeMethod.assembleOrderOutAdd(data, null, null, null, 3,
+                                        DateUtil.getNowLongTime(),null, failInfo);
 
+                                flag_check = false;
+                            }
+                        }
 
-                        // 获取上次最大的代付ID
-                        long maxReplacePayId = 0;
+                        long maxReplacePayId = 0;// 上次最大的代付ID
+                        if (flag_check){
+                            // 获取上次给出的代付ID
+                            maxReplacePayId = HodgepodgeMethod.getMaxReplacePayRedis(resourceType);
+                        }
 
-                        // 获取上次给出的代付ID
-                        maxReplacePayId = HodgepodgeMethod.getMaxReplacePayRedis(resourceType);
+                        List<ReplacePayModel> replacePayList = null;
+                        if (flag_check){
+                            // 查询代付集合数据
+                            ReplacePayModel replacePayModel = HodgepodgeMethod.assembleReplacePayQuery(merchantList, data.getOrderMoney(), resourceType);
+                            replacePayList = ComponentUtil.replacePayService.getReplacePayList(replacePayModel);
+                            if (replacePayList == null || replacePayList.size() <= 0){
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                        // 查询代付集合数据
-                        ReplacePayModel replacePayModel = HodgepodgeMethod.assembleReplacePayQuery(merchantList, requestModel.money, resourceType);
-                        List<ReplacePayModel> replacePayList = ComponentUtil.replacePayService.getReplacePayList(replacePayModel);
-                        HodgepodgeMethod.checkReplacePayIsNullByOutOrder(replacePayList);
+                                // 组装拉单失败的代付订单信息
+                                failInfo = "代付订单时,代付数据为空!";
+                                orderOutModel = HodgepodgeMethod.assembleOrderOutAdd(data, null, null, null, 3,
+                                        DateUtil.getNowLongTime(),null, failInfo);
+
+                                flag_check = false;
+                            }
+                        }
+
 
                         // 代付集合进行排序
                         List<ReplacePayModel> sortList = null;
-                        if (replacePayRule == 1){
-                            // 1从ID从小到大，
-                            sortList = HodgepodgeMethod.sortReplacePayList(replacePayList, maxReplacePayId);
-                        }else if (replacePayRule == 2){
-                            // 2金额从小到大
-                            sortList = replacePayList;
-                            sortList.sort((x, y) -> Double.compare(Double.parseDouble(x.getDayMoney()), Double.parseDouble(y.getDayMoney())));
+                        if (flag_check){
+                            if (replacePayRule == 1){
+                                // 1从ID从小到大，
+                                sortList = HodgepodgeMethod.sortReplacePayList(replacePayList, maxReplacePayId);
+                            }else if (replacePayRule == 2){
+                                // 2金额从小到大
+                                sortList = replacePayList;
+                                sortList.sort((x, y) -> Double.compare(Double.parseDouble(x.getDayMoney()), Double.parseDouble(y.getDayMoney())));
+                            }
                         }
 
-
-
-
-
-
-
-
-
+//                        多发
                         if (data.getResourceType() == 1){
                             // 杉德代付
 

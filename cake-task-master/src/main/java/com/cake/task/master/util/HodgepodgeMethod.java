@@ -1,4 +1,8 @@
 package com.cake.task.master.util;
+import com.cake.task.master.core.common.utils.DateUtil;
+import com.cake.task.master.core.common.utils.constant.CacheKey;
+import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
+import com.cake.task.master.core.model.merchant.MerchantChannelModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
 import com.cake.task.master.core.model.order.OrderOutLimitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
@@ -9,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -193,6 +200,157 @@ public class HodgepodgeMethod {
 
         return resBean;
 
+    }
+
+
+
+    /**
+     * @Description: 组装查询卡商与渠道关联关系
+     * @param id - 主键ID
+     * @param merchantId - 卡商ID
+     * @param merchantSiteId - 卡站点ID
+     * @param channelId - 渠道ID
+     * @param useStatus - 使用状态
+     * @return com.hz.cake.master.core.model.merchant.MerchantChannelModel
+     * @author yoko
+     * @date 2020/10/30 14:04
+     */
+    public static MerchantChannelModel assembleMerchantChannelQuery(long id, long merchantId, long merchantSiteId, long channelId, int useStatus){
+        MerchantChannelModel resBean = new MerchantChannelModel();
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (merchantId > 0){
+            resBean.setMerchantId(merchantId);
+        }
+        if (merchantSiteId > 0){
+            resBean.setMerchantSiteId(merchantSiteId);
+        }
+        if (channelId > 0){
+            resBean.setChannelId(channelId);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装查询卡商信息的方法
+     * @param id - 主键ID
+     * @param merchantType - 卡商类型：1我方卡商，2第三方卡商
+     * @param operateType - 卡商运营类型/运营性质：1代收，2代付
+     * @param idList - 卡商主键ID集合
+     * @param orderMoney - 订单金额
+     * @param useStatus - 使用状态:1初始化有效正常使用，2无效暂停使用
+     * @return com.hz.cake.master.core.model.merchant.MerchantModel
+     * @author yoko
+     * @date 2020/10/30 14:40
+     */
+    public static MerchantModel assembleMerchantQuery(long id, int merchantType, int operateType, List<Long> idList, String orderMoney, int useStatus){
+        MerchantModel resBean = new MerchantModel();
+        if (!StringUtils.isBlank(orderMoney)){
+            BigDecimal bd = new BigDecimal(orderMoney);
+            resBean.setMoney(bd);
+        }
+        if (id > 0){
+            resBean.setId(id);
+        }
+        if (merchantType > 0){
+            resBean.setMerchantType(merchantType);
+        }
+        if (operateType > 0){
+            resBean.setOperateType(operateType);
+        }
+        if (idList != null && idList.size() > 0){
+            resBean.setIdList(idList);
+        }
+        if (useStatus > 0){
+            resBean.setUseStatus(useStatus);
+        }
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 获取上一次使用过的代付ID
+     * <p>
+     *     从缓存中获取上次给出码的代付ID
+     *     数据来由：每次给出之后，把代付ID进行纪录
+     * </p>
+     * @param resourceType - 代付资源类型：1杉德支付，2金服支付
+     * @return
+     * @author yoko
+     * @date 2020/5/21 15:38
+     */
+    public static long getMaxReplacePayRedis(int resourceType) throws Exception{
+        String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.REPLACE_PAY, resourceType);
+        String strCache = (String) ComponentUtil.redisService.get(strKeyCache);
+        if (!StringUtils.isBlank(strCache)) {
+            return Long.parseLong(strCache);
+        }else{
+            return 0;
+        }
+    }
+
+
+    /**
+     * @Description: 组装查询代付的查询条件
+     * @param merchantList - 卡商集合
+     * @param orderMoney - 订单金额
+     * @param resourceType - 代付资源类型：1杉德支付，2金服支付
+     * @return com.hz.cake.master.core.model.replacepay.ReplacePayModel
+     * @author yoko
+     * @date 2021/6/21 11:05
+     */
+    public static ReplacePayModel assembleReplacePayQuery(List<MerchantModel> merchantList, String orderMoney, int resourceType){
+        ReplacePayModel resBean = new ReplacePayModel();
+        List<Long> merchantIdList = merchantList.stream().map(MerchantModel::getId).collect(Collectors.toList());
+        resBean.setMerchantIdList(merchantIdList);
+        BigDecimal bd = new BigDecimal(orderMoney);
+        resBean.setMoney(bd);
+        if (resourceType > 0){
+            resBean.setResourceType(resourceType);
+        }
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 代付集合排序
+     * <p>
+     *     排序方式：小于上次给过的代付ID放在集合的后面，大于上次给过的代付ID放集合的前面
+     * </p>
+     * @param replacePayList - 代付集合
+     * @param maxreplacePayRuleId - 上次给出的代付ID
+     * @return java.util.List<ReplacePayModel>
+     * @author yoko
+     * @date 2020/10/10 11:49
+     */
+    public static List<ReplacePayModel> sortReplacePayList(List<ReplacePayModel> replacePayList, long maxreplacePayRuleId){
+        if (maxreplacePayRuleId > 0){
+            List<ReplacePayModel> resList = new ArrayList<>();
+            List<ReplacePayModel> noList = new ArrayList<>();// 没有给出过出码的代付集合
+            List<ReplacePayModel> yesList = new ArrayList<>();// 有给出过出码的代付集合
+            for (ReplacePayModel replacePayModel : replacePayList){
+                if (replacePayModel.getId() > maxreplacePayRuleId){
+                    noList.add(replacePayModel);
+                }else {
+                    yesList.add(replacePayModel);
+                }
+            }
+            if (noList != null && noList.size() > 0){
+                resList.addAll(noList);
+            }
+            if (yesList != null && yesList.size() > 0){
+                resList.addAll(yesList);
+            }
+            return resList;
+        }else {
+            return replacePayList;
+        }
     }
 
 

@@ -519,32 +519,29 @@
         a.create_time,a.update_time,a.yn,
         b.id as replace_pay_strategy_id, b.replace_pay_id,b.priority,b.open_time_slot,b.out_day_money,b.out_month_money,b.out_day_num
         from tb_fr_replace_pay a left join tb_fr_replace_pay_strategy b on a.id = b.replace_pay_id and b.id is not null
-          where 1=1
-          and a.yn = 0
-          and a.is_ok = 2
-          and a.use_status = 1
-          and a.balance > #{money}
-          and a.use_balance > #{money}
-          and a.resource_type = #{resourceType}
-            <if test="merchantIdList != null and merchantIdList.size()>0">
-                and a.merchant_id in
-                <foreach item="item" index="index" collection="merchantIdList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-          and b.yn =0
+        where 1=1
+        and a.yn = 0
+        and a.is_ok = 2
+        and a.use_status = 1
+        and a.balance > #{money}
+        and a.use_balance > #{money}
+        and a.resource_type = #{resourceType}
+        <if test="merchantIdList != null and merchantIdList.size()>0">
+            and a.merchant_id in
+            <foreach item="item" index="index" collection="merchantIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and b.yn =0
         )a1
         left join (
-            select a.replace_pay_id,ifnull(sum(convert(a.money,decimal(19,2))), '0.00') as money from tb_fr_replace_pay_info a
-              where 1=1 and a.curday = #{curday}
-            group by a.replace_pay_id
+        select a.replace_pay_id,ifnull(sum(convert(a.money,decimal(19,2))), '0.00') as money from tb_fr_replace_pay_info a
+        where 1=1 and a.curday = #{curday}
+        group by a.replace_pay_id
         ) a2 on a1.id = a2.replace_pay_id
         order by a1.id asc
 
     </select>
-
-
-
 
 
     <!-- 更新代付账户的余额 -->

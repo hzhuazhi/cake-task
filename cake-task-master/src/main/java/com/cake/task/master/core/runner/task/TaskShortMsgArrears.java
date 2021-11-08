@@ -51,7 +51,7 @@ public class TaskShortMsgArrears {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 2000) // 每2秒执行
+//    @Scheduled(fixedDelay = 2000) // 每2秒执行 hhyoko
     public void handleArrears() throws Exception{
 //        log.info("----------------------------------TaskShortMsgArrears.handleArrears()----start");
         // 获取手机欠费短信数据

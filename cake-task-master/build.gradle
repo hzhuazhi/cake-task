@@ -131,6 +131,7 @@ dependencies {
 
 
     compile group: 'com.qiniu', name: 'qiniu-java-sdk', version: '7.2.29'
+    compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.18'
 }
 
 test {

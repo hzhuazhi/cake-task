@@ -58,7 +58,7 @@ public class TaskWithdraw {
      * @date 2019/12/6 20:25
      */
 //    @Scheduled(cron = "1 * * * * ?")
-    @Scheduled(fixedDelay = 5000) // 每秒执行
+//    @Scheduled(fixedDelay = 5000) // 每秒执行 hhyoko
     public void issueDistribution() throws Exception{
 //        log.info("----------------------------------TaskWithdraw.issueDistribution()----start");
 
@@ -241,7 +241,7 @@ public class TaskWithdraw {
      * @date 2019/12/6 20:25
      */
 //    @Scheduled(cron = "1 * * * * ?")
-    @Scheduled(fixedDelay = 10000) // 每秒执行
+//    @Scheduled(fixedDelay = 10000) // 每秒执行 hhyoko
     public void send() throws Exception{
 //        log.info("----------------------------------TaskWithdraw.send()----start");
 

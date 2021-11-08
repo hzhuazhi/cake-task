@@ -4,6 +4,8 @@ import com.cake.task.master.core.common.utils.StringUtil;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
 import com.cake.task.master.core.common.utils.constant.ServerConstant;
+import com.cake.task.master.core.common.utils.huichaogpay.model.response.CheckBalanceResponse;
+import com.cake.task.master.core.common.utils.huichaogpay.model.response.TransferQuery;
 import com.cake.task.master.core.common.utils.jinfupay.model.JinFuPayResponse;
 import com.cake.task.master.core.common.utils.jinfupay.model.ResultResponse;
 import com.cake.task.master.core.common.utils.sandpay.model.AgentPayResponse;
@@ -3114,6 +3116,64 @@ public class TaskMethod {
         resBean.setCurday(DateUtil.getDayNumber(new Date()));
         resBean.setCurhour(DateUtil.getHour(new Date()));
         resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装第三方代付主动拉取结果返回的订单结果的方法-汇潮
+     * @param replacePayGainModel - 第三方代付主动拉取结果的信息
+     * @param resultResponse -  第三方返回的订单信息-汇潮
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayGainResultModel
+     * @author yoko
+     * @date 2021/6/22 19:53
+     */
+    public static ReplacePayGainResultModel assembleReplacePayGainResultByHuiChaoAdd(ReplacePayGainModel replacePayGainModel, TransferQuery resultResponse){
+        ReplacePayGainResultModel resBean = new ReplacePayGainResultModel();
+        resBean.setReplacePayId(replacePayGainModel.getReplacePayId());
+        resBean.setResourceType(3);// 代付资源类型：1杉德支付，2金服支付，3汇潮
+        resBean.setOrderNo(replacePayGainModel.getOrderNo());
+        resBean.setTradeTime(replacePayGainModel.getTradeTime());
+
+
+        if (resultResponse.state.equals("00")){
+            resBean.setTradeStatus(4);
+        }else if (resultResponse.state.equals("11")){
+            resBean.setTradeStatus(2);
+        }
+
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+
+    /**
+     * @Description: 组装更新代付余额的方法-汇潮
+     * @param id - 主键ID
+     * @param resultResponse - 汇潮协议接口返回的信息
+     * @return com.cake.task.master.core.model.replacepay.ReplacePayModel
+     * @author yoko
+     * @date 2021/6/22 16:54
+     */
+    public static ReplacePayModel assembleReplacePayUpdateBalanceByHuiChao(long id, CheckBalanceResponse resultResponse){
+        ReplacePayModel resBean = new ReplacePayModel();
+        resBean.setId(id);
+        if (resultResponse != null){
+            if (!StringUtils.isBlank(resultResponse.availableBalance)){
+                resBean.setBalance(resultResponse.availableBalance);
+            }else {
+                return null;
+            }
+            if (!StringUtils.isBlank(resultResponse.availableBalance)){
+                resBean.setUseBalance(resultResponse.availableBalance);
+            }else {
+                return null;
+            }
+        }else {
+            return null;
+        }
         return resBean;
     }
 

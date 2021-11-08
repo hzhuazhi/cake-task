@@ -55,7 +55,7 @@ public class TaskInterestProfit {
      * @date 2019/12/6 20:25
      */
 //    @Scheduled(cron = "1 * * * * ?")
-    @Scheduled(fixedDelay = 30000) // 每30秒执行
+//    @Scheduled(fixedDelay = 30000) // 每30秒执行 hhyoko
     public void profit() throws Exception{
 //        log.info("----------------------------------TaskInterestProfit.profit()----start");
 

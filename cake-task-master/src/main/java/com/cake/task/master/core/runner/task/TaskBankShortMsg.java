@@ -58,7 +58,7 @@ public class TaskBankShortMsg {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 1000) // 每1秒执行
+//    @Scheduled(fixedDelay = 1000) // 每1秒执行 hhyoko
     public void analysisShortMsg() throws Exception{
 //        log.info("----------------------------------TaskBankShortMsg.analysisShortMsg()----start");
         // 策略：银行卡尾号起始关键字
@@ -288,7 +288,7 @@ public class TaskBankShortMsg {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 1000) // 每1秒执行
+//    @Scheduled(fixedDelay = 1000) // 每1秒执行 hhyoko
     public void handle() throws Exception{
 //        log.info("----------------------------------TaskBankShortMsg.handle()----start");
         // 策略数据：订单的支付时间

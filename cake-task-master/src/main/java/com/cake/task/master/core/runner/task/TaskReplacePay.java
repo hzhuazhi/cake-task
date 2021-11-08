@@ -1,5 +1,7 @@
 package com.cake.task.master.core.runner.task;
 
+import com.cake.task.master.core.common.utils.huichaogpay.HuiChaoApi;
+import com.cake.task.master.core.common.utils.huichaogpay.model.response.CheckBalanceResponse;
 import com.cake.task.master.core.common.utils.jinfupay.JinFuApi;
 import com.cake.task.master.core.common.utils.jinfupay.model.JinFuPayResponse;
 import com.cake.task.master.core.common.utils.sandpay.method.MerBalanceQuery;
@@ -115,6 +117,47 @@ public class TaskReplacePay {
 //                log.info("----------------------------------TaskReplacePay.jinFuBalanceQuery()----end");
             }catch (Exception e){
                 log.error(String.format("this TaskReplacePay.jinFuBalanceQuery() is error , the dataId=%s !", data.getId()));
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * @Description: task：代付信息，检测汇潮代付账户的余额
+     * <p>
+     *     每1分钟运行一次
+     *     1.查询代付信息表。
+     *     2.查询汇潮此代付账户的余额。
+     *     3.更新本地此代付的余额。
+     * </p>
+     * @author yoko
+     * @date 2019/12/6 20:25
+     */
+//    @Scheduled(cron = "1 * * * * ?")
+    @Scheduled(fixedDelay = 30000) // 每半分钟执行
+//    @Scheduled(fixedDelay = 6000) // 每分钟执行
+    public void huiChaoBalanceQuery() throws Exception{
+//        log.info("----------------------------------TaskReplacePay.huiChaoBalanceQuery()----start");
+
+        // 获取代付信息
+        ReplacePayModel replacePayQuery = TaskMethod.assembleReplacePayQuery(0,0,3,2,1);
+        List<ReplacePayModel> synchroList = ComponentUtil.replacePayService.findByCondition(replacePayQuery);
+        for (ReplacePayModel data : synchroList){
+            try{
+                // 调用汇潮查询余额
+                CheckBalanceResponse checkBalanceResponse = HuiChaoApi.queryBalance(data);
+                if (checkBalanceResponse != null && checkBalanceResponse.respCode.equals("0000")){
+                    // 更新代付账户余额
+                    ReplacePayModel replacePayModel = TaskMethod.assembleReplacePayUpdateBalanceByHuiChao(data.getId(), checkBalanceResponse);
+                    if (replacePayModel != null){
+                        ComponentUtil.replacePayService.updateBalance(replacePayModel);
+                    }
+                }
+
+//                log.info("----------------------------------TaskReplacePay.huiChaoBalanceQuery()----end");
+            }catch (Exception e){
+                log.error(String.format("this TaskReplacePay.huiChaoBalanceQuery() is error , the dataId=%s !", data.getId()));
                 e.printStackTrace();
             }
         }

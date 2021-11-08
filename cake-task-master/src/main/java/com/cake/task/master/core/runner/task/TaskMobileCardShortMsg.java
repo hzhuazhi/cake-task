@@ -53,7 +53,7 @@ public class TaskMobileCardShortMsg {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 1000) // 每1秒执行
+//    @Scheduled(fixedDelay = 1000) // 每1秒执行 hhyoko
     public void analysisShortMsg() throws Exception{
 //        log.info("----------------------------------TaskMobileCardShortMsg.analysisShortMsg()----start");
         // 获取短信的类型定位策略
@@ -124,7 +124,7 @@ public class TaskMobileCardShortMsg {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 1000) // 每1秒执行
+//    @Scheduled(fixedDelay = 1000) // 每1秒执行 hhyoko
     public void handle() throws Exception{
 //        log.info("----------------------------------TaskMobileCardShortMsg.handle()----start");
         // 获取手机短信数据

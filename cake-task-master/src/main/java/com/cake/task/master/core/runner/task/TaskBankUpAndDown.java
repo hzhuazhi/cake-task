@@ -56,7 +56,7 @@ public class TaskBankUpAndDown {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 4000) // 每4秒执行
+//    @Scheduled(fixedDelay = 4000) // 每4秒执行 hhyoko
     public void bankUp() throws Exception{
 //        log.info("----------------------------------TaskBankUpAndDown.bankUp()----start");
         int curday = DateUtil.getDayNumber(new Date());
@@ -226,7 +226,7 @@ public class TaskBankUpAndDown {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 9000) // 每9秒执行
+//    @Scheduled(fixedDelay = 9000) // 每9秒执行 hhyoko
     public void bankDown() throws Exception{
 //        log.info("----------------------------------TaskBankUpAndDown.bankDown()----start");
 

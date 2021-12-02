@@ -139,6 +139,9 @@ public class AutowireRunner implements ApplicationRunner {
     private MerchantWithdrawService merchantWithdrawService;
 
     @Autowired
+    private MerchantServiceChargeService merchantServiceChargeService;
+
+    @Autowired
     private BankLeadService bankLeadService;
 
     @Autowired
@@ -285,6 +288,7 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.withdrawService = withdrawService;
         ComponentUtil.monitorBankService = monitorBankService;
         ComponentUtil.merchantWithdrawService = merchantWithdrawService;
+        ComponentUtil.merchantServiceChargeService = merchantServiceChargeService;
         ComponentUtil.bankLeadService = bankLeadService;
         ComponentUtil.bankLeadLinkService = bankLeadLinkService;
         ComponentUtil.bankLeadCollectionService = bankLeadCollectionService;

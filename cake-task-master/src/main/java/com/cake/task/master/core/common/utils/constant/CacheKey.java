@@ -156,6 +156,7 @@ public interface CacheKey {
 
 
 
+
     /**
      * 代付日付款金额
      * task:需要检测付款限制
@@ -173,5 +174,20 @@ public interface CacheKey {
      * task:需要检测收款限制
      */
     String OUT_DAY_NUM = "-28";
+
+
+    /**
+     * 锁：在筛选代付时，需要先锁住此代付
+     * 高并发避免出现问题
+     */
+    String LOCK_REPLACE_PAY = "-29";
+
+
+    /**
+     * 卡商绑定渠道的手续费
+     */
+    String MERCHANT_SERVICE_CHARGE = "-30";
+
+
 
 }

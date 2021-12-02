@@ -48,6 +48,7 @@ public class ComponentUtil {
     public static WithdrawService withdrawService;
     public static MonitorBankService monitorBankService;
     public static MerchantWithdrawService merchantWithdrawService;
+    public static MerchantServiceChargeService merchantServiceChargeService;
     public static BankLeadService bankLeadService;
     public static BankLeadLinkService bankLeadLinkService;
     public static BankLeadCollectionService bankLeadCollectionService;

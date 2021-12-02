@@ -508,4 +508,22 @@
     </select>
 
 
+
+    <!-- 更新卡商的余额-根据代付订单 -->
+    <update id="updateBalanceByOrderOut" parameterType="com.cake.task.master.core.model.merchant.MerchantModel">
+        UPDATE tb_fr_merchant a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="addBalance != null and addBalance != '' " >
+                a.balance = a.balance + #{orderMoney},
+            </if>
+            <if test="subtractBalance != null and subtractBalance != '' " >
+                a.balance = a.balance - #{orderMoney},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+    </update>
+
+
 </mapper>

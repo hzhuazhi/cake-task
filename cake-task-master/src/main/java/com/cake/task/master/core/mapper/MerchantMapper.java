@@ -102,4 +102,14 @@ public interface MerchantMapper<T> extends BaseDao<T> {
      * @date 2020/12/2 15:47
     */
     public List<MerchantModel> getMerchantByChannelBank(MerchantModel model);
+
+
+    /**
+     * @Description: 更新卡商的余额-根据代付订单
+     * @param model
+     * @return
+     * @author yoko
+     * @date 2020/9/15 20:36
+     */
+    public int updateBalanceByOrderOut(MerchantModel model);
 }

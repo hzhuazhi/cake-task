@@ -10,6 +10,7 @@ import com.cake.task.master.core.model.merchant.MerchantServiceChargeModel;
 import com.cake.task.master.core.model.order.OrderOutLimitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
 import com.cake.task.master.core.model.order.OrderOutPrepareModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayGainModel;
 import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import com.cake.task.master.core.model.strategy.StrategyModel;
 import com.cake.task.master.core.model.task.base.StatusModel;
@@ -62,7 +63,7 @@ public class TaskOrderOutPrepare {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-//    @Scheduled(fixedDelay = 20000) // 每20秒执行
+    @Scheduled(fixedDelay = 3000) // 每3秒执行
     public void sendThreeApi() throws Exception{
 //        log.info("----------------------------------TaskOrderOutPrepare.sendThreeApi()----start");
 
@@ -101,14 +102,14 @@ public class TaskOrderOutPrepare {
         List<OrderOutPrepareModel> synchroList = ComponentUtil.taskOrderOutPrepareService.getDataList(statusQuery);
         for (OrderOutPrepareModel data : synchroList){
             try{
+                StatusModel statusModel = null;
+                OrderOutModel orderOutUpdate = null;
+                ReplacePayModel replacePayData = null;
+                String failInfo = ""; // 失败缘由
                 // 锁住这个数据流水
                 String lockKey = CachedKeyUtils.getCacheKeyTask(TkCacheKey.LOCK_ORDER_OUT_PREPARE, data.getId());
                 boolean flagLock = ComponentUtil.redisIdService.lock(lockKey);
                 if (flagLock){
-                    StatusModel statusModel = null;
-                    OrderOutModel orderOutUpdate = null;
-                    String failInfo = ""; // 失败缘由
-
                     // 优先check校验黑名单
                     OrderOutLimitModel orderOutLimitQuery = null;
                     if (replacePayBlackListRule == 1){
@@ -132,10 +133,17 @@ public class TaskOrderOutPrepare {
                         failInfo = "黑名单限制,拉单失败!";
                         orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
                                 2, failInfo);
+
+                        // 更新代付订单状态
+                        ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                        // 更新状态
+                        ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                        // 解锁
+                        ComponentUtil.redisIdService.delLock(lockKey);
+                        continue;
                     }else{
                         // 不属于黑名单
                         int resourceType = data.getResourceType();// 代付资源类型：1杉德支付，2金服支付，3汇潮支付
-                        boolean flag_check = true;// 所有check校验的状态
 
                         // 根据渠道获取关联的卡商
                         MerchantChannelModel merchantChannelQuery = HodgepodgeMethod.assembleMerchantChannelQuery(0,0,0, data.getChannelId(), 1);
@@ -149,179 +157,225 @@ public class TaskOrderOutPrepare {
                             orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
                                     2, failInfo);
 
-                            flag_check = false;
+                            // 更新代付订单状态
+                            ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                            // 更新状态
+                            ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                            // 解锁
+                            ComponentUtil.redisIdService.delLock(lockKey);
+                            continue;
                         }
 
                         // 获取卡商的集合ID
                         List<Long> merchantIdList = null;
-                        if (flag_check){
-                            if (merchantChannelList != null && merchantChannelList.size() > 0){
-                                merchantIdList = merchantChannelList.stream().map(MerchantChannelModel::getMerchantId).collect(Collectors.toList());
-                            }
+                        if (merchantChannelList != null && merchantChannelList.size() > 0){
+                            merchantIdList = merchantChannelList.stream().map(MerchantChannelModel::getMerchantId).collect(Collectors.toList());
                         }
 
                         List<MerchantModel> merchantList = null;
-                        if (flag_check){
-                            // 根据渠道与卡商的关联关系中的卡商ID获取卡商集合
-                            MerchantModel merchantModel = HodgepodgeMethod.assembleMerchantQuery(0, 0, 2, merchantIdList, data.getOrderMoney(), 1);
-                            merchantList = ComponentUtil.merchantService.findByCondition(merchantModel);
-                            if (merchantList == null || merchantList.size() <= 0){
-                                // 成功：因为task运算是成功的
-                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                        // 根据渠道与卡商的关联关系中的卡商ID获取卡商集合
+                        MerchantModel merchantModel = HodgepodgeMethod.assembleMerchantQuery(0, 0, 2, merchantIdList, data.getOrderMoney(), 1);
+                        merchantList = ComponentUtil.merchantService.findByCondition(merchantModel);
+                        if (merchantList == null || merchantList.size() <= 0){
+                            // 成功：因为task运算是成功的
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                                // 组装拉单失败的代付订单信息
-                                failInfo = "代付订单时,卡商数据为空!";
-                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                        2, failInfo);
+                            // 组装拉单失败的代付订单信息
+                            failInfo = "代付订单时,卡商数据为空!";
+                            orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
+                                    2, failInfo);
 
-                                flag_check = false;
-                            }
+                            // 更新代付订单状态
+                            ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                            // 更新状态
+                            ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                            // 解锁
+                            ComponentUtil.redisIdService.delLock(lockKey);
+                            continue;
                         }
 
                         long maxReplacePayId = 0;// 上次最大的代付ID
-                        if (flag_check){
-                            // 获取上次给出的代付ID
-                            maxReplacePayId = HodgepodgeMethod.getMaxReplacePayRedis(resourceType);
-                        }
+                        // 获取上次给出的代付ID
+                        maxReplacePayId = HodgepodgeMethod.getMaxReplacePayRedis(resourceType);
 
                         List<ReplacePayModel> replacePayList = null;
-                        if (flag_check){
-                            // 查询代付集合数据
-                            ReplacePayModel replacePayModel = HodgepodgeMethod.assembleReplacePayQuery(merchantList, data.getOrderMoney(), resourceType);
-                            replacePayList = ComponentUtil.replacePayService.getReplacePayList(replacePayModel);
-                            if (replacePayList == null || replacePayList.size() <= 0){
-                                // 成功：因为task运算是成功的
-                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                        // 查询代付集合数据
+                        ReplacePayModel replacePayModel = HodgepodgeMethod.assembleReplacePayQuery(merchantList, data.getOrderMoney(), resourceType);
+                        replacePayList = ComponentUtil.replacePayService.getReplacePayList(replacePayModel);
+                        if (replacePayList == null || replacePayList.size() <= 0){
+                            // 成功：因为task运算是成功的
+                            statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                                // 组装拉单失败的代付订单信息
-                                failInfo = "代付订单时,代付数据为空!";
-                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                        2, failInfo);
+                            // 组装拉单失败的代付订单信息
+                            failInfo = "代付订单时,代付数据为空!";
+                            orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
+                                    2, failInfo);
 
-                                flag_check = false;
-                            }
+                            // 更新代付订单状态
+                            ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                            // 更新状态
+                            ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                            // 解锁
+                            ComponentUtil.redisIdService.delLock(lockKey);
+                            continue;
                         }
 
                         // 查询代付订单信息
-                        OrderOutModel orderOutQuery = HodgepodgeMethod.assembleOrderOutQuery(data.getOrderNo());
+                        OrderOutModel orderOutQuery = HodgepodgeMethod.assembleOrderOutQuery(data.getOrderNo(), 1);
                         OrderOutModel orderOutModel = (OrderOutModel)ComponentUtil.orderOutService.findByObject(orderOutQuery);
                         if (orderOutModel == null){
                             // 成功：因为task运算是成功的
                             statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,"根据订单号查询代付订单信息的数据为空!");
-                            flag_check = false;
+
+                            // 更新状态
+                            ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                            // 解锁
+                            ComponentUtil.redisIdService.delLock(lockKey);
+                            continue;
                         }
 
 
                         // 代付集合进行排序
                         List<ReplacePayModel> sortList = null;
-                        if (flag_check){
-                            if (replacePayRule == 1){
-                                // 1从ID从小到大，
-                                sortList = HodgepodgeMethod.sortReplacePayList(replacePayList, maxReplacePayId);
-                            }else if (replacePayRule == 2){
-                                // 2金额从小到大
-                                sortList = replacePayList;
-                                sortList.sort((x, y) -> Double.compare(Double.parseDouble(x.getDayMoney()), Double.parseDouble(y.getDayMoney())));
-                            }
+                        if (replacePayRule == 1){
+                            // 1从ID从小到大，
+                            sortList = HodgepodgeMethod.sortReplacePayList(replacePayList, maxReplacePayId);
+                        }else if (replacePayRule == 2){
+                            // 2金额从小到大
+                            sortList = replacePayList;
+                            sortList.sort((x, y) -> Double.compare(Double.parseDouble(x.getDayMoney()), Double.parseDouble(y.getDayMoney())));
                         }
 
-                        if (flag_check){
-                            if (data.getResourceType() == 1){
-                                // 杉德代付
-                                // 组装请求衫德的订单信息
-                                orderOutModel.setTradeTime(DateUtil.getNowLongTime());
-                                // 筛选可用的代付
-                                ReplacePayModel replacePayData = ComponentUtil.orderOutService.screenReplacePay(sortList, merchantList, orderOutModel);
-                                if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
-                                    // 获取卡商绑定渠道的手续费
-                                    MerchantServiceChargeModel merchantServiceChargeQuery = HodgepodgeMethod.assembleMerchantServiceChargeQuery(0, replacePayData.getMerchantId(), data.getChannelId(),1);
-                                    MerchantServiceChargeModel merchantServiceChargeModel = ComponentUtil.merchantServiceChargeService.getMerchantServiceChargeModel(merchantServiceChargeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                        if (data.getResourceType() == 1){
+                            // 杉德代付
+                            // 组装请求衫德的订单信息
+                            orderOutModel.setTradeTime(DateUtil.getNowLongTime());
+                            // 筛选可用的代付
+                            replacePayData = ComponentUtil.orderOutService.screenReplacePay(sortList, merchantList, orderOutModel);
+                            if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
+                                // 获取卡商绑定渠道的手续费
+                                MerchantServiceChargeModel merchantServiceChargeQuery = HodgepodgeMethod.assembleMerchantServiceChargeQuery(0, replacePayData.getMerchantId(), data.getChannelId(),1);
+                                MerchantServiceChargeModel merchantServiceChargeModel = ComponentUtil.merchantServiceChargeService.getMerchantServiceChargeModel(merchantServiceChargeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
 
-                                    // 成功：因为task运算是成功的
-                                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                                    // 组装拉单成功的代付订单信息
-                                    orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), replacePayData, merchantList, merchantServiceChargeModel.getServiceCharge(), 2,
-                                            1, null);
-                                }else {
-                                    // 成功：因为task运算是成功的
-                                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                                // 组装拉单成功的代付订单信息
+                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), replacePayData, merchantList, merchantServiceChargeModel.getServiceCharge(), 2,
+                                        1, null);
 
-                                    // 组装拉单失败的代付订单信息
-                                    failInfo = "拉单杉德失败!";
-                                    orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                            2, failInfo);
-                                }
-                            }else if (data.getResourceType() == 2){
-                                // 金服代付
-                                // 组装请求金服的订单信息
-                                orderOutModel.setTradeTime(DateUtil.getNowLongTime());
-                                // 筛选可用的代付
-                                ReplacePayModel replacePayData = ComponentUtil.orderOutService.screenReplacePayJinFu(sortList, merchantList, orderOutModel);
-                                if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
-                                    // 获取卡商绑定渠道的手续费
-                                    MerchantServiceChargeModel merchantServiceChargeQuery = HodgepodgeMethod.assembleMerchantServiceChargeQuery(0, replacePayData.getMerchantId(), data.getChannelId(),1);
-                                    MerchantServiceChargeModel merchantServiceChargeModel = ComponentUtil.merchantServiceChargeService.getMerchantServiceChargeModel(merchantServiceChargeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                            }else {
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                                    // 成功：因为task运算是成功的
-                                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                                // 组装拉单失败的代付订单信息
+                                failInfo = "拉单杉德失败!";
+                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
+                                        2, failInfo);
 
-                                    // 组装拉单成功的代付订单信息
-                                    orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), replacePayData, merchantList, merchantServiceChargeModel.getServiceCharge(), 2,
-                                            1, null);
-                                }else {
-                                    // 成功：因为task运算是成功的
-                                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                                // 更新代付订单状态
+                                ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                                // 更新状态
+                                ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                                // 解锁
+                                ComponentUtil.redisIdService.delLock(lockKey);
+                                continue;
+                            }
+                        }else if (data.getResourceType() == 2){
+                            // 金服代付
+                            // 组装请求金服的订单信息
+                            orderOutModel.setTradeTime(DateUtil.getNowLongTime());
+                            // 筛选可用的代付
+                            replacePayData = ComponentUtil.orderOutService.screenReplacePayJinFu(sortList, merchantList, orderOutModel);
+                            if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
+                                // 获取卡商绑定渠道的手续费
+                                MerchantServiceChargeModel merchantServiceChargeQuery = HodgepodgeMethod.assembleMerchantServiceChargeQuery(0, replacePayData.getMerchantId(), data.getChannelId(),1);
+                                MerchantServiceChargeModel merchantServiceChargeModel = ComponentUtil.merchantServiceChargeService.getMerchantServiceChargeModel(merchantServiceChargeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
 
-                                    // 组装拉单失败的代付订单信息
-                                    failInfo = "拉单金服失败!";
-                                    orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                            2, failInfo);
-                                }
-                            }else if(data.getResourceType() == 3){
-                                // 汇潮支付
-                                // 组装请求汇潮的订单信息
-                                orderOutModel.setTradeTime(DateUtil.getNowLongTime());
-                                // 筛选可用的代付
-                                ReplacePayModel replacePayData = ComponentUtil.orderOutService.screenReplacePayHuiChao(sortList, merchantList, orderOutModel);
-                                if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
-                                    // 获取卡商绑定渠道的手续费
-                                    MerchantServiceChargeModel merchantServiceChargeQuery = HodgepodgeMethod.assembleMerchantServiceChargeQuery(0, replacePayData.getMerchantId(), data.getChannelId(),1);
-                                    MerchantServiceChargeModel merchantServiceChargeModel = ComponentUtil.merchantServiceChargeService.getMerchantServiceChargeModel(merchantServiceChargeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                                    // 成功：因为task运算是成功的
-                                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                                // 组装拉单成功的代付订单信息
+                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), replacePayData, merchantList, merchantServiceChargeModel.getServiceCharge(), 2,
+                                        1, null);
+                            }else {
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
 
-                                    // 组装拉单成功的代付订单信息
-                                    orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), replacePayData, merchantList, merchantServiceChargeModel.getServiceCharge(), 2,
-                                            1, null);
-                                }else {
-                                    // 成功：因为task运算是成功的
-                                    statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+                                // 组装拉单失败的代付订单信息
+                                failInfo = "拉单金服失败!";
+                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
+                                        2, failInfo);
 
-                                    // 组装拉单失败的代付订单信息
-                                    failInfo = "拉单汇潮失败!";
-                                    orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                            2, failInfo);
-                                }
+                                // 更新代付订单状态
+                                ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                                // 更新状态
+                                ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                                // 解锁
+                                ComponentUtil.redisIdService.delLock(lockKey);
+                                continue;
+                            }
+                        }else if(data.getResourceType() == 3){
+                            // 汇潮支付
+                            // 组装请求汇潮的订单信息
+                            orderOutModel.setTradeTime(DateUtil.getNowLongTime());
+                            // 筛选可用的代付
+                            replacePayData = ComponentUtil.orderOutService.screenReplacePayHuiChao(sortList, merchantList, orderOutModel);
+                            if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
+                                // 获取卡商绑定渠道的手续费
+                                MerchantServiceChargeModel merchantServiceChargeQuery = HodgepodgeMethod.assembleMerchantServiceChargeQuery(0, replacePayData.getMerchantId(), data.getChannelId(),1);
+                                MerchantServiceChargeModel merchantServiceChargeModel = ComponentUtil.merchantServiceChargeService.getMerchantServiceChargeModel(merchantServiceChargeQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+
+                                // 组装拉单成功的代付订单信息
+                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), replacePayData, merchantList, merchantServiceChargeModel.getServiceCharge(), 2,
+                                        1, null);
+                            }else {
+                                // 成功：因为task运算是成功的
+                                statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 3, 0, 0,0,null);
+
+                                // 组装拉单失败的代付订单信息
+                                failInfo = "拉单汇潮失败!";
+                                orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
+                                        2, failInfo);
+
+                                // 更新代付订单状态
+                                ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
+                                // 更新状态
+                                ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
+                                // 解锁
+                                ComponentUtil.redisIdService.delLock(lockKey);
+                                continue;
                             }
                         }
 
                     }
 
+                    ReplacePayGainModel replacePayGainModel = null;
+                    // 添加主动拉取订单结果的数据
+                    if (replacePayData != null && replacePayData.getId() != null && replacePayData.getId() > 0){
+                        if (replacePayData.getGainDataType() == 2){
+                            // 获取订单结果类型：1被动接收数据，2主动查询
+                            data.setTradeTime(DateUtil.getNowLongTime());
+                            replacePayGainModel = HodgepodgeMethod.assembleReplacePayGainAdd(data, replacePayData);
+                        }
+                        // 存储redis：给出的代付ID，用于字段maxReplacePayId
+                        HodgepodgeMethod.saveMaxreplacePayByRedis(replacePayData.getResourceType(), replacePayData.getId());
+                    }
 
 
+                    orderOutUpdate.setTradeTime(DateUtil.getNowLongTime());
+                    boolean flag = ComponentUtil.orderOutPrepareService.handleOrderOutPrepare(replacePayGainModel, orderOutUpdate);
+                    if (!flag){
+                        // 失败
+                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 2, 0, 0,0,"处理事务异常!");
+                    }
 
-//                    OrderOutModel orderOutUpdate = TaskMethod.assembleOrderOutUpdateBySand(data);
-//                    int num = ComponentUtil.orderOutService.updateOrderStatusBySand(orderOutUpdate);
-//                    if (num > 0){
-//                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 0, 0, 0,0,null);
-//                    }else {
-//                        statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0, 0, 0,0,"更新订单状态失败!");
-//                    }
 
                     // 更新状态
-                    ComponentUtil.taskReplacePayGainResultService.updateStatus(statusModel);
+                    ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
                     // 解锁
                     ComponentUtil.redisIdService.delLock(lockKey);
                 }
@@ -330,8 +384,8 @@ public class TaskOrderOutPrepare {
                 log.error(String.format("this TaskOrderOutPrepare.sendThreeApi() is error , the dataId=%s !", data.getId()));
                 e.printStackTrace();
                 // 更新此次task的状态：更新成失败：因为必填项没数据
-                StatusModel statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 2, 0,0, 0,0,"异常失败try!");
-                ComponentUtil.taskReplacePayGainResultService.updateStatus(statusModel);
+                StatusModel statusModel = TaskMethod.assembleTaskUpdateStatus(data.getId(), 3, 2, 0, 0,0,"异常失败try!");
+                ComponentUtil.taskOrderOutPrepareService.updateStatus(statusModel);
             }
         }
     }

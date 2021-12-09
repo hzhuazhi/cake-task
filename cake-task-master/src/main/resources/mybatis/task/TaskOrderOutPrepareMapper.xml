@@ -44,7 +44,7 @@
                 and a.send_status &lt; #{sendStatus}
             </if>
             <if test="invalidTime != null and invalidTime != '' " >
-                and date_format(adddate(a.create_time, interval #{invalidTime} minute),'%y-%m-%d %h:%i:%s') &lt;= now()
+                and date_format(adddate(a.create_time, interval #{invalidTime} minute),'%Y-%m-%d %H:%i:%s') &lt;= now()
                 and (unix_timestamp(now()) - unix_timestamp(a.create_time)) &lt; 86400
             </if>
             and a.yn = 0

@@ -9,6 +9,7 @@ import com.cake.task.master.core.model.merchant.MerchantServiceChargeModel;
 import com.cake.task.master.core.model.order.OrderOutLimitModel;
 import com.cake.task.master.core.model.order.OrderOutModel;
 import com.cake.task.master.core.model.order.OrderOutPrepareModel;
+import com.cake.task.master.core.model.replacepay.ReplacePayGainModel;
 import com.cake.task.master.core.model.replacepay.ReplacePayModel;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -383,6 +384,9 @@ public class HodgepodgeMethod {
         if (orderStatus > 0){
             resBean.setOrderStatus(orderStatus);
         }
+        if (outStatus > 0){
+            resBean.setOutStatus(outStatus);
+        }
 
         if (!StringUtils.isBlank(serviceCharge)){
             resBean.setServiceCharge(serviceCharge);
@@ -419,13 +423,15 @@ public class HodgepodgeMethod {
     /**
     * @Description: 组装根据代付订单号查询订单信息
     * @param orderNo - 代付订单号
+     * @param orderStatus - 订单状态
     * @author: yoko
     * @date: 2021/11/30 15:28
     * @version 1.0.0
     */
-    public static OrderOutModel assembleOrderOutQuery(String orderNo){
+    public static OrderOutModel assembleOrderOutQuery(String orderNo, int orderStatus){
         OrderOutModel resBean = new OrderOutModel();
         resBean.setOrderNo(orderNo);
+        resBean.setOrderStatus(orderStatus);
         return resBean;
     }
 
@@ -554,6 +560,55 @@ public class HodgepodgeMethod {
             resBean.setUseStatus(useStatus);
         }
         return resBean;
+    }
+
+
+    /**
+     * @Description: 组装主动拉取订单结果的数据
+     * @param orderOutModel - 代付订单信息
+     * @param replacePayModel - 代付信息
+     * @return com.hz.cake.master.core.model.replacepay.ReplacePayGainModel
+     * @author yoko
+     * @date 2021/6/22 13:49
+     */
+    public static ReplacePayGainModel assembleReplacePayGainAdd(OrderOutPrepareModel orderOutPrepareModel, ReplacePayModel replacePayModel){
+        ReplacePayGainModel resBean = new ReplacePayGainModel();
+        resBean.setReplacePayId(replacePayModel.getId());
+        resBean.setResourceType(replacePayModel.getResourceType());
+        resBean.setOrderNo(orderOutPrepareModel.getOrderNo());
+        resBean.setOrderMoney(orderOutPrepareModel.getOrderMoney());
+        resBean.setTradeTime(Long.parseLong(orderOutPrepareModel.getTradeTime()));
+
+        String next_time = "";
+        if (replacePayModel.getGainDataTimeType() == 1){
+            next_time = DateUtil.addDateMinute(1);
+        }else if (replacePayModel.getGainDataTimeType() == 2){
+            next_time = DateUtil.addDateMinute(Integer.parseInt(replacePayModel.getGainDataTime()));
+        }else if (replacePayModel.getGainDataTimeType() == 3){
+            // 获取第一下标位：因为这里的时间属于集合时间
+            String [] strArr = replacePayModel.getGainDataTime().split("#");
+            next_time = DateUtil.addDateMinute(Integer.parseInt(strArr[0]));
+        }
+
+        resBean.setNextTime(next_time);
+        resBean.setNowGainDataTime("1");// 默认1的话，下次取时间则是代付的第一个时间位
+        resBean.setCurday(DateUtil.getDayNumber(new Date()));
+        resBean.setCurhour(DateUtil.getHour(new Date()));
+        resBean.setCurminute(DateUtil.getCurminute(new Date()));
+        return resBean;
+    }
+
+    /**
+     * @Description: redis：添加给出的代付ID
+     * @param resourceType - 代付资源类型：1杉德支付，2金服支付
+     * @param replacePayId - 代付ID
+     * @return void
+     * @author yoko
+     * @date 2020/10/10 15:44
+     */
+    public static void saveMaxreplacePayByRedis(int resourceType, long replacePayId){
+        String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.REPLACE_PAY, resourceType);
+        ComponentUtil.redisService.set(strKeyCache, String.valueOf(replacePayId));
     }
 
 

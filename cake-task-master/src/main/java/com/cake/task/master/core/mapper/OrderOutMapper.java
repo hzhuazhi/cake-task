@@ -40,4 +40,14 @@ public interface OrderOutMapper<T> extends BaseDao<T> {
      * @date 2021/6/23 16:54
     */
     public String sumOrderMoney(OrderOutModel model);
+
+
+    /**
+     * @Description: 更新预请求时后代付订单的信息
+     * @param model - 代付订单信息
+     * @author: yoko
+     * @date: 2021/12/2 19:45
+     * @version 1.0.0
+     */
+    public int updateOrderOutByPrepare(OrderOutModel model);
 }

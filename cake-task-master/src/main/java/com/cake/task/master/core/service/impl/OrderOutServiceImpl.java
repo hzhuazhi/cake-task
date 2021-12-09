@@ -372,6 +372,10 @@ public class OrderOutServiceImpl<T> extends BaseServiceImpl<T> implements OrderO
         return null;
     }
 
+    @Override
+    public int updateOrderOutByPrepare(OrderOutModel model) {
+        return orderOutMapper.updateOrderOutByPrepare(model);
+    }
 
 
     /**

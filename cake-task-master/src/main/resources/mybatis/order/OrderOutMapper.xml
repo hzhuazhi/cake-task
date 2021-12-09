@@ -650,4 +650,57 @@
         <include refid="Example_Where_Clause"/>
     </select>
 
+
+
+
+    <!-- 更新预请求时后代付订单的信息 -->
+    <update id="updateOrderOutByPrepare" parameterType="com.cake.task.master.core.model.order.OrderOutModel">
+        UPDATE tb_fr_order_out a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="serviceCharge != null and serviceCharge != '' " >
+                a.service_charge = #{serviceCharge},
+            </if>
+            <if test="outStatus != null and outStatus != '' " >
+                a.out_status = #{outStatus},
+            </if>
+            <if test="merchantId != null and merchantId != '' " >
+                a.merchant_id = #{merchantId},
+            </if>
+            <if test="merchantName != null and merchantName != '' " >
+                a.merchant_name = #{merchantName},
+            </if>
+            <if test="replacePayId != null and replacePayId != '' " >
+                a.replace_pay_id = #{replacePayId},
+            </if>
+            <if test="replacePayName != null and replacePayName != '' " >
+                a.replace_pay_name = #{replacePayName},
+            </if>
+            <if test="resourceType != null and resourceType != '' " >
+                a.resource_type = #{resourceType},
+            </if>
+            <if test="supplierTradeNo != null and supplierTradeNo != '' " >
+                a.supplier_trade_no = #{supplierTradeNo},
+            </if>
+            <if test="tradeTime != null and tradeTime != '' " >
+                a.trade_time = #{tradeTime},
+            </if>
+            <if test="failInfo != null and failInfo != '' " >
+                a.fail_info = #{failInfo},
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                a.data_explain = #{dataExplain},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.order_no = #{orderNo}
+        and a.yn = 0
+    </update>
+
 </mapper>

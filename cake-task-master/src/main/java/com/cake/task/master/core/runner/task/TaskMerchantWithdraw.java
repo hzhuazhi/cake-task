@@ -58,7 +58,7 @@ public class TaskMerchantWithdraw {
      * @date 2019/12/6 20:25
      */
 //    @Scheduled(cron = "1 * * * * ?")
-    @Scheduled(fixedDelay = 10000) // 每秒执行
+//    @Scheduled(fixedDelay = 10000) // 每秒执行
     public void handle() throws Exception{
 //        log.info("----------------------------------TaskMerchantWithdraw.handle()----start");
 

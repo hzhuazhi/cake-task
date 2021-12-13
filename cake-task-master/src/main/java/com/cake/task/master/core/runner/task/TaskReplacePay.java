@@ -94,7 +94,7 @@ public class TaskReplacePay {
      * @date 2019/12/6 20:25
      */
 //    @Scheduled(cron = "1 * * * * ?")
-    @Scheduled(fixedDelay = 30000) // 每半分钟执行
+//    @Scheduled(fixedDelay = 30000) // 每半分钟执行
 //    @Scheduled(fixedDelay = 6000) // 每分钟执行
     public void jinFuBalanceQuery() throws Exception{
 //        log.info("----------------------------------TaskReplacePay.jinFuBalanceQuery()----start");

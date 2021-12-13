@@ -49,7 +49,7 @@ public class TaskOrderReplenish {
      * @author yoko
      * @date 2019/12/6 20:25
      */
-    @Scheduled(fixedDelay = 3000) // 每3秒执行
+//    @Scheduled(fixedDelay = 3000) // 每3秒执行
     public void handleReplenish() throws Exception{
 //        log.info("----------------------------------TaskOrderReplenish.handleReplenish()----start");
         // 获取订单补单数据

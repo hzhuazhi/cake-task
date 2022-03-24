@@ -96,6 +96,13 @@ public class TaskOrderOutPrepare {
         replacePayBlackListRule = strategyReplacePayBlackListRuleModel.getStgNumValue();
 
 
+        // 策略：代付API拉单失败人工审核开关
+        int orderOutApiFailSwitch = 0;// 代付API拉单失败人工审核开关：1无需人工审核，2需要人工审核
+        StrategyModel strategyOrderOutApiFailSwitchQuery = TaskMethod.assembleStrategyQuery(ServerConstant.StrategyEnum.ORDER_OUT_API_FAIL_SWITCH.getStgType());
+        StrategyModel strategyOrderOutApiFailSwitchModel = ComponentUtil.strategyService.getStrategyModel(strategyOrderOutApiFailSwitchQuery, ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ZERO);
+        orderOutApiFailSwitch = strategyOrderOutApiFailSwitchModel.getStgNumValue();
+
+
 
         // 获取未跑的代付预备数据
         StatusModel statusQuery = TaskMethod.assembleTaskStatusQuery(limitNum, 1, 1, dataType, 0, 0,0,0,String.valueOf(replacePayDelayTimeNum));
@@ -270,8 +277,14 @@ public class TaskOrderOutPrepare {
 
                                 // 组装拉单失败的代付订单信息
                                 failInfo = "拉单杉德失败!";
+
+                                int orderStatus = 0;// 订单状态
+                                if (orderOutApiFailSwitch == 1){
+                                    // 无需要人工审核
+                                    orderStatus = 2;
+                                }
                                 orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                        2, failInfo);
+                                        orderStatus, failInfo);
 
                                 // 更新代付订单状态
                                 ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
@@ -304,8 +317,13 @@ public class TaskOrderOutPrepare {
 
                                 // 组装拉单失败的代付订单信息
                                 failInfo = "拉单金服失败!";
+                                int orderStatus = 0;// 订单状态
+                                if (orderOutApiFailSwitch == 1){
+                                    // 无需要人工审核
+                                    orderStatus = 2;
+                                }
                                 orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                        2, failInfo);
+                                        orderStatus, failInfo);
 
                                 // 更新代付订单状态
                                 ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);
@@ -338,8 +356,14 @@ public class TaskOrderOutPrepare {
 
                                 // 组装拉单失败的代付订单信息
                                 failInfo = "拉单汇潮失败!";
+
+                                int orderStatus = 0;// 订单状态
+                                if (orderOutApiFailSwitch == 1){
+                                    // 无需要人工审核
+                                    orderStatus = 2;
+                                }
                                 orderOutUpdate = HodgepodgeMethod.assembleOrderOutUpdate(data.getOrderNo(), null, null, null, 3,
-                                        2, failInfo);
+                                        orderStatus, failInfo);
 
                                 // 更新代付订单状态
                                 ComponentUtil.orderOutService.updateOrderOutByPrepare(orderOutUpdate);

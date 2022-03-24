@@ -121,6 +121,7 @@ public class ServerConstant {
         REPLACE_PAY_BLACK_LIST_RULE(34,""),
         REPLACE_PAY_DELAY_TIME_NUM(35,""),
         REPLACE_PAY_CHECK(36,""),
+        ORDER_OUT_API_FAIL_SWITCH(37,""),
 
 
 

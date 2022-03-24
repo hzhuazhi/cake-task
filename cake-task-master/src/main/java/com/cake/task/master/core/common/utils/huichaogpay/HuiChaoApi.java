@@ -67,7 +67,6 @@ public class HuiChaoApi {
         resData = new String(Base64.decodeBase64(resData), "UTF-8");
         log.info("transferFixed----------------resData:" + resData);
 
-//        resData = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><yemadai><errCode>0000</errCode><transferList><resCode>0000</resCode><transId>1636108657064</transId><accountName>王苏炀</accountName><cardNo>6214851219706053</cardNo><amount>1.00</amount><remark>备注</remark><secureCode>CtLMUXWz3T6aS4i42Ld17BnuWLDOPxAYXbEd/Btr4IixJrBI/HqxnXXGTJrdCp44yGSA3ECE3Zhqv/WoO2AAVCDDmd6oYYUTX48vSHCaqATSBebSQg+RV645pCZWDagF0YMT6Kr+PaHqs4JxCZyWEDdql+hfE4u5Ocz4wY7QWiI=</secureCode></transferList></yemadai>";
         TransferResponse result = null;
         if (!StringUtils.isBlank(resData)){
             // 将xml字符串转换成实体Bean
@@ -105,6 +104,7 @@ public class HuiChaoApi {
         log.info("base64.transferQueryFixed.resData:" + resData);
         resData = new String(Base64.decodeBase64(resData), "UTF-8");
         log.info("transferQueryFixed----------------resData:" + resData);
+//        resData = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><yemadai><code>0000</code><transfer><mertransferID>HC202111301234231</mertransferID><amount>1.00</amount><state>00</state><date>2021-11-05 18:37:38</date><memo>成功</memo></transfer></yemadai>";
         TransferQueryResponse result = null;
         if (!StringUtils.isBlank(resData)){
             // 将xml字符串转换成实体Bean

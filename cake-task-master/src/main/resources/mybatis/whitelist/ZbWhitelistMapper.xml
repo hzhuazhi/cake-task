@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cake.task.master.core.mapper.ZbWhitelistMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.trx_id,a.serial_no,a.user_serial_no,a.user_name,a.card_num,a.card_img_front,a.card_img_back,a.phone_num,a.bank_card,
+        a.order_status,a.query_status,a.notify_url,a.res_code,a.res_explain,a.sign,a.work_type,a.data_explain,a.remark,
+        a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.handle_status,a.handle_num,a.send_num,a.send_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="trxId != null and trxId != '' " >
+                and a.trx_id = #{trxId}
+            </if>
+            <if test="serialNo != null and serialNo != '' " >
+                and a.serial_no = #{serialNo}
+            </if>
+            <if test="userSerialNo != null and userSerialNo != '' " >
+                and a.user_serial_no = #{userSerialNo}
+            </if>
+            <if test="userName != null and userName != '' " >
+                and a.user_name = #{userName}
+            </if>
+            <if test="cardNum != null and cardNum != '' " >
+                and a.card_num = #{cardNum}
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                and a.phone_num = #{phoneNum}
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                and a.bank_card = #{bankCard}
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                and a.order_status = #{orderStatus}
+            </if>
+            <if test="queryStatus != null and queryStatus != '' " >
+                and a.query_status = #{queryStatus}
+            </if>
+            <if test="sign != null and sign != '' " >
+                and a.sign = #{sign}
+            </if>
+            <if test="workType != null and workType != '' " >
+                and a.work_type = #{workType}
+            </if>
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 显示所有数据 -->
+    <select id="findAll" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="findByCondition" parameterType="Object" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 根据条件查询信息-->
+    <select id="findByObject" parameterType="Object" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause"/>
+        limit 1
+    </select>
+
+    <!-- 根据id查询信息-->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause_id"/>
+    </select>
+
+
+    <!-- 查询总数-->
+    <select id="queryByCount" resultType="java.lang.Integer"  parameterType="Object">
+        select count(1)
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询分页列表 -->
+    <select id="queryByList" parameterType="Object" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause"/>
+        <include refid="Example_Order_By"/>
+        <if test="pageNumber != null and pageNumber != ''" >
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 添加基本信息 -->
+    <insert id="add" parameterType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel" >
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+        <!--SELECT LAST_INSERT_ID() as id-->
+        <!--</selectKey>-->
+        insert into tb_fr_zb_whitelist
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="trxId != null and trxId != '' " >
+                trx_id,
+            </if>
+            <if test="serialNo != null and serialNo != '' " >
+                serial_no,
+            </if>
+            <if test="userSerialNo != null and userSerialNo != '' " >
+                user_serial_no,
+            </if>
+            <if test="userName != null and userName != '' " >
+                user_name,
+            </if>
+            <if test="cardNum != null and cardNum != '' " >
+                card_num,
+            </if>
+            <if test="cardImgFront != null and cardImgFront != '' " >
+                card_img_front,
+            </if>
+            <if test="cardImgBack != null and cardImgBack != '' " >
+                card_img_back,
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                phone_num,
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                bank_card,
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                order_status,
+            </if>
+            <if test="queryStatus != null and queryStatus != '' " >
+                query_status,
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                notify_url,
+            </if>
+            <if test="resCode != null and resCode != '' " >
+                res_code,
+            </if>
+            <if test="resExplain != null and resExplain != '' " >
+                res_explain,
+            </if>
+            <if test="sign != null and sign != '' " >
+                sign,
+            </if>
+            <if test="workType != null and workType != '' " >
+                work_type,
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                data_explain,
+            </if>
+            <if test="remark != null and remark != '' " >
+                remark,
+            </if>
+            <if test="curday != null and curday != '' " >
+                curday,
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                curhour,
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                curminute,
+            </if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="trxId != null and trxId != '' " >
+                <![CDATA[  #{trxId}, ]]>
+            </if>
+            <if test="serialNo != null and serialNo != '' " >
+                <![CDATA[  #{serialNo}, ]]>
+            </if>
+            <if test="userSerialNo != null and userSerialNo != '' " >
+                <![CDATA[  #{userSerialNo}, ]]>
+            </if>
+            <if test="userName != null and userName != '' " >
+                <![CDATA[  #{userName}, ]]>
+            </if>
+            <if test="cardNum != null and cardNum != '' " >
+                <![CDATA[  #{cardNum}, ]]>
+            </if>
+            <if test="cardImgFront != null and cardImgFront != '' " >
+                <![CDATA[  #{cardImgFront}, ]]>
+            </if>
+            <if test="cardImgBack != null and cardImgBack != '' " >
+                <![CDATA[  #{cardImgBack}, ]]>
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                <![CDATA[  #{phoneNum}, ]]>
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                <![CDATA[  #{bankCard}, ]]>
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                <![CDATA[  #{orderStatus}, ]]>
+            </if>
+            <if test="queryStatus != null and queryStatus != '' " >
+                <![CDATA[  #{queryStatus}, ]]>
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                <![CDATA[  #{notifyUrl}, ]]>
+            </if>
+            <if test="resCode != null and resCode != '' " >
+                <![CDATA[  #{resCode}, ]]>
+            </if>
+            <if test="resExplain != null and resExplain != '' " >
+                <![CDATA[  #{resExplain}, ]]>
+            </if>
+            <if test="sign != null and sign != '' " >
+                <![CDATA[  #{sign}, ]]>
+            </if>
+            <if test="workType != null and workType != '' " >
+                <![CDATA[  #{workType}, ]]>
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                <![CDATA[  #{dataExplain}, ]]>
+            </if>
+            <if test="remark != null and remark != '' " >
+                <![CDATA[  #{remark}, ]]>
+            </if>
+            <if test="curday != null and curday != '' " >
+                <![CDATA[  #{curday}, ]]>
+            </if>
+            <if test="curhour != null and curhour != '' " >
+                <![CDATA[  #{curhour}, ]]>
+            </if>
+            <if test="curminute != null and curminute != '' " >
+                <![CDATA[  #{curminute}, ]]>
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 更新基本信息 -->
+    <update id="update" parameterType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        UPDATE tb_fr_zb_whitelist a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="trxId != null and trxId != '' " >
+                a.trx_id = #{trxId},
+            </if>
+            <if test="serialNo != null and serialNo != '' " >
+                a.serial_no = #{serialNo},
+            </if>
+            <if test="userSerialNo != null and userSerialNo != '' " >
+                a.user_serial_no = #{userSerialNo},
+            </if>
+            <if test="userName != null and userName != '' " >
+                a.user_name = #{userName},
+            </if>
+            <if test="cardNum != null and cardNum != '' " >
+                a.card_num = #{cardNum},
+            </if>
+            <if test="cardImgFront != null and cardImgFront != '' " >
+                a.card_img_front = #{cardImgFront},
+            </if>
+            <if test="cardImgBack != null and cardImgBack != '' " >
+                a.card_img_back = #{cardImgBack},
+            </if>
+            <if test="phoneNum != null and phoneNum != '' " >
+                a.phone_num = #{phoneNum},
+            </if>
+            <if test="bankCard != null and bankCard != '' " >
+                a.bank_card = #{bankCard},
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="queryStatus != null and queryStatus != '' " >
+                a.query_status = #{queryStatus},
+            </if>
+            <if test="notifyUrl != null and notifyUrl != '' " >
+                a.notify_url = #{notifyUrl},
+            </if>
+            <if test="resCode != null and resCode != '' " >
+                a.res_code = #{resCode},
+            </if>
+            <if test="resExplain != null and resExplain != '' " >
+                a.res_explain = #{resExplain},
+            </if>
+            <if test="workType != null and workType != '' " >
+                a.work_type = #{workType},
+            </if>
+            <if test="dataExplain != null and dataExplain != '' " >
+                a.data_explain = #{dataExplain},
+            </if>
+            <if test="remark != null and remark != '' " >
+                a.remark = #{remark},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+    <!-- 主要作用1.逻辑删除，2更新状态 -->
+    <update id="manyOperation" parameterType="Object">
+        update tb_fr_zb_whitelist a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="yn != 0 and yn >0 " >
+                a.yn = #{yn},
+            </if>
+        </trim>
+        <include refid="Example_Where_Clause_id"/>
+    </update>
+
+
+
+</mapper>

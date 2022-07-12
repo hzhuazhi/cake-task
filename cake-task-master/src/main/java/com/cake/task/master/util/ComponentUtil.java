@@ -62,6 +62,9 @@ public class ComponentUtil {
     public static OrderOutLimitService orderOutLimitService;
 
 
+    public static ZbWhitelistService zbWhitelistService;
+
+
 
     public static TaskMobileCardShortMsgService taskMobileCardShortMsgService;
     public static TaskBankShortMsgService taskBankShortMsgService;

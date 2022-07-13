@@ -138,6 +138,11 @@ public class StatusModel implements Serializable {
      */
     private Integer resourceType;
 
+    /**
+     * 查询状态
+     */
+    private Integer queryStatus;
+
     public Long getId() {
         return id;
     }
@@ -370,5 +375,13 @@ public class StatusModel implements Serializable {
 
     public void setResourceType(Integer resourceType) {
         this.resourceType = resourceType;
+    }
+
+    public Integer getQueryStatus() {
+        return queryStatus;
+    }
+
+    public void setQueryStatus(Integer queryStatus) {
+        this.queryStatus = queryStatus;
     }
 }

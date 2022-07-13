@@ -3179,6 +3179,52 @@ public class TaskMethod {
 
 
 
+    /**
+     * @Description: 组装更改运行状态的数据 - 众邦白名单修改状态
+     * @param id - 主键ID
+     * @param runStatus - 运行计算状态：：0初始化，1锁定，2计算失败，3计算成功
+     * @param sendStatus - 发送状态：0初始化，1锁定，2计算失败，3计算成功
+     * @param orderStatus - 订单状态
+     * @param invalidTime - 错误码
+     * @param info - 错误详情
+     * @return StatusModel
+     * @author yoko
+     * @date 2019/12/10 10:42
+     */
+    public static StatusModel assembleTaskUpdateStatusByZhongBangWhitelist(long id, int runStatus,int sendStatus,int orderStatus, String invalidTime, String info){
+        StatusModel resBean = new StatusModel();
+        resBean.setId(id);
+        if (runStatus > 0){
+            resBean.setRunStatus(runStatus);
+            if (runStatus == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
+                // 表示失败：失败则需要运行次数加一
+                resBean.setRunNum(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+            }
+        }
+        if (sendStatus > 0){
+            resBean.setSendStatus(sendStatus);
+            if (sendStatus == ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_TWO){
+                // 表示失败：失败则需要运行次数加一
+                resBean.setSendNum(ServerConstant.PUBLIC_CONSTANT.SIZE_VALUE_ONE);
+            }
+        }
+        if (orderStatus > 0){
+            resBean.setOrderStatus(orderStatus);
+        }
+        if (!StringUtils.isBlank(invalidTime)){
+            resBean.setInvalidTime(invalidTime);
+        }
+        if (!StringUtils.isBlank(info)){
+            resBean.setInfo(info);
+        }
+        return resBean;
+    }
+
+
+
+
+
+
 
 
 

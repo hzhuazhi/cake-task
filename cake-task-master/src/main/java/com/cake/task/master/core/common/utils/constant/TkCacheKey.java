@@ -202,5 +202,13 @@ public interface TkCacheKey {
     String LOCK_ORDER_OUT_PREPARE = "-36";
 
 
+    /**
+     * LOCK-众邦白名单查询
+     */
+    String LOCK_ZHONG_BANG_WHITELIST_QUERY = "-37";
 
+    /**
+     * LOCK-众邦白名单结果同步
+     */
+    String LOCK_ZHONG_BANG_WHITELIST_NOTIFY = "-38";
 }

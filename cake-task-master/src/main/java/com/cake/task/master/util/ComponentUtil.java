@@ -86,4 +86,6 @@ public class ComponentUtil {
     public static TaskReplacePayGainResultService taskReplacePayGainResultService;
     public static TaskOrderOutPrepareService taskOrderOutPrepareService;
 
+    public static TaskZbWhitelistService taskZbWhitelistService;
+
 }

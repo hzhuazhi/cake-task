@@ -242,6 +242,10 @@ public class AutowireRunner implements ApplicationRunner {
     private TaskOrderOutPrepareService taskOrderOutPrepareService;
 
 
+    @Autowired
+    private TaskZbWhitelistService taskZbWhitelistService;
+
+
 
 
 
@@ -328,6 +332,8 @@ public class AutowireRunner implements ApplicationRunner {
         ComponentUtil.taskReplacePayGainService = taskReplacePayGainService;
         ComponentUtil.taskReplacePayGainResultService = taskReplacePayGainResultService;
         ComponentUtil.taskOrderOutPrepareService = taskOrderOutPrepareService;
+
+        ComponentUtil.taskZbWhitelistService = taskZbWhitelistService;
 
 
         runThread = new RunThread();

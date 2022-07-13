@@ -2,6 +2,7 @@ package com.cake.task.master.util;
 import com.cake.task.master.core.common.utils.DateUtil;
 import com.cake.task.master.core.common.utils.constant.CacheKey;
 import com.cake.task.master.core.common.utils.constant.CachedKeyUtils;
+import com.cake.task.master.core.common.utils.zhongbangpay.model.response.TransferResponse;
 import com.cake.task.master.core.model.merchant.MerchantBalanceDeductModel;
 import com.cake.task.master.core.model.merchant.MerchantChannelModel;
 import com.cake.task.master.core.model.merchant.MerchantModel;
@@ -609,6 +610,75 @@ public class HodgepodgeMethod {
     public static void saveMaxreplacePayByRedis(int resourceType, long replacePayId){
         String strKeyCache = CachedKeyUtils.getCacheKey(CacheKey.REPLACE_PAY, resourceType);
         ComponentUtil.redisService.set(strKeyCache, String.valueOf(replacePayId));
+    }
+
+
+    /**
+    * @Description: check判断白名单是否添加成功
+    * @param transferResponse
+    * @author: yoko
+    * @date: 2022/7/12 15:57
+    * @version 1.0.0
+    */
+    public static boolean checkZhongBangWhitelistRst(TransferResponse transferResponse){
+        try{
+            if (transferResponse != null){
+                if (transferResponse.getResult_code().equals("SUCCESS") && transferResponse.getReturn_code().equals("SUCCESS")){
+                    if (transferResponse.getWhiteList_data() != null && transferResponse.getWhiteList_data().size() > 0 ){
+                        if (transferResponse.getWhiteList_data().get(0).getAdd_status().equals("ADD_SUCCESS")){
+                            return true;
+                        }else {
+                            return false;
+                        }
+                    }else {
+                        return false;
+                    }
+                }else {
+                    return false;
+                }
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+
+    /**
+    * @Description: 当众邦白名单添加错误时把错误码以及错误原因记录
+    * @param transferResponse
+    * @author: yoko
+    * @date: 2022/7/12 16:19
+    * @version 1.0.0
+    */
+    public static String getZhongBangWhitelistErrorInfo(TransferResponse transferResponse){
+        String str = "";
+        if (transferResponse != null){
+            if (!StringUtils.isBlank(transferResponse.getResult_code())){
+                str += transferResponse.getResult_code() + "|";
+            }
+            if (!StringUtils.isBlank(transferResponse.getReturn_code())){
+                str += transferResponse.getReturn_code() + "|";
+            }
+            if (transferResponse.getWhiteList_data() != null && transferResponse.getWhiteList_data().size() > 0 ){
+                if (StringUtils.isBlank(transferResponse.getWhiteList_data().get(0).getAdd_status())){
+                    str += transferResponse.getWhiteList_data().get(0).getAdd_status() + "|";
+                }
+            }
+            str += "#";// 分割符
+            if (!StringUtils.isBlank(transferResponse.getReturn_message())){
+                str += transferResponse.getReturn_message() + "|";
+            }
+            if (transferResponse.getWhiteList_data() != null && transferResponse.getWhiteList_data().size() > 0 ){
+                if (!StringUtils.isBlank(transferResponse.getWhiteList_data().get(0).getDescription())){
+                    str += transferResponse.getWhiteList_data().get(0).getDescription();
+                }
+            }
+        }else {
+            return null;
+        }
+        return str;
     }
 
 

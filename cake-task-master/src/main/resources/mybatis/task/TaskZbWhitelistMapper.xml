@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cake.task.master.core.mapper.task.TaskZbWhitelistMapper">
+
+
+
+
+    <!-- 定义数据库基本列,只适用代替单表的*-->
+    <sql id="Base_Column_List">
+        a.id,a.trx_id,a.serial_no,a.user_serial_no,a.user_name,a.card_num,a.card_img_front,a.card_img_back,a.phone_num,a.bank_card,
+        a.order_status,a.query_status,a.notify_url,a.res_code,a.res_explain,a.sign,a.work_type,a.data_explain,a.remark,
+        a.curday,a.curhour,a.curminute,a.run_num,a.run_status,a.handle_status,a.handle_num,a.send_num,a.send_status,
+        a.create_time,a.update_time,a.yn
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                and a.order_status = #{orderStatus}
+            </if>
+            <if test="queryStatus != null and queryStatus != '' " >
+                and a.query_status = #{queryStatus}
+            </if>
+            <if test="runNum != null and runNum != '' " >
+                and a.run_num &lt; #{runNum}
+            </if>
+            <if test="runStatus != null and runStatus != '' " >
+                and a.run_status &lt; #{runStatus}
+            </if>
+            <if test="handleNum != null and handleNum != '' " >
+                and a.handle_num &lt; #{handleNum}
+            </if>
+            <if test="handleStatus != null and handleStatus != '' " >
+                and a.handle_status &lt; #{handleStatus}
+            </if>
+            <if test="sendNum != null and sendNum != '' " >
+                and a.send_num &lt; #{sendNum}
+            </if>
+            <if test="sendStatus != null and sendStatus != '' " >
+                and a.send_status &lt; #{sendStatus}
+            </if>
+            and (unix_timestamp(now()) - unix_timestamp(a.ts_time)) > 120
+            and a.yn = 0
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件_id -->
+    <sql id="Example_Where_Clause_id">
+        where 1=1
+        <trim  suffixOverrides="," >
+            <if test="id != null and id != '' " >
+                and a.id = #{id}
+            </if>
+            and a.yn =  0
+        </trim>
+    </sql>
+
+    <!-- 排序条件 -->
+    <sql id="Example_Order_By">
+        order by a.create_time desc
+    </sql>
+
+
+    <!-- 查询未跑的信息 -->
+    <select id="getDataList" parameterType="Object" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        <include refid="Example_Where_Clause"/>
+        limit #{limitNum}
+    </select>
+
+    <!-- 更新信息数据的状态成功、失败的结果 -->
+    <update id="updateStatus" parameterType="Object">
+        UPDATE tb_fr_zb_whitelist a
+        <trim prefix="set" suffixOverrides=",">
+            <if test="runNum != null and runNum != '' " >
+                a.run_num = a.run_num + #{runNum},
+            </if>
+            <if test="runStatus != null and runStatus != '' " >
+                a.run_status = #{runStatus},
+            </if>
+            <if test="handleNum != null and handleNum != '' " >
+                a.handle_num = a.handle_num + #{handleNum},
+            </if>
+            <if test="handleStatus != null and handleStatus != '' " >
+                a.handle_status = #{handleStatus},
+            </if>
+            <if test="sendNum != null and sendNum != '' " >
+                a.send_num = a.send_num + #{sendNum},
+            </if>
+            <if test="sendStatus != null and sendStatus != '' " >
+                a.send_status = #{sendStatus},
+            </if>
+            <if test="orderStatus != null and orderStatus != '' " >
+                a.order_status = #{orderStatus},
+            </if>
+            <if test="queryStatus != null and queryStatus != '' " >
+                a.query_status = #{queryStatus},
+            </if>
+           <!-- <if test="info != null and info != '' " >
+                a.data_explain = #{info},
+            </if>-->
+
+            <if test="invalidTime != null and invalidTime != '' " >
+                a.res_code = #{invalidTime},
+            </if>
+            <if test="info != null and info != '' " >
+                a.res_explain = #{info},
+            </if>
+            a.update_time = NOW(),
+        </trim>
+        where 1=1
+        and a.id = #{id}
+        and a.yn = 0
+    </update>
+
+
+    <!-- 获取要同步给下游的白名单数据 -->
+    <select id="getWhitelistNotifyList" parameterType="Object" resultType="com.cake.task.master.core.model.zhongbang.ZbWhitelistModel">
+        select
+        <include refid="Base_Column_List" />
+        from tb_fr_zb_whitelist a
+        where 1=1
+        and ((a.order_status = 2 and a.run_status =2 and a.run_num >= 5) or (a.order_status=3))
+        <if test="sendNum != null and sendNum != '' " >
+            and a.send_num &lt; #{sendNum}
+        </if>
+        <if test="sendStatus != null and sendStatus != '' " >
+            and a.send_status &lt; #{sendStatus}
+        </if>
+        limit #{limitNum}
+    </select>
+
+
+
+</mapper>
